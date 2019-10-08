@@ -1,0 +1,326 @@
+For maven 3 : default jdk is : 1.5
+for maven 2 : default jdk is : 1.4 
+
+
+
+Video 1: Introduction and setting up part 1
+
+its build tool
+proj mgmt tool
+
+in this we are explained only build tool
+
+
+Common problems which we face normally when we try to create any web application:
+1. To know all jars with respect to the technology like Spring and Hibernate
+2. To find dependencies and versions
+3. Proj Structure
+4. process of building, publising and deploying 
+
+Maven will help us on all these 4 issues.
+
+Steps to Install Maven:
+1. Extract the Zip files downloaded from Maven 
+   eg: D:\Training_sws\apache-maven-2.2.1
+2. set the Environment varbls:
+   M2_HOME=D:\Training_sws\apache-maven-2.2.1
+   Path=D:\Training_sws\apache-maven-2.2.1\bin;
+3. Open Command prompt
+   execute the following cmd: mvn -v (it will give o/p as version of mvn)
+
+
+Creation of mvn project:
+1. create user folder eg: maven_projs
+2. use of cmd go upto that folder and use follwing cmd
+   cd D:\Training_sws\maven_projs
+   D:\Training_sws\maven_projs> mvn archetype:generate
+   
+3.After few secs you can see the following msg on command prompt:(means mvn downloaded all types of dependent jars.)
+  Choose a number or apply filter (format: [groupId:]artifactId, case sensitive contains): 510:
+
+4.Press enter -> it takes default archetype as we are not entered any number. other wise we can enter some number which 
+  was listed when we run the cmd "mvn archetype:generate" based on that number it creates the proj structure and downloads
+  those related dependent jars.(This is the major advantage of maven build tool).
+
+5. After it display follwoing data on cmd prompt
+   
+   Choose org.apache.maven.archetypes:maven-archetype-quickstart version:
+	1: 1.0-alpha-1
+	2: 1.0-alpha-2
+	3: 1.0-alpha-3
+	4: 1.0-alpha-4
+	5: 1.0
+	6: 1.1
+	Choose a number: 6: 6 (I entred the 6 its user dependent)
+
+6. Based on version it downloads few more dependent jars and asks user to give few names as follows:
+	Define value for property 'groupId': : org.cognizant.maven
+	Define value for property 'artifactId': : MavenTestApp
+	Define value for property 'version': 1.0-SNAPSHOT:
+	Define value for property 'package': org.cognizant.maven:
+	 
+   After that it gives confirmation on the same:
+    [INFO] project created from Old (1.x) Archetype in dir: D:\Training_sws\maven_projs\MavenTestApp
+	[INFO] ------------------------------------------------------------------------
+	[INFO] BUILD SUCCESSFUL
+	[INFO] ------------------------------------------------------------------------
+	[INFO] Total time: 6 minutes 18 seconds
+	[INFO] Finished at: Tue Dec 30 11:12:33 IST 2014
+	[INFO] Final Memory: 20M/48M
+	[INFO] ------------------------------------------------------------------------
+
+   Means mvn proj created successfully you can check the folder structure at D:\Training_sws\maven_projs\MavenTestApp.
+
+-----------------------------------------------------------------------------------------------------------------------------
+
+Video 2: Introduction and setting up part 2
+
+Steps to compile mvn proj:
+1. go upto pom.xml file present in "MavenTestApp"
+2. execute cmd:
+   mvn compile
+3. give o/p
+    
+	[INFO] ------------------------------------------------------------------------
+	[INFO] BUILD SUCCESSFUL
+	[INFO] ------------------------------------------------------------------------
+	[INFO] Total time: 1 minute 8 seconds
+	[INFO] Finished at: Tue Dec 30 12:38:26 IST 2014
+	[INFO] Final Memory: 8M/20M
+	[INFO] ------------------------------------------------------------------------
+
+4. we have to do pkg 
+   cmd: mvn package
+   It will creates the jar file becoz we mentioned in pom.xml file after compilation it suppose to be deployed as .jar
+   we can mention as user want like either .jar or .war or etc....
+
+   	[INFO] Building jar: D:\Training_sws\maven_projs\MavenTestApp\target\MavenTestApp-1.0-SNAPSHOT.jar
+	[INFO] ------------------------------------------------------------------------
+	[INFO] BUILD SUCCESSFUL
+	[INFO] ------------------------------------------------------------------------
+	[INFO] Total time: 1 minute
+	[INFO] Finished at: Tue Dec 30 12:40:27 IST 2014
+	[INFO] Final Memory: 12M/28M
+	[INFO] ------------------------------------------------------------------------
+
+   	And at the same time it will display the .jar location as well. you can check it out on top of build successful msg.
+
+5. execution setp:
+	D:\Training_sws\maven_projs\MavenTestApp>   java -cp target\MavenTestApp-1.0-SNAPSHOT.jar org.cognizant.maven.App
+
+	It executed and give o/p: Hellow World! becoz in my App.java has only sop ("Hellow World");
+
+
+Back end what happening:
+Basically Maven will work with use of Maven repository.
+This repository divided into two parts 
+1. Archetype info  -- explains what type of proj user want to create like web app or spring web app or nor stand alone proj
+2. Dependency info  -- will download jars based on depedency tag which we mentioned in pom.xml
+
+when we fire the cmd "mvn archetype:generate", maven reads the archetype repository from maven repository downloads the all jars
+based on archetype which user selected(webapp or springwebapp or normal proj) and creates the folder structure and creates pom.xml.
+when we fire the cmd "mvn compile" it reads the pom.xml file and finds out all dependecy jars list which are listed under <dependency>
+and downloads these jars from "dependency info" from "maven repository". with help of those completes the compilation of code.
+when we fire the cmd "mvn package" based on type of pkg you mentioned in pom.xml it will build that and do published.
+
+
+-----------------------------------------------------------------------------------------------------------------------------
+
+Video 3: understanding archetype and pom.xml
+
+mvn archetype:generate
+1. Archtype
+2. Groupid
+3. artifactid
+4. version
+5. package
+
+pom.xml:
+1. Maven co-ordinates = groupid, artifactid, version
+2. meta data = proj details like undestand proj name and type of proj nothing but groupid, artifactid
+3. build version = either jar or war or ear 
+4. resources and dependencies = list of jars of dependency
+
+eg: 
+	<groupId>org.cognizant.maven</groupId>
+  	<artifactId>MavenTestApp</artifactId>
+  	<version>1.0-SNAPSHOT</version>
+  	<packaging>jar</packaging>
+
+  	<name>MavenTestApp</name>
+  	<url>http://maven.apache.org</url>
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------
+
+video 4: Maven Build Phases
+
+ Available lifecycle phases are: validate, initialize, generate-sources, process-sources, generate-resources, process-resources, compile, 
+ process-classes, generate-test-sources, process-test-sources, generate-test-resources, process-test-resources, test-compile, 
+ process-test-classes, test, prepare-package, package, pre-integration-test, integration-test, post-integration-test, verify, install, 
+ deploy, pre-clean, clean, post-clean, pre-site, site, post-site, site-deploy. -> [Help 1]
+
+Explained the build life cycle phases of Maven.
+phase 1: validate -- will check the pom.xml file and structure of the proj and configuration settings etc
+2: compile -- compiles all java files and generates .class files. If you run compile first defaultly it will call validate phase
+3: test -- with use of junit it generates the test cased and tests the code as well.
+4: package -- gerats .jar or .war or .ear file. If any one of above seq phase will fail then the pkg phase also go failure.
+5: Install -- storing of generated pkge into local repository ie: m2/repository
+6: deploy -- moving of generated pkg to remote server or share drive from which other user tried to access this pkg.
+
+
+Steps to execute phases individually:
+compile:   D:\Training_sws\maven_projs\MavenTestApp> mvn compile
+Test: D:\Training_sws\maven_projs\MavenTestApp> mvn test
+package: D:\Training_sws\maven_projs\MavenTestApp> mvn package   (it runs again above 2 steps again)
+install: D:\Training_sws\maven_projs\MavenTestApp> mvn install 
+
+-----------------------------------------------------------------------------------------------------------------------------
+
+video 5: Adding Dependency
+
+
+To clean project or delete target folder from project cmd:
+	D:\Training_sws\maven_projs\MavenTestApp> mvn clean
+
+chage the App.java 
+1. comment sop
+2. add Logger logger=LoggerFactory.getLogger(App.class);
+       logger.info("Hellow World!");
+3. add import org.slf4j.*; stmt
+
+4. execute the mvn compile
+   in this case build would failed becoz we imported slf4j in our code but not made any entry of dependency jar list in pom.xml
+   so we are getting the failure
+5. append following dependency tag in pom.xml
+ 	<dependency>
+      		<groupId>org.slf4j</groupId>
+      		<artifactId>slf4j-api</artifactId>
+      		<version>1.6.1</version>      		
+    	</dependency>
+   
+   and compile again: mvn compile
+   Now it will successful. Observe that you not made entry of <scope> tag in above <dependency>, in this case maven assumes 
+   for this scope is default soce.
+
+   compile is default scope of maven. ie: <scope>compile</scope>. Mean jar will be used only on compilation time.
+
+
+-----------------------------------------------------------------------------------------------------------------------------
+
+video 6: A Web Application Using Maven
+
+  its similar to normal method nothing differen other than chose of archetype number in my case this number is: 749
+And we have to observe that in pom.xml the scope of jsp and servlet dependency it is "provided".
+
+<scope>provided</scope>
+
+eg:
+   <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.4</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet.jsp</groupId>
+      <artifactId>jsp-api</artifactId>
+      <version>2.1</version>
+      <scope>provided</scope>
+    </dependency>
+
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.0.2</version>
+        <configuration>
+          <source>1.4</source>
+          <target>1.4</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  As we select archtype of webapp to use jdk1.4 version in pom.xml file we can see the entry of <source>1.4</source> under <plugin>.
+
+-----------------------------------------------------------------------------------------------------------------------------
+
+video 7: Introduction to Plugins with the Maven Compiler Plugin
+
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------
+
+video 8: Using the Jetty Plugin (is one of lite weight web container like tomcat)
+
+plugins should be add in pom.xml uder <build> tag.
+
+
+pom.xml
+-------
+<build>
+   <plugins>
+       <plugin>
+            <groupId>org.mortbay.jetty</groupId>
+	    <artifactId>maven-jetty-plugin</artifactId>
+            <version>6.1.10</version>
+       </plugin>
+
+After adding plugins in pom.xml to run the jetty server use the following cmd:
+mvn jetty:run
+
+
+
+The usage of <configuration> tag is that, giving control to the servlet container if any file modified in some interval of time
+which we mentiond in <scanIntervalSeconds> tag it suppose to compile the code and build it and have to the deployment as well.
+Due to this users allways get the latest data and we can rid off from the time of building and deploying of proj manually. its major 
+advantage.
+
+<plugin>
+            <groupId>org.mortbay.jetty</groupId>
+	    <artifactId>maven-jetty-plugin</artifactId>
+            <version>6.1.10</version>
+	    <configuration>
+                    <scanIntervalSeconds>10<scanIntervalSeconds>
+            </configuration>	
+</plugin>
+
+-----------------------------------------------------------------------------------------------------------------------------
+
+
+video 9: Eclipse Plugin for Maven and Maven Plugin for Eclipse
+
+mvn eclipse:eclipse  => to convert mavent appliction to eclipse plugable project
+
+The above cmd will work even if you wont make any entry of <plugin> in pom.xml, maven can understand by default for eclipse plugin
+and do the things for us. So that we can able to open this project in eclipse directly.
+
+eg: D:\Training_sws\maven_projs\mywebapp>mvn eclipse:eclipse
+
+explantaion of above cmd: 
+1. Should have mywebapp web application by mavne generated.
+2. later apply cmd mvn eclipse:eclipse the it downloads all eclipse dependencies and generated eclipse readable project
+   If you find the .class path .project and .settings files under the "mywebapp" folder we can say its converted correctly other wise not.
+
+to import in eclipse: file-> import -> existing project -> select root directory "mywebapp".
+
+
+
+To install m2 plugin in eclipse:
+1. help -> 
+2. install new software -> 
+    work with: all types
+    enter in textbox: maven (list out all maven related plugins )
+    select check box "maven integration for eclipse"
+3. click next
+4. click next
+5. select acceptance agrement radio button
+6. click finish
+
+-----------------------------------------------------------------------------------------------------------------------------
+

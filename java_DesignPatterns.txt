@@ -1,0 +1,12 @@
+Helpful: https://www.youtube.com/channel/UCd0L83mMeQ4Ioy4IjaSYhvA
+
+Design Patterns:
+----------------
+
+
+proxy Design Pattern:
+https://www.youtube.com/watch?v=cHg5bWW4nUI&index=21&list=PLF206E906175C7E07
+
+
+Template Design Pattern:
+https://www.youtube.com/watch?v=83O-yY0JhFU

@@ -1,0 +1,110 @@
+http://channel9.msdn.com/Series/Javascript-Fundamentals-Development-for-Absolute-Beginners/Writing-your-First-JavaScript-Application-02
+https://www.youtube.com/playlist?list=PLOxOmO43E6JvLzUBTbc9dkNw7xv9BMTnW
+
+
+Jquery Vs Dojo
+http://thetascript.com/jqueryvsdojo/ 
+
+------------------------------------------------------------------------------------------------------------------------------------------------------
+Definition: jQuery is primarily a JavaScript library for doing DOM(Document Object Model) manipulation, Ajax, events, and effects.
+
+JQurey few examples syntaxes:
+ready : $(document).ready(function(){ });
+load  : $('#msg').load('/ajax/test.html');
+
+click : $("#button").click(function(){ });
+on change: $("select").change(function(){ });
+
+show : $("p").show();
+hide : $("p").hide();
+replace : $('#div_for_IE').replaceWith($('#div_for_mozilla'))
+remove : $("#EOPtrgt_select_primarydimn1 option[value='ALL']").remove();
+
+get value from id : $("#id").val();
+
+html : $("#div").html(response);   // appending response data to the the div
+
+$.each(	$("input[name^='editRepairCB']:checked"),function() { });
+
+check box :    var isChecked = $('#chkSelect').prop('checked');  -- return true or false
+raido button : var isChecked = $('#rdSelect') .prop('checked');
+check box to be checked :      $("#chkSelect").prop('checked', true );
+
+class : $("#bar").addClass('foo').removeClass('abc');
+
+
+Compare to Jquery, Dojo supports these extra features 
+internationalization, accessibility, templated widgets, graphing and charting, rich UI widgets, and much more.
+
+------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+var test; // undefined (not null)
+		=4+5+"6"+7+8  //9678
+		="6"+7 //67
+		=1+"7" //17
+		=parseInt("s")  //NaN
+		=parseInt("34s78") //34
+		
+var ob="This is."		
+var len=obj.length	// no parenthesis 9
+var ind=obj.indexOf("is"); // 2       
+	   =obj.substr(ind,2); // ind = starting index  and 2 is number of chars after that
+       =obj.subString(2,4); // is - starting index and 4 is next index position.
+
+Data Types:
+-----------
+Object
+String 
+Number
+Boolean
+
+we can create user defined object data types also.
+
+var person = {
+	firstName : "abc",
+	lastName  : "def",
+	getFullName : function(){
+		return this.firstName+" "+this.lastName;
+	}
+};
+
+alert(person.getFullName()); // abc def
+
+----
+Confirm Button:
+<button onclick="myFunction()">Try it</button>
+
+<p id="demo"></p>
+
+<script>
+function myFunction() {
+    var x;
+    if (confirm("Press a button!") == true) {
+        x = "You pressed OK!";
+    } else {
+        x = "You pressed Cancel!";
+    }
+    document.getElementById("demo").innerHTML = x;
+}
+</script>
+----
+prompt :
+
+<button onclick="myFunction()">Try it</button>
+
+<p id="demo"></p>
+
+<script>
+function myFunction() {
+    var person = prompt("Please enter your name", "Harry Potter");
+    
+    if (person != null) {
+        document.getElementById("demo").innerHTML =
+        "Hello " + person + "! How are you today?";
+    }
+}
+</script>
+----
+typeof a; return data type of a ie: number, string, boolean (no float data type)
+

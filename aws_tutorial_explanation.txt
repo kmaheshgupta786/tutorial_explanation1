@@ -1,0 +1,43 @@
+
+
+in mac:
+ssh -i demo-key.pem ec2-user@52.91.126.76
+
+
+private key present in local machine
+public key present on server.
+
+To generate Key using Putty:
+----------------------------
+
+1.open puttygen.exe
+2. select ssh-2 RSA
+3. number of bits in a generated key : 4906
+4. click on generate (it will create public and private key)
+5. click on save public key
+6. click on save private key
+
+
+create .ssh on server:
+----------------------
+1. connect to server
+2. create .ssh directory
+3. cd .ssh -> execute following cmd (it openes an emptty file)
+	nano authorized_keys
+4. paste the public key in the above file.
+5. come out of the directory (cd..)
+6. change owner ship (from root to user)
+		chown username:username -R .ssh
+7. chmod 0700 .ssh (and keep 644 permissions on keys)
+8. do nano on sshd directory.
+	nano /etc/ssh/sshd_config
+9. 
+
+
+
+connect through putty:
+-----------------------	
+	
+		
+
+

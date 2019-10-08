@@ -1,0 +1,1245 @@
+
+Skip to content
+This repository
+
+    Pull requests
+    Issues
+    Marketplace
+    Explore
+
+    @kmaheshgupta786
+
+0
+0
+
+    0
+
+kmaheshgupta786/tutorial_explanation
+Code
+Issues 0
+Pull requests 0
+Projects 0
+Wiki
+Insights
+Settings
+tutorial_explanation/hibernate_setup_explanation.txt
+b9c0d03 16 minutes ago
+@kmaheshgupta786 kmaheshgupta786 removed the sensitive data
+1126 lines (894 sloc) 46.5 KB
+
+Hibernate Features:
+1. ORM Tool -> object relational mapping, explain java classes mapped to tables
+2. high performace -> explain lazy loading with proxy objects and supports of optimistic locking.
+3. JPA specification followed.
+
+- from hibernate 3 onwards, annotations introduced.
+
+
+Hibernate Object States:
+    Transient - an object is transient if it has just been instantiated using the new operator, and it is not associated with a Hibernate Session. 
+				It has no persistent representation in the database and no identifier value has been assigned. 
+				Transient instances will be destroyed by the garbage collector if the application does not hold a reference anymore. 
+				Use the Hibernate Session to make an object persistent (and let Hibernate take care of the SQL statements that need to be 
+				executed for this transition).
+    Persistent - a persistent instance has a representation in the database and an identifier value. 
+				 It might just have been saved or loaded, however, it is by definition in the scope of a Session. 
+				 Hibernate will detect any changes made to an object in persistent state and synchronize the state with the database 
+				 when the unit of work completes. Developers do not execute manual UPDATE statements, or DELETE statements when an object 
+				 should be made transient.
+    Detached - a detached instance is an object that has been persistent, but its Session has been closed. 
+			   The reference to the object is still valid, of course, and the detached instance might even be modified in this state. 
+			   A detached instance can be reattached to a new Session at a later point in time, making it (and all the modifications) 
+			   persistent again. This feature enables a programming model for long running units of work that require user think-time. 
+			   We call them application transactions, i.e., a unit of work from the point of view of the user. 
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+Why Hibernate:
+1. manages resources (connection objs), so we can focus on business logic.
+2. Supports HQL(Obj oriented query lang.) and SQL 
+3. support for XML as well as JPA annotations. (Easy to write code)
+4. open source.
+5. easy to integrate with other Java EE frameworks like spring and structs.
+6. supports lazy initialization using proxy objects and perform actual database queries only when it’s required.
+
+1. Problem of Granularity: For example let's say we have the User class which has an Address object (one class two tables)
+2. Problem of Subtype: There is no support of inheritance in SQL.
+3. Problem of Identity: == and equals() but in SQL to check we have to depend on only primary keys.
+4. Problem of Association: Polymorphishm 1-1 or 1-*
+5. Problem of Data Navigation: usage of . operator eg: currentUser.getAddress().getZipCode(); In SQL, it can be done through SQL joins which are less efficient and cumbersome.
+
+
+
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+Difference b/w  update and merge
+ 
+http://www.journaldev.com/3481/hibernate-save-vs-saveorupdate-vs-persist-vs-merge-vs-update-explanation-with-examples
+
+in update: detached object is tracked.
+in Merge : detached object wont tracked. 
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+refresh vs merge
+
+syntax: session.refresh(emp); - emp properties will be updated with column values saved in db.  -- void 
+syntax: Emp e = session.merge(emp) - exactly opposite of refresh. It updates the database with values from a detached entity. -- object
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+blob data
+
+https://howtodoinjava.com/hibernate/hibernate-example-of-insertselect-blob-from-database/
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Persistent:
+-----------
+UserDetails user=new UserDetails();
+user.setUserName("User1");
+
+session.beginTransaction();
+session.save(user);
+session.getTransaction().commit();
+session.close();
+// output: one insert query -> User1 saved in db
+
+
+session.beginTransaction();
+session.save(user);
+user.setUserName("UpdatingUser1");
+session.getTransaction().commit();
+session.close();	
+// output: two queries 1)insert query  2) one update query -> first "User1" and later it updated as "UpdatingUser1" in db.
+
+case on Save later update User details before commit:
+-----------------------------------------------------
+session.beginTransaction();
+session.save(user);
+user.setUserName("UpdatingUser1");
+user.setUserName("UpdatingUser2");
+session.getTransaction().commit();
+session.close();	
+// output: two queries 1)insert query  2)one update query -> first User1 and later it updated as UpdatingUser2 in db.
+		   mean it persist the data which would triggered before commit() stmt. 
+
+Case on Delete:  After delete using sess.delete(user) can i access the deleted user object? after committing tr and closing session? -- yes	   
+---------------
+SessionFactory sf= new Configuration().configure().buildSessionFactory();
+Session session=sf.openSession();
+session.beginTransaction();
+UserDetails user=null;
+user=(UserDetails)session.get(UserDetails.class, 1);
+//session.save(user);
+session.delete(user);
+session.getTransaction().commit();
+session.close();
+user.setUserId(2);
+user.setUserName("First User Updated after deleting data");
+System.out.println("id: "+ user.getUserId()+" User Name: "+user.getUserName());
+// output: before deleting in db -> userid: 1 and userName: User1
+           get "user1" - delete user1 - commit tr - close session - sop user => o/p is userid: 2 and userName: "First User Updated after deleting data"	   
+		   in db no data.
+		   
+---------------------------------------------------------------------------------------------------------------------------------------------------			   
+Convert Detached object to persistent obj:
+Session session=sessionFactory.openSession();
+session.beginTransaction();
+UserDetails user=(UserDetails)session.get(UserDetails.class,1); // Assume one record present in db as userid: 1 and UserName: user1
+session.getTransaction().commit();
+session.close();
+
+user.setUserName("updating user after session close");
+
+session=sessionFactory.openSession(); // Here opening new Session as closed the session before line.
+session.beginTransaction();
+session.update(user);
+session.getTransaction().commit();
+session.close();
+
+// output: two queries 1) get user data (user1) 2) update user1 with "updating user after session close".
+   in db we can see userid: 1 and UserName: updating user after session close
+
+---------------------------------------------------------------------------------------------------------------------------------------------------			   
+Q) Hibernate supports 2 types of Locking mechanism: 1.optimistic and 
+													2. pessimistic
+	Locking is when hibernate locks a column or row in the database. 
+	With optimistic locking the column/row that is locked by a transaction can also be read by other transactions. 
+	With pessimistic locking the column/row that is locked by a transaction cannot be read by other transactions.												
+
+	for configuration we have to concentrate on @Entity class and DAOImpl class
+	at @Entity: @Entity
+				@Table(name = "Dept")
+				@org.hibernate.annotations.Entity(dynamicUpdate = true,optimisticLock = OptimisticLockType.ALL)
+				public class Dept{
+				}
+	at DAOImpl class: public class DeptDAOImpl extends HibernateDaoSupport implements DeptDAO {
+						@Transactional(readOnly = true, propagation = Propagation.REQUIRED, isolation = Isolation.REPEATABLE_READ)
+						public Dept getDeptById(Long id) {
+					 }	
+
+---------------------------------------------------------------------------------------------------------------------------------------------------			   
+Query      - wont support generics
+TypedQuery - support generics. So, in DI we used it.
+
+1) Query query = em.createQuery("SELECT c FROM Country c");
+   List results = query.getResultList();
+  
+2)TypedQuery<Country> query =  em.createQuery("SELECT c FROM Country c", Country.class);
+  List<Country> results = query.getResultList();
+
+  
+List<Employee> empList = session.createCriteria(Employee.class)
+								.addOrder(Order.desc("id")).list();  
+--------------------------------------------------------------------------------------------------------------------------------------------------			   
+
+find method() will work on entityManager object.
+eg: Employee emp = em.find(Employee.class, empid);
+
+--------------------------------------------------------------------------------------------------------------------------------------------------			   
+
+Q) Difference b/w Save, Update and  SaveOrUpdate?
+ 
+Save:
+Save method stores an object into the database. That means it insert an entry if the identifier doesn’t exist, else it will throw error.
+If the primary key already present in the table, it cannot be inserted.
+-       return type of save() is a Serializable object
+ 
+Update:
+Update method in the hibernate is used for updating the object using identifier.
+If the identifier is missing or doesn’t exist, it will throw exception.
+ 
+SaveOrUpdate:
+This method calls save() or update() based on the operation. If the identifier exists, it will call update method else the save method will be called. saveOrUpdate() method does the following:
+If the object is already persistent in the current session, it do nothing
+If another object associated with the session has the same identifier, throw an exception to the caller
+If the object has no identifier property, save() the object
+If the object’s identifier has the value assigned to a newly instantiated object, save() the object
+ 
+Persist:
+-       return type of persist() is void.
+ 
+--------------------------------------------------------------------------------------------------------------------------------------------------	
+Q) In one - Many relation ship assume fetch type is lazyloading, then when you pull data from primary table which type of object will return.
+
+	Proxy object will return.
+	Assume scenario we have User and List of Address tables with 1 - * relationship. (userid, username, addressid) (addressid, street, city)
+	Consider 1 user in db and 2 addresses  associated to that user.
+	
+	while pulling data from user -> it will return 'proxy' obj as (1, abc, address obj with no-initialization)
+									the list of address obj will be initialized only while calling get method (ie. user.getListOfAddresses())
+	
+		code snippet:
+		user = null;
+		session = sessionFactory.openSession();
+		user = (userDetails) session.get(UserDetails.class, 1);  // user is proxy obj and list of address proerty wont be intialized.
+		user.getListOfAddresses(); // at this point of time addresses will be pulled from db and will be assigned to user obj.
+		
+		
+Q) How to test 'session.get(UserDetails.class, 1)' will return proxy obj in above piece of code? // important question. see java brains video for better understanding.
+
+	add session.close() before calling getListOfAddresses();
+	
+		user = null;
+		session = sessionFactory.openSession();
+		user = (userDetails) session.get(UserDetails.class, 1);
+		session.close();  // added this new line
+		user.getListOfAddresses(); 
+		
+		After execution of above code you can observe the following points.
+		1. It will return 'lazyInitializationException'.
+			becoz as we know that scope of proxy obj is session, once session is closed we cant pull the data from db so while execution
+			of getListOfAddresses() it will throw exception.
+		2. And the same thing we can reconfirm in diff way,
+			as we know that, we can pull the data from detached object (after closing the session) in above case detached object wont have the
+			list of address. So the obj which returning from hibernate is 'proxy'.
+			
+		
+--------------------------------------------------------------------------------------------------------------------------------------------------	 
+ 
+Q) How many ways to create query in Hibernate
+ 
+               Three ways to create query in Hibernate
+session.createQuery():
+               The method createQuery() creates Query object using the HQL syntax.
+               Eg: Query query = session.createQuery("from Student s where s.name like 'k%'");
+ 
+session.createSQLQuery():
+               The method createSQLQuery() creates Query object using the native SQL syntax.
+               Eg: Query query = session.createSQLQuery("Select * from Student");
+ 
+session.createCriteria():
+               The method createCriteria() creates Criteria object for setting the query parameters.
+This is more useful feature for those who don’t want to write the query in hand.
+You can specify any type of complicated syntax using the Criteria API.
+               Eg: Criteria criteria = session.createCriteria(Student.class);
+ 
+ 
+ 
+ 
+ 
+Q) Caching mechanism in Hibernate.
+ 
+Hibernate caching improves the performance of the application by pooling the object in the cache.
+There are mainly two types of caching:
+first level cache and
+second level cache.
+ 
+First Level Cache
+Session object holds the first level cache data. It is enabled by default. 
+The first level cache data will not be available to entire application. An application can use many session object.
+session - Not Thread Safe. 
+ 
+Second Level Cache
+Second level Cache is maintained at SessionFactory level and can improve performance by saving few database round trip.
+(SessionFactory object holds the second level cache data.) The data stored in the second level cache will be available to entire application.
+But we need to enable it explicitely.
+It is like ServletContext in case of servlets. If you would like the object data should be available to all the threads in the client program, 
+the best choice is second-level cache.
+SessionFactory - Thread Safe.
+ 
+Second Level Cache implementations are provided by different vendors such as:
+•EH (Easy Hibernate) Cache
+•Swarm Cache
+•OS Cache (Open Symphony)
+•JBoss Cache
+ 
+                               In Hibernate.cfg.xml:
+                                  <property name="cache.provider_class">org.hibernate.cache.EhCacheProvider</property>   (Based on type of cache you selected.)
+                                      <property name="hibernate.cache.use_second_level_cache">true</property>
+                              
+                               // Annotation version based at entity level
+                               @Entity(name="dna")
+							   @Cacheable
+							   @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+ 
+ 
+ 
+Q) What is difference between sorted and ordered collection in hibernate?
+
+                    This is one of the easy Hibernate interview question you ever face.
+A sorted collection is sorted in memory by using Java Comparator, while a ordered collection uses database's order by clause for ordering.
+For large data set it's better to use ordered collection to avoid any OutOfMemoryError in Java, by trying to sort them in memory.
+
+            
+ 
+ 
+Q) Can we make an Hibernate Entity Class final?
+ 
+Yes, you can make an Hibernate Entity class final, but that's not a good practice. 
+Since Hibernate uses proxy pattern for performance improvement in case of lazy association, by making an entity final, 
+Hibernate will no longer be able to use proxy, because Java doesn't allow extension of final class, 
+thus limiting your performance improvement options. Though, you can avoid this penalty, 
+if your persistent class is an implementation of interface, which declares all public methods defined in Entity class.
+ 
+	the hibernate proxy or An object proxy is just a way to avoid retrieving an object until you need it. Hibernate 2 does not proxy objects by default.
+ 
+ 
+Q) What is Session in Hibernate? Can we share single Session among multiple threads in Hibernate? -- not thread-safe
+  
+Session represent a small unit of work in Hibernate, they maintain connection with database 
+and they are not thread-safe, it means you cannot share Hibernate Session between multiple threads. 
+Though Session obtains database connection lazily it's good to close session as soon as you are done with it.
+ 
+ 
+Q) Difference between get and load in Hibernate?
+ 
+get vs load 
+is one of the most frequently asked Hibernate Interview question, since correct understanding of both get() and load() is require to effectively using Hibernate. 
+Main difference between get and load is that, 
+get will hit the database if object is not found in the cache and returned completely initialized object, 
+which may involve several database call while 
+load() method can return proxy, if object is not found in cache and only hit database if any method other than getId() is called. 
+This can save lot of performance in some cases. 
+You can also see difference between get and load in Hibernate for more differences and detailed discussion on this question. 
+1. hit database   -- no hit database
+2. Return exact db obj -- return proxy obj
+3. return null if no data in db -- return objectNotFoundException
+4. slow -- fast
+ 
+ 
+Q) Difference between save and persist method in Hibernate?
+ 
+1) First difference between save and persist is there return type. 
+   Similar to save method persist also INSERT records into database but 
+   return type of persist is void while return type of save is Serializable object. 
+2)  Another difference between persist and save is that both methods make a transient instance persistent. 
+   However, persist() method doesn't guarantee that the identifier value will be assigned to the persistent instance immediately, 
+   the assignment might happen at flush time.
+3)  One more thing which differentiate persist and save method in Hibernate is that is there behavior on outside of transaction boundaries. 
+    persist() method guarantees that it will not execute an INSERT statement if it is called outside of transaction boundaries. 
+	save() method does not guarantee the same, it returns an identifier, and if an INSERT has to be executed to get the identifier 
+	(e.g. "identity" generator), this INSERT happens immediately, no matter if you are inside or outside of a transaction.
+4)  Fourth difference between save and persist method in Hibernate is related to previous difference on save vs persist. 
+    Because of its above behavior of persist method outside transaction boundary, 
+	its useful in long-running conversations with an extended Session context. 
+	On the other hand save method is not good in a long-running conversation with an extended Session context.
+ 
+
+ 
+Hibernate Setup:
+1. Decide Annotation driven transactions or not
+	<tx:annotation-driven mode="aspectj" transaction-manager="transactionManagerCdb" />
+2. Define Transaction Manager
+	<bean id="transactionManagerCdb" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactoryCdb" />
+	</bean>
+3. Define Data Source
+	<bean id="entityManagerFactoryCdb"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="persistenceUnitName" value="dataintegration-core-cdb" />
+		<property name="persistenceXmlLocation" value="classpath:META-INF/cdb-persistence.xml"/>
+		<property name="jpaVendorAdapter" ref="jpaAdapter" />
+		<property name="jpaProperties">
+			<props>
+				<prop key="hibernate.show_sql">${jpa.showSql}</prop>
+				<prop key="hibernate.dialect">${jpa.hibernate.dialect}</prop>
+				<prop key="hibernate.connection.includesynonyms">${jpa.hibernate.connection.includesynonyms}</prop>
+				<prop key="hibernate.ejb.naming_strategy">${jpa.hibernate.ejb.naming_strategy}</prop>
+				<prop key="hibernate.cache.use_second_level_cache">false</prop>
+				<prop key="hibernate.cache.use_query_cache">false</prop>
+				<prop key="cache.provider_class">org.hibernate.cache.NoCacheProvider</prop>
+			</props>
+		</property>
+	</bean>
+	
+	<bean id="jpaAdapter" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" >	
+		<property name="showSql" value="true" />
+		<property name="databasePlatform" value="${jpa.databasePlatform}" />
+	</bean>
+	
+Class: 
+------
+@Repository
+public abstract class AbstractJPADaoImpl {
+	@PersistenceContext(unitName = "dataintegration-core-cdb")
+	protected EntityManager entityManager;	
+}
+
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence 
+						http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+	version="2.0">
+	<persistence-unit name="dataintegration-core-cdb" transaction-type="RESOURCE_LOCAL">
+		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+		<non-jta-data-source>java:/cdbDS</non-jta-data-source>		
+		<class>com.ge.comfin.fleet.dataintegration.data.entity.ATAListPO</class>
+		<class>com.ge.comfin.fleet.dataintegration.data.entity.AuditTracePO</class>
+		<class>com.ge.comfin.fleet.dataintegration.data.entity.DataProviderConfigPO</class>
+		<class>com.ge.comfin.fleet.dataintegration.data.entity.DataProviderFileConfigPO</class>
+		<class>com.ge.comfin.fleet.dataintegration.data.entity.DataProviderFileEventPO</class>
+		<class>com.ge.comfin.fleet.dataintegration.data.entity.DataProviderFileLayoutPO</class>
+		<class>com.ge.comfin.fleet.dataintegration.data.entity.DataProviderFileTypesPO</class>
+		<class>com.ge.comfin.fleet.dataintegration.data.entity.DataProviderMappingPO</class>
+		<class>com.ge.comfin.fleet.dataintegration.data.entity.DataProviderPO</class>
+		<class>com.ge.comfin.fleet.dataintegration.data.entity.DataProviderTransTypeFieldsPO</class>
+		<class>com.ge.comfin.fleet.dataintegration.data.entity.DPMapPO</class>
+		<class>com.ge.comfin.fleet.dataintegration.data.entity.StageCustMtFuelTransDtlPO</class>
+		<class>com.ge.comfin.fleet.dataintegration.data.entity.StageCustMtFuelTransPO</class>
+		<class>com.ge.comfin.fleet.dataintegration.data.entity.SupplierPO</class>
+		<class>com.ge.comfin.fleet.dataintegration.data.entity.TransactionTypePO</class>
+		<class>com.ge.comfin.fleet.dataintegration.data.entity.ReferenceAddressPO</class>
+		<class>com.ge.comfin.fleet.dataintegration.data.entity.IndividualPO</class>
+		<class>com.ge.comfin.fleet.dataintegration.data.entity.AddressDefinitionPO</class>
+		<class>com.ge.comfin.fleet.dataintegration.data.entity.DpFileContactInfo</class>				
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>				
+	</persistence-unit>
+</persistence>
+
+JPA Details:
+------------	
+jpa.databasePlatform=org.hibernate.dialect.Oracle10gDialect
+jpa.showSql=true
+jpa.hibernate.dialect=org.hibernate.dialect.Oracle10gDialect
+jpa.hibernate.connection.includesynonyms=true
+jpa.hibernate.ejb.naming_strategy=org.hibernate.cfg.ImprovedNamingStrategy	
+	
+#CDB Database:
+--------------
+database.schemaNames=OPNSUTIL,DI_SCHEMA,OST
+database.min.poolsize=1
+database.max.poolsize=2
+database.maxStatements=20
+
+
+.xml:
+-----
+<context:annotation-config />
+<context:component-scan base-package="net.viralpatel.spring3.controller" />
+	
+
+code:
+-----
+@Repository
+public class RepairCodeDaoImpl extends AbstractCDBTransactionalDaoImpl implements RepairCodeDao {
+	@Override
+	public List<DataProviderMapping> searchRepairCode(Search search) throws DIException {
+		Map<SearchCriteriaName, Object> criteria = search == null ? null
+				: search.getSearchCriteria();
+		List<DataProviderMapping> list = new ArrayList<DataProviderMapping>();
+
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+		CriteriaQuery<DataProviderMappingPO> criteriaQuery = cb.createQuery(DataProviderMappingPO.class);
+		Root<DataProviderMappingPO> dpRoot = criteriaQuery.from(DataProviderMappingPO.class);
+		Join<DataProviderMappingPO, DPMapPO> mapJoin = dpRoot.join(DataProviderMappingPO_.map);
+		Join<DataProviderMappingPO, ATAListPO> ataJoin = dpRoot.join(DataProviderMappingPO_.ata);
+
+		List<Predicate> predicateList = new ArrayList<Predicate>();
+		if (criteria != null) {
+			if (criteria.get(SearchCriteriaName.DPMAPNAME) != null) {
+				predicateList.add(
+								  cb.equal( mapJoin.get(DPMapPO_.mapName),
+											criteria.get(SearchCriteriaName.DPMAPNAME).toString()
+										  )
+								 );
+			}
+			if (criteria.get(SearchCriteriaName.ATAMAJORCODE) != null) {
+				predicateList.add(
+								  cb.equal( ataJoin.get(ATAListPO_.ataMajorCode),
+											criteria.get(SearchCriteriaName.ATAMAJORCODE).toString()
+										  )
+								 );
+			}
+			if (criteria.get(SearchCriteriaName.ATAMINORCODE) != null) {
+				predicateList.add(
+								  cb.equal(	ataJoin.get(ATAListPO_.ataMinorCode),
+											criteria.get(SearchCriteriaName.ATAMINORCODE).toString()
+										  )
+								 );
+			}
+			if (criteria.get(SearchCriteriaName.REPAIRCODE1) != null) {
+				predicateList.add(
+								   cb.equal( dpRoot.get(DataProviderMappingPO_.repairCode1),
+											 criteria.get(SearchCriteriaName.REPAIRCODE1).toString()
+											)
+								 );
+			}
+			if (criteria.get(SearchCriteriaName.REPAIRCODE2) != null) {
+				predicateList.add(
+								  cb.equal( dpRoot.get(DataProviderMappingPO_.repairCode2),
+											criteria.get(SearchCriteriaName.REPAIRCODE2).toString()
+											)
+								 );
+			}
+			if (criteria.get(SearchCriteriaName.REPAIRCODE3) != null) {
+				predicateList.add(
+								  cb.equal( dpRoot.get(DataProviderMappingPO_.repairCode3),
+											criteria.get(SearchCriteriaName.REPAIRCODE3).toString()
+										  )
+								 );
+			}
+		}
+		predicateList.add(cb.equal(dpRoot.get(DataProviderMappingPO_.active),
+				new Boolean(true)));
+
+		Predicate[] predicates = new Predicate[predicateList.size()];
+		criteriaQuery
+				.select(dpRoot)
+				.where(predicateList.toArray(predicates))
+				.orderBy(cb.desc(dpRoot.get(DataProviderMappingPO_.repairCodeMappingId)));
+
+		TypedQuery<DataProviderMappingPO> query = entityManager.createQuery(criteriaQuery);
+		List<DataProviderMappingPO> result = query.getResultList();
+		for (DataProviderMappingPO po : result) {
+			DataProviderMapping repairCode = (DataProviderMapping) PoDomainTransformer
+					.transform(po, new DataProviderMapping());
+			repairCode.setMap((DPMap) PoDomainTransformer.transform(
+					po.getMap(), new DPMap()));
+			repairCode.setAta((ATAList) PoDomainTransformer.transform(
+					po.getAta(), new ATAList()));
+			repairCode.setModifiedBy(po.getModifiedBy());
+			repairCode.setModifyDate(po.getModifiedDate());
+			list.add(repairCode);
+		}
+		return list;
+	}
+}
+	
+	
+Spring Security:
+----------------
+In Pom.xml
+<dependency>
+	<groupId>org.springframework.security</groupId>
+	<artifactId>spring-security-core</artifactId>
+	<version>${spring-security.version}</version>
+	<scope>compile</scope>
+</dependency>
+<dependency>
+	<groupId>org.springframework.security</groupId>
+	<artifactId>spring-security-config</artifactId>
+	<version>${spring-security.version}</version>
+	<scope>compile</scope>
+</dependency>
+<dependency>
+	<groupId>org.springframework.security</groupId>
+	<artifactId>spring-security-taglibs</artifactId>
+	<version>${spring-security.version}</version>
+	<scope>compile</scope>
+</dependency>
+<dependency>
+	<groupId>org.springframework.security</groupId>
+	<artifactId>spring-security-web</artifactId>
+	<version>${spring-security.version}</version>
+	<scope>compile</scope>
+</dependency>	
+
+
+Ajax Call:
+----------
+$.ajax({
+	type : "GET",
+	url : '/ePlan/planCreation/'+primaryvalue+'/getsecondarydimns?SPOOFCHECK=FALSE',
+	dataType : 'json',
+	success : function(data){				
+		 var secondaryEOPDimn="";
+		for ( var i = 0; i < data.length; i++) {					
+			  secondaryEOPDimn +=  "<option value='"+ data[i] + "'>"+data[i]+"</option>";					
+		}				
+		$("#secondaryEOPDimn").append(secondaryEOPDimn);
+	}
+});
+
+Method at Controller:
+---------------------
+@RequestMapping(value = "/getprimarydimns", method = RequestMethod.GET)
+public String getPrimaryEOPDimensionsList(	HttpServletRequest request,
+											HttpServletResponse response, 
+											@ModelAttribute("USER") BeanUserDetails user,
+											Model model) throws  Exception {
+											
+	try{
+		// some code
+	}catch (Exception e) {
+		modelMap.addAttribute(ApplConst.MESSAGE, e.getMessage());
+		//return new ModelAndView(ApplConst.ERROR, modelMap);
+		return "EOPTargetSettingForm";
+	}
+	return "EOPTargetSettingForm";
+}
+
+Overridding Rule in Java:
+-------------------------
+Q) If a method throws NullPointerException in super class, 
+can we override it with a method which throws RuntimeException?
+Ans: One more tricky Java questions from overloading and overriding concept. 
+	 Answer is you can very well throw super class of RuntimeException in overridden method 
+	 but you can not do same if its checked Exception. 
+	 See Rules of method overriding in Java for more details.
+
+Q) Rules of Method Overriding in Java:
+Following are rules of method overriding in java which must be followed while overriding any method. as stated earlier private, static and final method can not be overridden.
+1. Method signature must be same including return type, number of method parameters, type of parameters 
+   and order of parameters
+2. Overriding method can not throw higher Exception than original or overridden method. 
+   means if original method throws IOException than overriding method can not throw super class of IOException 
+   e.g. Exception but it can throw any sub class of IOException or simply does not throw any Exception. 
+   This rule only applies to checked Exception in Java, overridden method is free to throw any unchecked Exception.
+3. Overriding method can not reduce accessibility of overridden method , 
+   means if original or overridden method is public than overriding method can not make it protected.
+
+You can not override static, final and private method in Java 
+but you can overload static, final or private method in Java.
+
+Q) Why is the String class in Java is final immutable object?
+Ans: 
+Security: the system can pass on sensitive info like password, credit card number, etc 
+		  as read-only information without worrying that it will be altered.
+Immutable objects are thread-safe: Two or more threads can  work on an immutable object at the same time
+								   without any possibility of conflict. Immutable String objects are great to be 
+								   used as keys in a map without worrying about the key getting modified.
+To keep things simple: Since final, you can't subclass it to have two different String objects that have 
+					   the same value. It is also easier to implement some of the string methods like substring 
+					   because of its immutability.
+
+
+-------------
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+
+public class test {
+	public static class Person {
+		public String name;
+		public int id;
+		public Date hireDate;
+
+		public Person(String iname, int iid, Date ihireDate) {
+			name = iname;
+			id = iid;
+			hireDate = ihireDate;
+		}
+
+		public String toString() {
+			return name + " " + id + " " + hireDate.toString();
+		}
+
+		// Comparator
+		public static class CompId implements Comparator<Person> {
+			@Override
+			public int compare(Person arg0, Person arg1) {
+				System.out.println(arg0.id + ": arg0.id :");
+				System.out.println(arg1.id + ": arg1.id :");
+				System.out.println(arg0.id - arg1.id+" - : Id Return value: ");
+				return arg0.id - arg1.id;
+			}
+		}
+		
+		public static class CompName implements Comparator<Person> {
+			@Override
+			public int compare(Person arg0, Person arg1) {
+				return arg0.name.compareTo(arg1.name);
+			}
+		}
+
+		public static class CompDate implements Comparator<Person> {
+			private int mod = 1;
+			public CompDate(boolean desc) {
+				if (desc) mod =-1;
+			}
+			@Override
+			public int compare(Person arg0, Person arg1) {
+				return mod*arg0.hireDate.compareTo(arg1.hireDate);
+			}
+		}
+	}
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		SimpleDateFormat df = new SimpleDateFormat("mm-dd-yyyy");
+		ArrayList<Person> people;
+		people = new ArrayList<Person>();
+		try {
+			people.add(new Person("d", 92422, df.parse("12-12-2010")));
+			people.add(new Person("a", 24122, df.parse("1-12-2010")));
+			people.add(new Person("z", 24922, df.parse("12-2-2010")));
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		Collections.sort(people, new Person.CompId());
+		System.out.println("BY ID");
+		for (Person p : people) {
+			System.out.println(p.toString());
+		}
+		
+		Collections.sort(people, new Person.CompName());
+		System.out.println("BY NAME");
+		for (Person p : people) {
+			System.out.println(p.toString());
+		}
+
+		Collections.sort(people, new Person.CompDate(false));
+		System.out.println("BY Date asc");
+		for (Person p : people) {
+			System.out.println(p.toString());
+		}
+		Collections.sort(people, new Person.CompDate(true));
+		System.out.println("BY Date desc");
+		for (Person p : people) {
+			System.out.println(p.toString());
+		}
+
+	}
+}
+
+---------------
+
+Substring:
+System.out.println("efgh".substring(2)); // o/p: gh
+System.out.println("efgh".substring(1));   o/p: fgh
+System.out.println("efgh".substring(4));  o/p:blank becoz 5th char is NULL
+System.out.println("efgh".substring(5));  o/p: Indexoutofbounds error
+System.out.println("efgh".length());      o/p: 4
+
+shallow cloing: implements clonable and call super.clone();  
+eg:
+//Shallow cloning:
+
+class Subject {
+
+  private String name;
+  public String getName() {
+    return name;
+  }
+  public void setName(String s) {
+    name = s;
+  }
+  public Subject(String s) {
+    name = s;
+  }
+}
+
+class Student implements Cloneable {
+  //Contained object
+  private Subject subj;
+  private String name;
+  
+  public Subject getSubj() {
+	return subj;
+  }
+  public String getName() {
+	return name;
+  }
+  public void setName(String s) {
+	name = s;
+  }
+  public Student(String s, String sub) {
+	name = s;
+	subj = new Subject(sub);
+  }
+
+  public Object clone() {
+	//shallow copy
+	try {
+	  return super.clone();
+	} catch (CloneNotSupportedException e) {
+	  return null;
+	}
+  }
+}
+
+public class CopyTest {
+
+  public static void main(String[] args) {
+	//Original Object
+	Student stud = new Student("John", "Algebra");
+
+	System.out.println("Original Object: " + stud.getName() + " - "
+		+ stud.getSubj().getName());
+
+	//Clone Object
+	Student clonedStud = (Student) stud.clone();
+
+	System.out.println("Cloned Object: " + clonedStud.getName() + " - "
+		+ clonedStud.getSubj().getName());
+
+	stud.setName("Dan");
+	stud.getSubj().setName("Physics");
+
+	System.out.println("Original Object after it is updated: " 
+		+ stud.getName() + " - " + stud.getSubj().getName());
+
+	System.out.println("Cloned Object after updating original object: "
+		+ clonedStud.getName() + " - " + clonedStud.getSubj().getName());
+
+  }
+}
+
+Deep cloning: implements Cloneable  no call super.clone();
+
+class Student implements Cloneable {
+  //Contained object
+  private Subject subj;
+  private String name;
+
+  public Subject getSubj() {
+	return subj;
+  }
+
+  public String getName() {
+	return name;
+  }
+
+  public void setName(String s) {
+	name = s;
+  }
+
+  public Student(String s, String sub) {
+	name = s;
+	subj = new Subject(sub);
+  }
+
+  public Object clone() {
+	//Deep copy
+	Student s = new Student(name, subj.getName());
+	return s;
+  }
+}
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+Video 32: Cacheing in Hibernate
+
+
+Second level cache we can implement on 
+	1. Across sessions in an application
+	2. Across applications
+	3. Across clusters.
+	
+	
+eg: in main(){
+	UserDetails user1=(UserDetails)session.get(UserDetails,1); 
+}	
+
+// o/P: one select query and displays name as "User1"
+
+in main(){
+	UserDetails user1=(UserDetails)session.get(UserDetails,1); 
+	// some piece of code
+	UserDetails user2=(UserDetails)session.get(UserDetails,1); 
+}	
+// o/P: only one select query and displays name as "User1"
+
+
+in main(){
+	UserDetails user1=(UserDetails)session.get(UserDetails,1); 
+	user1.setUserName("updated User1");
+	UserDetails user2=(UserDetails)session.get(UserDetails,1); 
+}	
+// o/P: only one select query and one updated query and displays name as "updated User1"  
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+Video 33: configuration of second level of Cacheing in Hibernate
+
+we have to download the EhCacheProvider related jar files and have add to our project library. then only it will work other wise wont work.
+
+<property name="cache.use_second_level_cache">true</property>
+<property name="cache.provier_class"> org.hibernate.cache.EhCacheProvider</property>
+
+at class level:
+
+@Entity
+@Cacheable
+@Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
+@Table
+
+in main(){
+session.beginTransaction();
+UserDetails user1=(UserDetails)session.get(UserDetails,1); 
+session.close();
+
+session2.beginTransaction();
+UserDetails user1=(UserDetails)session.get(UserDetails,1); 
+session2.close();
+}
+
+// o/P: only one select query 
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+Video 34: Using Query Cache
+
+<property name="cache.use_query_cache">true</property>
+
+in main(){
+session.beginTransaction();
+Query query = session.createQuery("from UserDetails where userid=1");
+List<UserDetails> users=query.list();
+session.close();
+
+session2.beginTransaction();
+Query query2 = session2.createQuery("from UserDetails where userid=1");
+List<UserDetails> users=query2.list();
+session2.close();
+}
+
+// o/P: two select stmts
+
+
+in main(){
+session.beginTransaction();
+Query query = session.createQuery("from UserDetails where userid=1");
+query.setCacheable(true);
+List<UserDetails> users=query.list();
+session.close();
+
+session2.beginTransaction();
+Query query2 = session2.createQuery("from UserDetails where userid=1");
+query2.setCacheable(true);
+List<UserDetails> users=query2.list();
+session2.close();
+}
+
+// o/P: only one select stmt. we must have to mention after query stmt setCacheable(true); other wise it wont work.
+
+
+
+---------------------------------------------------------------------------------------------------
+Transaction Mgmt:
+----------------
+
+Local vs. Global Transactions
+
+Local transactions are specific to a single transactional resource like a JDBC connection, whereas global transactions can span multiple transactional resources like transaction in a distributed system.
+
+Local transaction management can be useful in a centralized computing environment where application components and resources are located at a single site, and transaction management only involves a local data manager running on a single machine. Local transactions are easier to be implemented.
+
+Global transaction management is required in a distributed computing environment where all the resources are distributed across multiple systems. In such a case, transaction management needs to be done both at local and global levels. A distributed or a global transaction is executed across multiple systems, and its execution requires coordination between the global transaction management system and all the local data managers of all the involved systems.
+
+
+--
+@Transactional ---- Annotation
+
+when ever you apply transaction mgmt to your code with @Transactional annotation
+you have remember the following 5 attributes.
+
+1. Propagation
+2. Isolation
+3. Read only
+4. Roll back rules
+5. Timeout
+
+Propagation - 
+- propagation behaviour defines the boundaries of a tr.
+- Propagation cfg tells the tr manager 
+	If a new tr should be started or
+	can use the tr which already exists.
+	
+PROPAGATION_MANDATORY : Supports a current transaction; throws an exception if no current transaction exists.
+PROPAGATION_NESTED : Executes within a nested transaction if a current transaction exists.
+PROPAGATION_NEVER : Does not support a current transaction; throws an exception if a current transaction exists.
+PROPAGATION_NOT_SUPPORTED : Does not support a current transaction; rather always execute nontransactionally.
+PROPAGATION_REQUIRED :Supports a current transaction; creates a new one if none exists.
+PROPAGATION_REQUIRES_NEW : Creates a new transaction, suspending the current transaction if one exists.
+PROPAGATION_SUPPORTS : Supports a current transaction; executes non-transactionally if none exists.
+
+
+Isolation -
+- Dirty reads: occur when tr reads an uncommitted data.
+- non-repeatable reads: occurs when a tr reads the same data multiple times but gets diff results each time.
+- Phantom reads: occur when two trs work on same row where one updates and other reads. the reading tr get new data.
+
+ISOLATION_DEFAULT : This is the default isolation level.
+ISOLATION_READ_UNCOMMITTED : Indicates that dirty reads, non-repeatable reads, and phantom reads can occur.
+ISOLATION_READ_COMMITTED : Indicates that dirty reads are prevented; non-repeatable reads and phantom reads can occur.
+ISOLATION_REPEATABLE_READ : Indicates that dirty reads and non-repeatable reads are prevented; phantom reads can occur.
+ISOLATION_SERIALIZABLE : (SAFIEST OR STRONGEST LOCKING) Indicates that dirty reads, non-repeatable reads, and phantom reads are prevented.
+ 
+Read-only :
+ - by applying read-only to a tr, the underlying data
+ store will apply some performance optimzations to render data,pre faster/
+ 
+ Transaction time out :
+ - By declaring the timeout attribute, we can ensure that long running
+ trs are rolled bacck after certain number of secs.
+ - the count down starts when tr is started. so, timeout attribute can be meaningful when applied for
+	PROPAGATION_REQUIRED or 
+	PROPAGATION_REQUIRES_NEW or 
+	PROPAGATION_NESTED
+
+
+Rollback - 
+
+- rollback tells a tr manager when to rollback a tr when an exception occurs.
+- by default the trs will be rolledback when run time exception occurs.
+- but, by specifically mentioning the checked exceptions, tr manager will be able to rollback the trs.
+
+---------------------------------------------------------------------------------------------------------
+
+Spring transaction propagation Level - explantation 
+
+Explained well below two propagation levels: with example (initial 6 mins)
+PROPAGATION_REQUIRED :Supports a current transaction; creates a new one if none exists.
+PROPAGATION_REQUIRES_NEW : Creates a new transaction, suspending the current transaction if one exists.
+https://www.youtube.com/watch?v=oy4VFlbH1cU
+
+propagation means - one tr calling multiple trs inside.
+
+PROPAGATION_REQUIRED: REQUIRED behavior means that the same tr will be used if there is an already opened tr in the cunrrent bean method execution context. If there is no existing tr the spring container will create a new one. 
+If multiple methods configured as 'Required' behavior are called in a nested way they will be assigned 'distinct logical trs' but they will all share the 'same physical tr'.
+In short this means that if an inner method causes a tr to rollback, the outer method will fail to commit and will also rollback the tr.
+
+eg:
+outer bean - class: 
+class OuterBean{
+ // some autowired
+ @Override
+ @Transactional(propagation=propagation.required)
+ public void testRequired(User user){
+	// some logic
+	try{
+		innerBean.testRequired();
+	}
+	catch(RuntimeException e){
+		//handle exception
+	}	
+}
+	
+class InnerBean{
+	//some autowired properties
+	
+	@Override
+	@Transactional(propagation=propagation.required)
+	public void testRequired(){
+		throw new RuntimeException("roll back inner tr");
+	}
+}	
+
+As we defined two trs as 'propagation.required', if inner bean tr fails it will roll back and as well as outer bean tr also go for rollback.
+- The only unchecked exceptions that set a tr to rollback state by default.
+  if you want checked exceptions to also set trs to rollback you must configure them to do so.
+  like eg: 
+  @Transactional(propagation=propagation.required,readonly=false, rollbackFor=Exception.class)
+	
+PROPAGATION_REQUIRES_NEW:
+		behavior means that a 'new physical tr' will always be created by the container.
+		In other words the inner tr may commit or rollback 'independently' of the outer tr.
+		ie: the outer tr will not be affected by the inner tr result: they will run in 'distinct physical trs'
+
+eg:
+outer bean - class: 
+class OuterBean{
+ // some autowired
+ @Override
+ @Transactional(propagation=propagation.required)  // it should be required (not always, in this ex)
+ public void testRequired(User user){
+	// some logic
+	try{
+		innerBean.testRequired();
+	}
+	catch(RuntimeException e){
+		//handle exception
+	}	
+}
+	
+class InnerBean{
+	//some autowired properties
+	
+	@Override
+	@Transactional(propagation=propagation.requires_new) // it should be requires_new
+	public void testRequired(){
+		throw new RuntimeException("roll back inner tr");
+	}
+}	
+		
+based on above two code snippets:
+	- The inner method is annotated with 'requires_new' and throws a runtime exception so it will set its tr to rollback but will 'not' affect the outer tr.
+	- the outer tr is paused when the inner tr starts and then 'resumes after' the inner tr is concluded. They run independently of each other so the outer tr may commit successfully.
+
+
+Nested Behavior : supports to springjdbc and save points.
+
+------------------------------------
+https://www.youtube.com/watch?v=UgTZ1Tun-wg (7:28)
+Isolation :
+
+Isolation level defines how the changes made to some data repository by one tr affect other simultaneous concurrent trs, and also how and when that changed data becomes available to other trs. 
+when we define a tr using the spring framework we are also able to configure in which isolation level that same tr will be executed.
+
+
+	
+---------------------------------------------------------------------------------------------------------
+
+Which header of HTTP response, provides the date and time of the resource when it was created?
+Ans: Date header provides the date and time of the resource when it was created.
+
+Which header of HTTP response, provides the date and time of the resource when it was last modified?
+Ans: Last Modified header provides the date and time of the resource when it was last modified.
+
+Which header of HTTP response provides control over caching?
+Ans: Cache-Control is the primary header to control caching.
+
+Which header of HTTP response sets expiration date and time of caching?
+Ans: Expires header sets expiration date and time of caching.
+	
+	
+
+Qns-3: How can we roll back a declarative transaction?
+Ans: We can use rollback-for and no-rollback-for attributes with transactional definition.
+
+Qns-4: How many types of isolation are there?
+Ans: a. ISOLATION_DEFAULT: default isolation.
+b. ISOLATION_READ_COMMITTED: dirty reads are prevented, non-repeatable and phantom reads are allowed.
+c. ISOLATION_READ_UNCOMMITTED : dirty reads are allowed, no-repeatable and phantom reads are allowed.
+d. ISOLATION_REPEATABLE_READ: dirty reads and non-repeatable reads are prevented but phantom reads are allowed.
+e. ISOLATION_SERIALIZABLE : dirty , non- repeatable reads and phantom reads are prevented.
+
+Qns-5: How many types of Propagation are there?
+Ans: Find the Propagation type. a. PROPAGATION_MANDATORY : supports current transaction and throws exception if no transaction available.
+b. PROPAGATION_NESTED : runs with nested transaction
+c. PROPAGATION_NEVER : does not run with current transaction and throws exception if current transaction exits.
+d. PROPAGATION_NOT_SUPPORTED : runs non -transactionaly and does not support current transaction.
+e. PROPAGATION_REQUIRED : runs with current transaction and create one if does not exist.
+f. PROPAGATION_REQUIRES_NEW : creates new transaction and suspends if exits any.
+g. PROPAGATION_SUPPORTS: runs current transaction and runs non -transactionaly 
+
+--------------------------------------------------------------
+http://www.concretepage.com/hibernate/example-mappedsuperclass-hibernate
+
+@MappedSuperclass in hibernate supports entities to keep basic properties in a super class. The super class annotated by @MappedSuperclass will not behave as independent entity. It will not be associated with any database table. If we want to change the column name different from super class, we need to use @AttributeOverride. Find the example.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Hibernate 3 : creation of SessionFactory Object.
+
+public class HibernateUtil 
+{
+	private static final SessionFactory sessionFactory = buildSessionFactory();
+
+	private static SessionFactory buildSessionFactory() 
+	{
+		try {
+			// Create the SessionFactory from hibernate.cfg.xml
+			return new AnnotationConfiguration().configure(
+					new File("hibernate.cgf.xml")).buildSessionFactory();
+
+		} catch (Throwable ex) {
+			// Make sure you log the exception, as it might be swallowed
+			System.err.println("Initial SessionFactory creation failed." + ex);
+			throw new ExceptionInInitializerError(ex);
+		}
+	}
+
+	public static SessionFactory getSessionFactory() {
+		return sessionFactory;
+	}
+
+	public static void shutdown() {
+		// Close caches and connection pools
+		getSessionFactory().close();
+	}
+}
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+Hibernate 4 : creation of SessionFactory Object.
+
+public class HibernateUtil
+{
+   private static SessionFactory sessionFactory = buildSessionFactory();
+
+   private static SessionFactory buildSessionFactory()
+   {
+      try
+      {
+         if (sessionFactory == null)
+         {
+            Configuration configuration = new Configuration().configure(HibernateUtil.class.getResource("/hibernate.cfg.xml"));
+            StandardServiceRegistryBuilder serviceRegistryBuilder = new StandardServiceRegistryBuilder();
+            serviceRegistryBuilder.applySettings(configuration.getProperties());
+            ServiceRegistry serviceRegistry = serviceRegistryBuilder.build();
+            sessionFactory = configuration.buildSessionFactory(serviceRegistry);
+         }
+         return sessionFactory;
+      } catch (Throwable ex)
+      {
+         System.err.println("Initial SessionFactory creation failed." + ex);
+         throw new ExceptionInInitializerError(ex);
+      }
+   }
+
+   public static SessionFactory getSessionFactory()
+   {
+      return sessionFactory;
+   }
+
+   public static void shutdown()
+   {
+      getSessionFactory().close();
+   }
+}    
+

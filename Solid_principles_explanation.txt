@@ -1,0 +1,70 @@
+
+Solid Principles:
+
+
+    S – Single-responsiblity principle
+    O – Open-closed principle
+    L – Liskov substitution principle
+    I – Interface segregation principle
+    D – Dependency Inversion Principle
+
+	
+-----------------------------------------------------------------------------------------------------------	
+	
+S is for Single Responsibility Principle 
+(the class or module should have only one reason to change)
+(A class should have one and only one reason to change, meaning that a class should have only one job.)
+
+The single responsibility principle (SRP) asserts that a class or module should do one thing only. Now, this is kind of subjective, so the principle is reinforced with the heuristic that the class or module should have only one reason to change.
+
+eg:
+By way of counter-example, consider a class that opens a connection to the database, pulls out some table data, and writes the data to a file. This class has multiple reasons to change: adoption of a new database, modified file output format, deciding to use an ORM, etc.  In terms of the SRP, we'd say that this class is doing too much.
+
+
+-----------------------------------------------------------------------------------------------------------	
+
+O is for Open/Closed Principle
+(open for extension, but closed for modification)
+(Objects or entities should be open for extension, but closed for modification.)
+
+
+The Open/Closed Principle states that code entities should be open for extension, but closed for modification. To put this more concretely, you should write a class that does what it needs to flawlessly and not assuming that people should come in and change it later. It's closed for modification, but it can be extended by, for instance, inheriting from it and overriding or extending certain behaviors.	
+
+eg:
+A great example of this in real life is sitting in your pocket in the form of a smartphone. All such phones have app stores and these app stores let you extend the base functionality of the phone. Sure, it ships with the basics: camera operation, actual calls, text messages, etc. But via the app store, you can extend the phone's capabilities to allow you to manage your todo list, play inane video games, and even serve as a flashlight or wireless access point.
+
+
+-----------------------------------------------------------------------------------------------------------	
+
+L is for Liskov Substitution Principle
+(every subclass/derived class should be substitutable for their base/parent class.)
+
+The Liskov Substitution Principle (LSP) is the one here that is most unique to object-oriented programming. The LSP says, basically, that any child type of a parent type should be able to stand in for that parent without things blowing up.
+
+eg:
+In other words, if you have a class, Animal, with a MakeNoise() method, then any subclass of Animal should reasonably implement MakeNoise(). Cats should meow, dogs should bark, etc. What you wouldn't do is define a MuteMouse class that throws IDontActuallyMakeNoiseException. This violates the LSP, and the argument would be that this class has no business inheriting from Animal.
+
+https://www.youtube.com/watch?v=gnKx1RW_2Rk
+Rules:
+1. No new exceptions can be thrwon by the subtype
+2. Clients should not know which specific subtype they are calling
+3. New derived calsses just extend without replacing the functionality of old classes.
+
+
+-----------------------------------------------------------------------------------------------------------	
+
+I is for Interface Segregation Principle
+(A client should never be forced to implement an interface that it doesn’t use or clients shouldn’t be forced to depend on methods they do not use.)
+
+
+
+-----------------------------------------------------------------------------------------------------------	
+
+
+D is for Dependency Inversion
+(Entities must depend on abstractions not on concretions. It states that the high level module must not depend on the low level module, but they should depend on abstractions.)
+
+The Dependency Inversion Principle (DIP) encourages you to write code that depends upon abstractions rather than upon concrete details.
+
+eg:
+To visualize this in your day to day, go down to your local store and pay for something with a credit card. The clerk doesn't examine your card and get out the "Visa Machine" after seeing that your card is a Visa. He just takes your card, whatever it is, and swipes it. Both you and the clerk depend on the credit card abstraction without worrying about specifics.

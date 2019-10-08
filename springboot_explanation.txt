@@ -1,0 +1,558 @@
+springboot
+-------------
+
+In this course:
+Building an end to end app
+Spring boot features
+configuration and customization
+
+-----------------------------------------------------------------------------------------------
+
+video : 3
+
+what is spring boot?
+
+spring boot makes it easy to create stand-alone, production-grade spring based application
+that you can "just run".
+
+
+-----------------------------------------------------------------------------------------------
+
+video : 4
+
+Spring and some of its problems.
+
+Spring is - application framework, programming and configuration model, infrastructure support(connection to db)
+
+problems with spring : 	Huge framework, 
+						multiple setup steps (like connect to oracle, mongodb, couch base etc like this), 
+						multiple configuration steps, 
+						multiple build and deploy steps
+						
+
+-----------------------------------------------------------------------------------------------
+
+video : 5
+
+what spring boot gives us :
+
+- convention over configuration (only 20% of configuration req when compare with spring)
+- stand alone (even web application as well, as it has inbuild servlet container)
+- production ready code
+
+
+-----------------------------------------------------------------------------------------------
+
+video : 6
+
+setup : java 8 sdk
+
+download sts and setup runtime env as jdk8
+
+
+-----------------------------------------------------------------------------------------------
+
+video : 7
+
+Maven
+
+-----------------------------------------------------------------------------------------------
+
+video : 8
+
+Creating a spring boot project
+
+new -> new maven project -> select check box - create simple project (skip archetype selection)
+
+group id : io.javabrains.springbootquickstart
+artifact : course-api
+
+open pom.xml and update
+
+<project>
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>1.4.2.RELEASE</version>
+	</parent>
+	
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+	</dependencies>
+	
+	<properties>
+		<java.version>1.8</java.version>
+	</properties>
+</project>
+
+
+-----------------------------------------------------------------------------------------------
+
+video : 9 
+
+Starting a spring boot application
+
+new -> class 
+
+pkg: io.javabrains.springbootstarter
+CourseApiApp
+
+
+
+@SpringBootApplication
+public class CourseApiApp {
+
+	public static void main(String[] args) {
+		
+		SpringApplication.run(CourseApiApp.class, args);  // static method
+	}
+
+}
+
+
+-----------------------------------------------------------------------------------------------
+
+video : 10
+
+spring boot startup steps
+
+static method do the follwoing tasks:
+- sets up default configuration
+- starts spring application context 
+- performs class path scan (scan all classes which are all controllers or services like that)
+- starts tomcat server
+
+-----------------------------------------------------------------------------------------------
+
+video : 11
+
+Adding a REST Controller
+
+
+
+@RestController
+public class HellowController {
+
+	@RequestMapping("/hello")
+	public String sayHi(){
+		return "Hi";
+	}
+	
+}
+
+
+@SpringBootApplication
+public class CourseApiApp {
+
+	public static void main(String[] args) {
+		
+		SpringApplication.run(CourseApiApp.class, args);
+	}
+
+}
+
+
+-----------------------------------------------------------------------------------------------
+
+video : 12
+
+Returning Objects From Controller
+
+@RestController
+public class TopicController {
+
+	@RequestMapping("/topics")
+	public List<Topic> getAllTopics(){
+		return Arrays.asList(
+				new Topic("spring", "spring framework", "spring framework description"),
+				new Topic("java", "java framework", "java description"),
+				new Topic("javaScript", "javaScript framework", "javaScript framework description")
+				);
+	}
+}
+
+
+browser url: http://localhost:8002/topics
+o/p: [{"id":"spring","name":"spring framework","description":"spring framework description"},{"id":"java","name":"java framework","description":"java description"},{"id":"javaScript","name":"javaScript framework","description":"javaScript framework description"}]
+
+
+-----------------------------------------------------------------------------------------------
+
+video : 13
+
+What's Happening Here: Bill Of Materials
+
+current pom.xml
+	---
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>1.4.2.RELEASE</version>
+	</parent>
+	
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+	</dependencies>
+	
+	--
+	
+	assume u kept only <parent> tag and not added <dependencies> tag then
+	u cant see the maven dependencies on LNP in STS
+	
+	After u updated with <dependencies> tag then only it will download all dependencies from mvn
+	
+	bill of meterials mans "the group of jars which will work well"
+	eg: in current pom parent tag version. based on version it downloads the all spring boot dependent jars and tomcat version jars like 6 or 7 or 8.
+	
+-----------------------------------------------------------------------------------------------
+
+video : 14
+	
+What's Happening Here: Embedded Servlet Container
+
+advantages are:
+- convenience
+- servlet container config is now application config (need not to think which server has t o use to run)
+- stand alone application
+- useful for micro services architecture projects
+
+
+-----------------------------------------------------------------------------------------------
+
+video : 2.1 How Spring MVC Works
+Learn what Spring MVC is and how it fits in to the view tier of your RESt API application.
+
+2.2 The REST API we'll build
+Let's quickly go over the API we'll be building - what the resources and the methods are.
+
+
+
+-----------------------------------------------------------------------------------------------
+
+video : 2.3 Creating a business service
+
+Learn how to create a Spring business service with the @Service annotation.
+
+create class:
+
+@Service
+public class TopicService {
+
+	private List<Topic> topics = Arrays.asList(
+			new Topic("spring", "spring framework", "spring framework description"),
+			new Topic("java", "java framework", "java description"),
+			new Topic("javaScript", "javaScript framework", "javaScript framework description")
+			);
+	
+	public List<Topic> getAllTopics(){
+		return topics;
+	}
+	
+}
+
+update existing controller class
+
+@RestController
+public class TopicController {
+
+	@Autowired
+	private TopicService topicService;
+	
+	@RequestMapping("/topics")
+	public List<Topic> getAllTopics(){
+		return topicService.getAllTopics();
+	}
+}
+
+
+-----------------------------------------------------------------------------------------------
+
+video : 2.4 Getting a single resource
+
+Learn how to create a GET REST API using Spring MVC that maps to a collection URI.
+
+changes in TopicService - class 
+
+public Topic getTopic(String id){
+		return topics.stream().filter(t -> t.getId().equalsIgnoreCase(id)).findFirst().get();
+	}
+
+changes in controller class
+
+@RequestMapping("/topics/{id}")
+	public Topic getTopic(@PathVariable String id){
+		return topicService.getTopic(id);
+	}
+
+-----------------------------------------------------------------------------------------------
+
+video :	2.5 Creating a new resource using POST
+
+Learn how to make a POST REST API work using Spring MVC.
+
+
+
+
+
+
+
+
+
+
+
+
+-----------------------------------------------------------------------------------------------------
+
+good interview questions:
+http://www.javainuse.com/spring/SpringBootInterviewQuestions
+
+
+Spring boot basic security:
+http://www.javainuse.com/spring/sprboot_sec	
+
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-security</artifactId>
+	<scope>test</scope>
+</dependency>
+
+Thus by just adding the spring boot security starter dependency the basic security has already been configured by default. Lets customize the security configuration by writing our own authorization and authentication. For this create a new class SecurityConfig that extends the WebSecurityConfigurerAdapter and overrides its methods. 
+
+
+--------------------------------------------------------------------------------------------------------------
+
+Top reasons to opt Spring Boot for your web applications:
+
+Reason #1: Spring Boot offers simpler dependency management to the starter projects as compared to CRUD web application.
+Reason #2: It offers quick standalone mode along with auto configuration
+Reason #3: It offers a highly opinionated as well as well tested set of dependencies that works great with Spring ecosystem for various projects.
+
+Thus, these were some of the great reasons to opt for the Spring Boot application framework for your projects.
+
+Features:
+    Create stand-alone Spring applications
+    Embed Tomcat, Jetty or Undertow directly (no need to deploy WAR files)
+    Provide opinionated 'starter' POMs to simplify your Maven configuration
+    Automatically configure Spring whenever possible
+    Provide production-ready features such as metrics, health checks and externalized configuration
+    Absolutely no code generation and no requirement for XML configuration
+	It makes it easier to develop Spring-based applications with Java or Groovy. Also, it reduces Developer’s effort with the “Opinionated Defaults Configuration” approach.
+
+	
+Pros of Spring Boot:
+    It is very easy to develop Spring Based applications with Java or Groovy.
+    It reduces lots of development time and increases productivity.
+    It avoids writing lots of boilerplate Code, Annotations and XML Configuration.
+    It is very easy to integrate Spring Boot Application with its Spring Ecosystem like Spring JDBC, Spring ORM, Spring Data, Spring Security etc.
+    It follows “Opinionated Defaults Configuration” Approach to reduce Developer effort
+    It provides Embedded HTTP servers like Tomcat, Jetty etc. to develop and test our web applications very easily.
+    It provides CLI (Command Line Interface) tool to develop and test Spring Boot (Java or Groovy) Applications from command prompt very easily and quickly.
+    It provides lots of plugins to develop and test Spring Boot Applications very easily using Build Tools like Maven and Gradle
+    It provides lots of plugins to work with embedded and in-memory Databases very easily.	
+	
+--------------------------------------------------------------------------------------------------------------
+
+4. Why is it "opinionated"?
+It follows "Opinionated Defaults Configuration" Approach to reduce Developer effort. Due to opinionated view of spring boot, what is required to get started but also we can get out if not suitable for application.
+• Spring Boot uses sensible defaults, “opinions”, mostly based on the classpath contents.
+• For example
+– Sets up a JPA Entity Manager Factory if a JPA implementation is on the classpath.
+– Creates a default Spring MVC setup, if Spring MVC is on the classpath.
+• Everything can be overridden easily
+– But most of the time not needed
+
+
+--------------------------------------------------------------------------------------------------------------
+4. Why is it "opinionated"?
+It follows "Opinionated Defaults Configuration" Approach to reduce Developer effort. Due to opinionated view of spring boot, what is required to get started but also we can get out if not suitable for application.
+• Spring Boot uses sensible defaults, “opinions”, mostly based on the classpath contents.
+• For example
+– Sets up a JPA Entity Manager Factory if a JPA implementation is on the classpath.
+– Creates a default Spring MVC setup, if Spring MVC is on the classpath.
+• Everything can be overridden easily
+– But most of the time not needed
+
+
+--------------------------------------------------------------------------------------------------------------
+
+
+5. How does it work? How does it know what to configure?
+• Auto-configuration works by analyzing the classpath
+– If you forget a dependency, Spring Boot can't configure it
+– A dependency management tool is recommended
+– Spring Boot parent and starters make it much easier
+• Spring Boot works with Maven, Gradle, Ant/Ivy
+– Our content here will show Maven
+
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.springframework</groupId>
+    <artifactId>gs-spring-boot</artifactId>
+    <version>0.1.0</version>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>1.5.2.RELEASE</version>
+    </parent>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+    </dependencies>
+
+    <properties>
+        <java.version>1.8</java.version>
+    </properties>
+
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
+
+--------------------------------------------------------------------------------------------------------------
+
+12. Can you control logging with Spring Boot? How?
+Yes, we can control logging with spring boot.
+
+Customizing default Configuration for Logging:
+By adding logback.xml file to the application we can override the default logging configuration providing by the Spring Boot. This file place in the classpath (src/main/resources) of the application for Spring Boot to pick the custom configuration.
+
+Spring Boot can control the logging level
+– Just set it in application.properties
+• Works with most logging frameworks
+– Java Util Logging, Logback, Log4J, Log4J2
+
+
+logging.level.org.springframework=DEBUG
+logging.level.com.acme.your.code=INFO	
+
+--------------------------------------------------------------------------------------------------------------
+
+13. How to reload my changes on Spring Boot without having to restart server?
+Include following maven dependency in the application.
+
+    <dependency>
+     <groupId>org.springframework</groupId>
+     <artifactId>springloaded</artifactId>
+     <version>1.2.6.RELEASE</version>
+    </dependency>
+
+
+Automatic restart
+Applications that use spring-boot-devtools will automatically restart whenever files on the classpath change. This can be a useful feature when working in an IDE as it gives a very fast feedback loop for code changes. By default, any entry on the classpath that points to a folder will be monitored for changes.
+
+    <dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-devtools</artifactId>
+    <optional>true</optional>
+    </dependency>
+
+
+This can be achieved using DEV Tools. With this dependency any changes you save, the embedded tomcat will restart. Spring Boot has a Developer tools (DevTools) module which helps to improve the productivity of developers. One of the key challenge for the Java developers is to auto deploy the file changes to server and auto restart the server. Developers can reload changes on Spring Boot without having to restart my server. This will eliminates the need for manually deploying the changes every time. Spring Boot doesn’t have this feature when it has released it’s first version. This was a most requested features for the developers. The module DevTools does exactly what is needed for the developers. This module will be disabled in the production environment.
+
+--------------------------------------------------------------------------------------------------------------
+
+14. What is Actuator in Spring Boot?
+pring Boot Actuator is a sub-project of Spring Boot. It adds several production grade services to your application with little effort on your part. There are also has many features added to your application out-of-the-box for managing the service in a production (or other) environment. They’re mainly used to expose different types of information about the running application – health, metrics, info, dump, env etc.
+
+--------------------------------------------------------------------------------------------------------------
+
+
+18. How to implement Spring web using Spring boot?
+Web Application Convenience 
+• Boot automatically configures
+– A DispatcherServlet & ContextLoaderListener
+– Spring MVC using same defaults as @EnableWebMvc
+• Plus many useful extra features:
+– Static resources served from classpath
+• /static, /public, /resources or /META-INF/resources
+– Templates served from /templates
+• If Velocity, Freemarker, Thymeleaf, or Groovy on classpath
+– Provides default /error mapping
+• Easily overridden
+– Default MessageSource for I18N
+
+--------------------------------------------------------------------------------------------------------------
+
+9. What does @EnableAutoConfiguration do? What about @SpringBootApplication?
+@EnableAutoConfiguration annotation on a Spring Java configuration class
+– Causes Spring Boot to automatically create beans it thinks you need
+– Usually based on classpath contents, can easily override
+
+    @Configuration
+    @EnableAutoConfiguration
+    public class MyAppConfig {
+    public static void main(String[] args) {
+    SpringApplication.run(MyAppConfig.class, args);
+    }
+    }
+
+@SpringBootApplication was available from Spring Boot 1.2
+It is very common to use @EnableAutoConfiguration, @Configuration, and @ComponentScan together.
+
+    @Configuration
+    @ComponentScan
+    @EnableAutoConfiguration
+    public class MyAppConfig {
+    ...
+    }
+
+
+With @SpringBootApplication annotation
+
+    @SpringBootApplication
+    public class MyAppConfig {
+    ...
+    }
+	
+@Configuration:
+Spring @Configuration annotation is part of the spring core framework. 
+Spring Configuration annotation indicates that the class has @Bean definition methods. 
+
+@EnableAutoConfiguration:
+ This annotation auto-configures the beans that are present in the classpath. This simplifies the developers work by guessing the required beans from the classpath and configure it to run the application. This annotation is part of the spring boot project.
+	
+--------------------------------------------------------------------------------------------------------------
+
+
+Secure REST API with authentication using Spring Boot , Security , OAuth2 and JPA.
+https://www.youtube.com/watch?v=0pD7YeTAUkk
+
+
+-----------------------------------------------------------------------------------------------------------------------
+
+Sprint boot							Spring
+
+@SpringBootApplication 				@Configuration + @ComponentScan + @EnableAutoConfiguration
+@RestController						@Controller + @ResponseBody
+
+@EnableAsync
+@EnableCaching
+@EnableRetry
+
+
+
+
+
+
+												

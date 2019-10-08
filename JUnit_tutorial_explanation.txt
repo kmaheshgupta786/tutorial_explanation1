@@ -1,0 +1,90 @@
+MOCK Tutorial : In28Minutes
+https://www.youtube.com/watch?v=eqRF4xHoGck
+
+------------------------------------------------------------------------------------------------------------------------------------	
+
+JUNIT - 7 Videos
+
+http://www.javatutorialonline.com/2012/06/junit-tutorial-all-7-videos.html
+
+1. JUnit Tutorial - 1 - JUnit tutorial, how to create a test class in Eclipse IDE part 1
+
+creation of srcTest Folder:
+	Right click on proj -> choose properties -> choose java build path -> click on add Folder -> enter folder name -> finish.
+creation of Test class for one of .java file:
+	Right click on class -> New -> JUNIT Test case -> check src folder name , check all check boxes (optional) -> next -> select methods for
+	which you would like to write test cases -> click finish.
+To Run:
+	Right click on test class -> Run as JUNIT
+	
+------------------------------------------------------------------------------------------------------------------------------------	
+	
+JUnit Tutorial - 2 - JUnit tutorial, how to create a test in Eclipse IDE part 2
+
+	JUNIT annotations hierarchy:
+	@BeforeClass 
+				-> one test
+					@Before -> @Test -> @After
+				-> second test
+					@Before -> @Test -> @After
+	@AfterClass.
+
+------------------------------------------------------------------------------------------------------------------------------------	
+
+JUnit Tutorial - 3 - JUnit assertions methods	
+
+	import static org.junit.Assert.*;
+	
+	Most useful methods:
+	- fail() - fails test.
+	- assertNotNull(o) / assertNull(o) - assert if object is (not) null.
+	- assertFalse(b) / assertTrue(b) - asserts if b is false / true.
+	- assertEquals(a,b) - compares two objects using equals() method. a.equals(b).
+	- assertSame(a,b) - compares two objects using == operator: a == b.
+	- assertArrayEquals(a,b) - compares two arrays.
+	- assertThat(o, condition) - asserts that o satisfies the condition specified by an instance of org.hamcrest.Matcher
+	
+------------------------------------------------------------------------------------------------------------------------------------	
+
+JUnit Tutorial - 4 - JUnit expected exceptions, timeout and ignoring tests	
+
+	@Test(expected=NullPointerException.class, timeout=1)
+	@Ignore - if you dont want to run the perticular test case.
+
+------------------------------------------------------------------------------------------------------------------------------------	
+
+JUnit Tutorial - 5 - JUnit & stub example
+
+	create stub classes, if testcase is depend on another class object.
+
+------------------------------------------------------------------------------------------------------------------------------------	
+
+JUnit Tutorial - 6 - JUnit & Spring, integration testing
+
+	at class level use the annotations @RunWith , @ContextConfiguration and @Transactional (its optional but recommended)
+	
+	eg:
+	@RunWith(SpringJUnit4ClassRunner.class)
+	@ContextConfiguration (classpath:test-spring-config.xml)
+	@Transactional
+	pulic class testMyClass(){
+		
+		@Autowired
+		private Testone tone;
+		
+		@Test
+		public void methodone(){}
+	
+	}
+	
+------------------------------------------------------------------------------------------------------------------------------------	
+
+JUnit Tutorial - 7 - JUnit test suite in Eclipse tutorial	
+
+
+
+
+
+
+
+

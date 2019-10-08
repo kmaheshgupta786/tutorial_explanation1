@@ -1,0 +1,1546 @@
+
+elastic search video tutorial:
+https://www.youtube.com/watch?v=ksTTlXNLick
+
+index -> database
+type -> table (class/category) ====> eg: User Class ====> consists of name and mapping
+mapping -> schema 
+document -> record ===> Json format
+fields -> columns
+
+
+shard => an index can be devided into multiple pieces called shards.
+replica => for high availability
+
+==============================
+elastic search does not have the datatype for array.
+================
+
+kaba plugin "sense"(like IDE) will use for creation of index.
+
+eg: creation of index 
+
+put /ecommerce
+{
+	"mappings" : {
+		"product" : {
+			"properties" : {
+				"name" :{
+					"type" : "string"
+				},
+				"price" :{
+					"type" : "double"
+				},
+				"description" :{
+					"type" : "string"
+				},
+				"status" :{
+					"type" : "string"
+				},
+				"quanity" :{
+					"type" : "integer"
+				},
+				"categoires" :{
+					"type" : "nested",
+					"properties" : {
+						"name" : {
+							"type" : "string"
+						}
+						
+					}
+				},
+				"tags" : {
+					"type" : "string"
+				}
+			}
+		}
+	}
+}
+
+
+===========================
+adding document
+
+put /ecommerce/product/1001
+{
+	"name" : "test product",
+	"price" : 30,
+	"description" : "test product description",
+	"status" : "active",
+	"quanity" : 30,
+	"categoires" : [
+	{"name" : "software"}
+	],
+	"tags" : ["test", "test2"]	
+}
+
+==================================
+
+Replace document: is similar to adding document
+ 
+put /ecommerce/product/1001
+{
+	"name" : "test product",
+	"price" : 40,     // changed the price value
+	"description" : "test product description",
+	"status" : "active",
+	"quanity" : 30,
+	"categoires" : [
+	{"name" : "software"}
+	],
+	"tags" : ["test", "test2"]	
+}
+
+=================================
+
+updating document - post, _update
+
+post /ecommerce/product/1001/_update
+{
+	"doc" : {
+		"price" : 50
+	}
+}
+
+==================================
+
+Deleting document - not required curly {} braces
+
+DELETE /ecommerce/product/1001
+
+===================================
+
+Batch processing: to execute multiple statements at once (it is similar to prepared stmt)
+check more about the keywords "index" and "_id"
+
+in the bulk stmt we have to follow the two steps. 
+1. execute cmd (in this example create of document --- line {"index" : {"_id" : "1002"}} )
+2. follwed by object details (json object data)
+
+
+POST /ecommerce/product/_bluk
+{"index" : {"_id" : "1002"}}
+{
+	"name" : "test product",
+	"price" : 40,     
+	"description" : "test product description",
+	"status" : "active",
+	"quanity" : 30,
+	"categoires" : [
+	{"name" : "software"}
+	],
+	"tags" : ["test", "test2"]	
+}
+{"index" : {"_id" : "1003"}}
+{
+	"name" : "test product",
+	"price" : 40,     
+	"description" : "test product description",
+	"status" : "active",
+	"quanity" : 30,
+	"categoires" : [
+	{"name" : "software"}
+	],
+	"tags" : ["test", "test2"]	
+}
+
+=====================
+
+Two ways of retriving of data 
+By default search query works on all fields of document.
+1. Query string (URL based)  --- eg: GET http://localhost:9200/ecommerce/product/_search?q=pasta 
+2. Query DSL (Json based )
+eg:
+GET http://localhost:9200/ecommerce/product/_search
+{
+	"query" : {
+		"match" :{
+			"name" : "pasta"
+		}
+	}
+}
+
+Types of queries:
+1. Leaf
+	- look for particular values in particular fields, for instance "pasta" in product names
+	- can be used by themselves within a query, without being part of a compound query
+	- can also be used wihtin compound queries to construct more advanced queries
+
+2. compound
+	- wrap leaf clauses or even othre compound query clauses
+	- used to combine multiple queries in a logical fashion (usually with boolean logic)
+	- can also be used to alter th behaviour of queries
+	
+=========================================================================================
+Rules for Aggregations:
+1. 	fielddata=true
+2.  if fielddata=true then index=true its must.
+	eg: if u keep index=false, fielddata=true  ==> error msg : Cannot enable fielddata on a [text] field that is not indexed: [gender]"
+	
+===========================================================================================
+
+composite key: works on 6.2.2
+
+#case 3: working on 6.2.2 : composite key
+#DELETE test2
+put /test2
+{
+  "mappings":{
+    "test2":{
+      "properties":{
+        "id":{
+          "type":"integer"
+        },
+        "sr":{
+          "type" : "text",
+          "fielddata": true,
+           "fields": {
+            "raw": { 
+              "type":  "keyword"
+            }
+          }
+        },
+        "attachment":{
+          "type" : "text",
+          "fielddata": true,
+           "fields": {
+            "raw": { 
+              "type":  "keyword"
+            }
+          }
+        },
+        "productFamily":{
+          "type" : "text",
+          "fielddata": true,
+           "fields": {
+            "raw": { 
+              "type":  "keyword"
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+
+#post /test2/test2
+{
+  "id":3,
+  "sr":"sr3",
+  "attachment":"attachment3",
+  "productFamily":"cisco catalyst 6300 series switches"
+}
+
+
+post /test2/test2/_search
+{
+  "size":0,
+  "aggs": {
+    
+    "group_by_sr_attachment": {
+      "composite" : {
+        "sources" : [
+          { "sr": 
+            { "terms" : 
+              { "field": "sr.raw"
+              } 
+            } 
+          },
+          { "attachment": 
+            { "terms" : 
+              { "field": "attachment.raw"
+              } 
+            } 
+          }
+        ]
+      },
+      
+      "aggs":{
+        "top_recs":{
+          "top_hits": {
+            "size": 1,
+            "sort": [
+              {"id":{"order":"desc"}}
+            ]
+          }
+        }
+      }
+      
+      
+    }
+    
+  }
+}
+
+===========================================================================================
+ASR
+===========================================================================================
+GET _cat/health
+
+DELETE test3
+
+put test3/test3/3
+{
+  "field1": "CD-CDE1-Tx"
+}
+
+post test3/test3/_search
+{
+  "query":{
+    "bool": {
+      "must": [
+        {  "wildcard" : { "field1" : "*cd*" }}
+      ]
+    }
+  }
+}
+
+put test3
+{
+  "mappings":{
+    "test3":{
+      "properties":{
+        "field1":{"type":"text",
+          "index":false
+        }
+      }
+    }
+  }
+}
+
+
+
+get pf
+PUT pf
+{
+  "mappings": {
+    "pf": {
+      "properties": {
+        "family": {
+          "type":  "keyword"
+        }
+      }
+    }
+  }
+}
+
+put pf2
+{
+  "mappings":{
+    "pf2":{
+      "properties":{
+        "family":{
+          "type":"text",
+          "fields":{"raw":{"type":"keyword"}}
+        }
+      }
+    }
+  }
+}
+
+DELETE  my_index
+PUT my_index
+{
+  "mappings": {
+    "_doc": {
+      "properties": {
+        "date": {
+          "type": "date",
+          "format": "yyyy-MM-dd HH:mm:ss"
+        }
+      }
+    }
+  }
+}
+
+PUT my_index/_doc/2
+{ "date": "2015-02-02 2:10:31" }
+
+post my_index/_doc/_search
+{
+  "sort" : [
+    { "date" : {"order" : "desc"}}
+  ]
+}
+
+get my_index/_doc/_search
+
+put my_index/_doc/2
+{
+  "exact_value": "cisco catalyst 6200 series switches"
+}
+
+post my_index/_search
+{
+  "query":{
+    "term": {
+      "exact_value": {
+        "value": "cisco catalyst 6200 series"
+      }
+    }
+  }
+}
+
+put pf2/pf2/1
+{
+  "family": "cisco catalyst 6100 series switches"
+}
+
+get /test3/test3/_search
+
+get pf
+get pf/pf/_search
+post pf/pf/_search
+{
+  "query": {
+    "bool": {
+      "must": [
+        { "match": { "family":"cisco catalyst 6100 series switches" }}
+      ]
+    }
+  }
+}
+get pf/_search
+{
+  "query": {
+     "term": {
+            "family": "cisco"
+          }
+  }
+}
+
+get pf2
+post pf2/pf2/_search
+{
+  "query": {
+     "term": {
+            "family": "cisco catalyst 6200 series switches"
+          }
+  }
+}
+==========================
+#case 1: working on 5.2.2
+
+#DELETE test
+
+
+PUT test
+{
+    "settings" : {
+        "index" : {
+            "number_of_shards" : 1, 
+            "number_of_replicas" : 0
+        }
+    }
+}
+
+put /test/_mapping/test
+{
+  
+      "properties":{
+        "name" : {"type" : "string",
+          "index" : "not_analyzed"
+          
+        },
+        "state" : {"type" : "string","index" : "not_analyzed"
+          
+        },
+        "gender":{"type" : "string","index" : "not_analyzed"
+         
+        },
+        "age":{"type" : "integer"}
+      }
+    
+}
+
+
+post /test/test
+{
+  "name":"two",
+  "state": "two",
+  "gender":"male",
+  "age":2
+  
+}
+
+post /test/test/_search
+{
+  "size":0,
+  "aggs": {
+    "group_by_gender": {
+      "terms": {
+        "field": "gender"
+      }
+    }
+  }
+}
+
+===============================================
+
+GET /test2/test2/_search
+
+GET /test2/test2/_search
+{
+  "size":0,
+  "query": {
+    "term": {
+      "usertype":  "live"
+    }
+  },
+  "aggs": {
+    "group_by_productFamily": {
+      "terms": {
+        "field": "productFamily.raw"
+      }
+    }
+  }
+}
+
+=================================================
+
+
+#case 3: working on 6.2.2 : composite key
+#DELETE test2
+
+
+put /test2
+{
+  "mappings":{
+    "test2":{
+      "properties":{
+        "id":{
+          "type":"integer"
+        },
+        "sr":{
+          "type" : "text",
+          "fielddata": true,
+           "fields": {
+            "raw": { 
+              "type":  "keyword"
+            }
+          }
+        },
+        "attachment":{
+          "type" : "text",
+          "fielddata": true,
+           "fields": {
+            "raw": { 
+              "type":  "keyword"
+            }
+          }
+        },
+        "productFamily":{
+          "type" : "text",
+          "fielddata": true,
+           "fields": {
+            "raw": { 
+              "type":  "keyword"
+            }
+          }
+        },
+        "usertype":{
+          "type" : "text",
+          "fielddata" : true,
+          "fields" : {
+            "raw":{
+              "type": "keyword"
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+#post /test2/test2
+{
+  "id":4,
+  "sr":"sr4",
+  "attachment":"attachment4",
+  "productFamily":"cisco catalyst 6400 series switches",
+  "usertype":"live"
+}
+
+GET /test2/test2/_search
+
+post /test2/test2/_search
+{
+  "size":0,
+  "query": {
+    "term": {
+      "usertype":  "live"
+    }
+  },
+  "aggs": {
+    "group_by_sr_attachment": {
+      "composite" : {
+        "sources" : [
+          { "sr": 
+            { "terms" : 
+              { "field": "sr.raw"
+              } 
+            } 
+          },
+          { "attachment": 
+            { "terms" : 
+              { "field": "attachment.raw"
+              } 
+            } 
+          }
+        ]
+      },
+      
+      "aggs":{
+        "top_recs":{
+          "top_hits": {
+            "size": 1,
+            "sort": [
+              {"id":{"order":"desc"}}
+            ]
+          }
+        }
+      }
+      
+      
+    }
+    
+  }
+}
+
+#case 4:  5.3.3 : composite key
+DELETE test2
+put /test2
+{
+  "mappings":{
+    "test2":{
+      "properties":{
+        "id":{
+          "type":"integer"
+        },
+        "sr":{
+          "type" : "text",
+          "fielddata": true,
+          "index" : true
+        },
+        "attachment":{
+          "type" : "text",
+          "fielddata": true,
+          "index" : true
+        },
+        "productFamily":{
+          "type" : "text",
+          "fielddata": true,
+           "fields": {
+            "raw": { 
+              "type":  "keyword"
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+#get specific fields
+GET test2/test2/_search
+{
+"_source": {
+        "includes": ["sr","sr_attachment" ]
+      }
+}
+
+get /test2/test2/_search
+post /test2/test2
+{
+  "id":2,
+  "sr":"sr2",
+  "attachment":"attachment2",
+  "productFamily":"cisco catalyst 6200 series switches"
+}
+
+
+post /test2/test2/_search
+{
+  "size" :  0,
+   "aggs":{
+     "groupby_sr":{
+       "terms": {
+         "field": "sr"
+       },
+       
+       "aggs":{
+         "groupby_att":{
+           "terms": {
+             "field": "attachment"
+           }
+         }
+       }
+     }
+   }
+  
+}
+=========================
+#DELETE asr_status
+
+GET /asr_status/asr_status/_search
+
+get /asr_feedback/asr_feedback/_search
+
+put /asr_status
+{
+	"mappings" : {
+		"asr_status" : {
+			"properties" : {
+				"requestId" :{"type" : "text",
+				  "fielddata": true,
+           "fields": {
+            "raw": { 
+              "type":  "keyword"
+            }
+          }
+				}, 
+				"uniqueId" :{"type" : "text",
+				  "fielddata": true,
+           "fields": {
+            "raw": { 
+              "type":  "keyword"
+            }
+          }
+				},
+				"appName" :{"type" : "text"},
+				"attachment" :{"type" : "text",
+				  "fielddata": true,
+           "fields": {
+            "raw": { 
+              "type":  "keyword"
+            }
+          }
+				},
+				"bugsList" :{"type" : "text"},
+				"clientId" : {"type" : "text"},
+				"createdDate" : {"type" : "date",
+				  "format": "yyyy-MM-dd HH:mm:ss"
+				},
+				"errorMsg" : {"type" : "text"},	
+				"inputData" :{ "type" : "text"},
+				"osType" : {"type" : "text"},
+				"osVersion" : {"type" : "text"},
+				"outputData" :{"type" : "text"},
+				"pid" : {"type" : "text",
+				  "fielddata": true,
+				  "fields": {
+            "raw": { 
+              "type":  "keyword"
+            }
+          }
+				},
+				"postUpgrade" : {"type" : "text"},
+				"preUpgrade" : {"type" : "text"},
+				"productFamily" : {"type" : "text",
+				  "fielddata": true,
+           "fields": {
+            "raw": { 
+              "type":  "keyword"
+            }
+          }
+				},
+				"serialNo" : {"type" : "text"},
+				"srList" : {"type" : "text"},
+				"status" : {"type" : "text"},
+				"supervisorPid" : {"type" : "text",
+				  "fielddata": true,
+				  "fields": {
+            "raw": { 
+              "type":  "keyword"
+            }
+          }
+				},
+				"updatedDate" : {"type" : "date",
+				  "format": "yyyy-MM-dd HH:mm:ss"
+				},
+				"user" : {"type" : "text"}
+			}
+		}
+	}
+}
+
+
+#get index strucutre
+GET asr_status
+
+
+#index deletion
+DELETE asr_status
+
+#get all records
+GET asr_status/asr_status/_search
+
+#get by _id
+GET asr_status/asr_status/a3f22130-bea5-4fbe-a803-168f4d7faf56
+
+#delete recs by id
+#DELETE asr_status/asr_status/756f1789-4dcd-46c6-879a-cc330d19b945
+
+# get -- exact match -- multiple fields 
+GET /asr_status/asr_status/_search
+{
+  "query": {
+    "bool": {
+      "must": [
+        { "match": { "attachment":"q69sE0UYF9ZC10nWBl4XJOobs874Un9I_IOS_CLI_OUTPUT.file.txt" }},
+        { "match": { "uniqueId":"apollo_ios_000f0e9a464a4fded4b8b82bc9d43c8b" }}
+      ]
+    }
+  }
+}
+
+#get specific fields
+GET /asr_status/asr_status/_search
+{
+"_source": {
+        "includes": ["requestId", "uniqueId", "attachment", "pid", "supervisorPid", "createdDate" ]
+      }
+}
+
+#group by
+get /asr_status/asr_status/_search
+
+#group by -- but buckets are not printing
+GET /asr_status/asr_status/_search
+{
+  "size": 0,
+  "query": {
+    "term": {
+      "preUpgrade":  "yes"
+      
+    }
+  },
+  "aggs": {
+    "group_by_productfamily": {
+      "terms": {
+        "field": "productFamilty.keyword"
+      }
+    }
+  }
+}
+
+
+
+
+#===============================================
+
+# table creation
+put /asr_feedback
+{
+	"mappings" : {
+		"asr_feedback" : {
+			"properties" : {
+				"requestId" :{"type":"text",
+				  "fielddata": true,
+           "fields": {
+            "raw": { 
+              "type":  "keyword"
+            }
+          }
+				},
+				"attachment" :{"type":"text",
+				  "fielddata": true,
+           "fields": {
+            "raw": { 
+              "type":  "keyword"
+            }
+          }
+				},
+				"clientId" :{"type" : "text"},				
+				"userId" :{"type" : "text"},
+				"serialNo" :{"type" : "text"},
+				"sr" :{"type" : "text",
+				  "fielddata": true,
+           "fields": {
+            "raw": { 
+              "type":  "keyword"
+            }
+          }
+				},
+				"createdDate" :{"type" : "date"},
+				"updatedDate" :{"type" : "date"},
+				"feedbackType" :{"type" : "text",
+				  "fielddata": true,
+           "fields": {
+            "raw": { 
+              "type":  "keyword"
+            }
+          }
+				},
+				
+				"preFeedbackVersion" :{"type" : "text"},
+				"preFeedback" :{"type" : "text"},
+				"preFeedbackBy" :{"type" : "text"},
+				"preFeedbackDate" :{"type" : "date"},
+				"discussed" :{"type" : "text"},
+				
+				"upgradeOption" :{"type" : "text"},
+				"upgradeVersion" :{"type" : "text"},
+				"upgradeVersionType" :{"type" : "text"},
+				"upgradeResult" :{"type" : "text"},
+				"postFeedback" :{"type" : "text"},
+				"issueFixed" :{"type" : "text"},
+				"postFeedbackDate" :{"type" : "date"},
+				"postFeedbackBy" :{"type" : "text"}
+				
+			}
+		}
+	}
+}
+
+#get index strucutre
+GET asr_feedback
+
+
+#index deletion
+DELETE asr_feedback
+
+#delete record by id
+#DELETE asr_feedback/asr_feedback/a3f22130-bea5-4fbe-a803-168f4d7faf56
+
+#get all records
+GET asr_feedback/asr_feedback/_search
+
+#get all records -- pagination
+GET test2/test2/_search
+{
+  "from" : 2, "size" : 2
+}
+
+
+
+# Insert 
+PUT /asr_status/asr_status/
+{
+				"requestid" :"b7634645-b83f-43c1-b104-5b771975a25f", 
+				"uniqueid" :"683968783",
+				"app_name" :"TAC",
+				"attachment" :"20180215-024115715_sh_tech.txt",
+				"bugs_list" :"",
+				"client_id" : "mgas",
+				"created_date" : "2018-02-19T12:15:02.000Z",
+				"error_msg" : "",	
+				"input_data" :"input data1",
+				"os_type" : "IOS",
+				"os_version" : "15.2(6)E",
+				"output_data" :"output data",
+				"pid" : "WS-C2960X-48TS-L",
+				"post_upgrade" : "No",
+				"pre_upgrade" : "Yes",
+				"product_family" : "Cisco Catalyst 2960-X Series Switches",
+				"serial_no" : "FOC2125V24Y",
+				"sr_list" : "683968783",
+				"status" : "SUCCESS",
+				"supervisor_pid" : "",
+				"updated_date" : "2018-02-19T12:23:52.000Z",
+				"user_id" : ""
+			
+}
+
+
+
+#get 
+GET /asr_status/asr_status/d9f132fa-8985-4663-9144-975455765106
+
+
+
+
+
+
+
+#update document by _id
+POST /asr_status/asr_status/d7ee0173-0870-4b5e-acdf-c3d460f6ae49/_update
+{
+  "doc": { "status": "SUCCESS" }
+}
+
+
+#get asr_feedback structure
+GET asr_feedback
+
+#get all
+GET /asr_feedback/asr_feedback/_search
+
+
+
+		
+
+
+#get by _id
+GET /asr_feedback/asr_feedback/a3f22130-bea5-4fbe-a803-168f4d7faf56
+
+
+#get by field requestid -- exact match -- 1 way 
+GET /asr_feedback/asr_feedback/_search
+{
+  "query": { 
+      "constant_score": {
+        "filter": {
+          "term": {
+            "requestid": "715c6635-b3a8-4384-a14a-50e73d57d23f"
+          }
+        }
+      }
+    }
+}
+
+
+
+#get by field requestid -- exact match -- 2 way
+GET /asr_feedback/asr_feedback/_search
+{
+  "query": { 
+      "term": {
+            "preFeedbackBy": "ckamatam"
+          }
+       
+    }
+}
+
+
+
+# to check field data is tokenized or not
+GET asr_feedback/_analyze
+{
+  "field": "attachment", 
+  "text":"Sh Tech-Support"
+}
+
+
+
+#get by sr, attachment and sort and size
+GET /asr_feedback/asr_feedback/_search
+{
+  "sort" : [
+    { "created_date" : {"order" : "asc"}}
+  ],
+  "query": {
+    "bool": {
+      "must": [
+        { "match": { "sr":"684139686" }},
+        { "match": { "attachment":"Sh Tech-Support" }}
+      ]
+    }
+  },
+  "size":1
+  
+}
+
+
+
+#get records by multiple ids
+GET asr_status/asr_status/_search
+{
+    "query": {
+        "ids" : {
+            "type": "asr_status", 
+            "values" : ["6f2e3f43-d896-49e9-8a3d-796a1e006e22","09dd252b-993e-45d1-909c-b7218b21d971"]
+        }
+    }
+}
+
+=======================================================================
+get asr_status/asr_status/_search
+
+
+
+#Test data asr_status
+Put /asr_status/asr_status/09dd252b-993e-45d1-909c-b7218b21d974
+{
+"requestId": "09dd252b-993e-45d1-909c-b7218b21d974",
+          "uniqueId": "682561584",
+          "user": null,
+          "appName": "TAC",
+          "serialNo": "FDO1751R27H",
+          "osVersion": "15.0(1)SE3",
+          "pid": "WC-C3750X-48T-T",
+          "productFamilty": "Cisco Catalyst 3750-X Series Switches",
+          "srList": [
+            682561585
+          ],
+          "attachment": "swt1500-show-tech1.txt",
+          "status": "SUCCESS",
+          "errorMsg": null,
+          "inputData": """{"nbaJson":{"version":"1.0","batch_size":"1","source_service":"TAC","userid":"mansigo","nba_device_input_timestamp":"04/24/2018 05:59:23","device_input_list":[{"unique_id":"682561580","os_type":"IOS","os_version":"15.0(1)SE3","product_family":"Cisco Catalyst 3750-X Series Switches","pid":"WS-C3750X-48T-S","supervisor_pid":"","image_name":"c3750e-universalk9npe-mz.150-1.SE3/c3750e-universalk9npe-mz.150-1.SE3.bin","memory_installed":"262144K","sr_list":["682561580"],"bugId_list":[],"features":["aaa_authorization_exec","Certificate_Authority_CA_Key_Rollover_IOS","IP_Source_Routing","Spanning_Tree_Mode_PVST_IOS","AAA_Method_Lists_Enhancement_IOS","Protocol_Filtering_IOS","Static Default Route","Trunk All Dot1Q IOS","Private VLAN IOS","Enabling_mDNS_gateway_functionality_IOS","SNMP","HTTP Server","IP","IEEE 802.1Q VLAN Support","multiple_rsa_keypair_support","Potential_Smart_Install_Client_IOS","Static Routing","TACACS+","dynamic_or_static_routing","vlan_internal_allocation_policy_ascending","Local User Database","Secure HTTP - HTTPS","VTP Transparent Mode IOS","aaa_accounting_exec","At_Least_One_IP_Interface_IOS","IOS Base","Switch_Provisioning_for_Stackwise_techno","VTP","SSH_Potentially_Enabled_IOS","Spanning Tree Extended System ID IOS","MPLS_Crafted_Packet_PSIRT","Trunk Mode On IOS","Connection and System Banners","AAA_Authorization_and_http_IOS","VTP_Domain_IOS","Logging Syslog Enabled","Trunk Encapsulation Dot1Q IOS","IKE Not Explicitly Disabled","Enhanced Password Security","AAA Command Authorization","named_method_lists_for_aaa_authorization_and_accounting","aaa_authentication_login","Classless IP Routing","HTTP_without_Authentication_IOS","IOS_Spanning_Tree_Protocol_STP","ocsp","stacked_catalyst_switch","ieee_802_1q_tunneling","Smart_Install_Client_Devices_IOS","Tacacs_server_directed_request_IOS","Certificate_Revocation_List_CRL_IOS","AAA","Cisco_Discovery_Protocol_CDP","ip_ips_config_location","Spanning Tree PortFast Interface IOS","Spanning Tree Disabled IOS","CDP_Disabled_Interface","Private_Address_Space_RFC_1918_class_A","Vlan_dot1q_tag_native","persistent_self_signed_certificates"],"config":"","new_features_to_be_deployed":"","serial_no":"FDO1751R27H","attachment_name":"swt1500-show-tech.txt","userid":null}],"split_recommendations":true}}""",
+          "outputData": """{"nbaOutput":{"version":"1.0","pid":"WS-C3750X-48T-S","supervisor_pid":"","image_name":"c3750e-universalk9npe-mz.150-1.SE3/c3750e-universalk9npe-mz.150-1.SE3.bin","os_type":"IOS","product_family":"Cisco Catalyst 3750-X Series Switches","nba_device_results_timestamp":"2018/04/26 06:00:38","batch_size":"1","recommendation_request_by":"mansigo","nba_output_list":[{"unique_id":"682561580","os_version":"15.0(1)SE3","serial_no":"FDO1751R27H","product_family":"Cisco Catalyst 3750-X Series Switches","health_score":"","pid":"WS-C3750X-48T-S","supervisor_pid":"","image_name":"c3750e-universalk9npe-mz.150-1.SE3/c3750e-universalk9npe-mz.150-1.SE3.bin","os_type":"IOS","recommendations":{"non_bu_inspired_recommendations":[{"rank":"1","os_version":"15.2(4)E6","reward":384.0,"psirts_resolved":["cisco-sa-20150325-tcpleak","cisco-sa-20180328-smi","cisco-sa-20180328-smi2","cisco-sa-20140605-openssl","cisco-sa-20160323-smi","cisco-sa-20160928-smi","cisco-sa-20150320-openssl","cisco-sa-20180328-lldp","cisco-sa-20130327-smartinstall","cisco-sa-20170629-snmp"],"psirts_unresolved":[],"new_psirts_introduced":[],"bugs_solved":[],"bugs_unsolved":[],"new_bugs_introduced":[],"software_milestones":[],"memory_compatibility":"Compatible","other_info":"","no_recommendation_reason":null,"error":null},{"rank":"2","os_version":"15.2(2)E8","reward":384.0,"psirts_resolved":["cisco-sa-20150325-tcpleak","cisco-sa-20180328-smi","cisco-sa-20180328-smi2","cisco-sa-20140605-openssl","cisco-sa-20160323-smi","cisco-sa-20160928-smi","cisco-sa-20150320-openssl","cisco-sa-20180328-lldp","cisco-sa-20130327-smartinstall","cisco-sa-20170629-snmp"],"psirts_unresolved":[],"new_psirts_introduced":[],"bugs_solved":[],"bugs_unsolved":[],"new_bugs_introduced":[],"software_milestones":["End Of Sale [Date: 2017-5-1]"],"memory_compatibility":"Compatible","other_info":"","no_recommendation_reason":null,"error":null},{"rank":"3","os_version":"15.2(4)E5","reward":128.0,"psirts_resolved":["cisco-sa-20150325-tcpleak","cisco-sa-20140605-openssl","cisco-sa-20160323-smi","cisco-sa-20160928-smi","cisco-sa-20150320-openssl","cisco-sa-20130327-smartinstall","cisco-sa-20170629-snmp"],"psirts_unresolved":["cisco-sa-20180328-smi","cisco-sa-20180328-smi2","cisco-sa-20180328-lldp"],"new_psirts_introduced":[],"bugs_solved":[],"bugs_unsolved":[],"new_bugs_introduced":[],"software_milestones":[],"memory_compatibility":"Compatible","other_info":"","no_recommendation_reason":null,"error":null}],"bu_inspired_recommendations":[{"rank":"1","os_version":"15.2(4)E6","reward":384.0,"psirts_resolved":["cisco-sa-20150325-tcpleak","cisco-sa-20180328-smi","cisco-sa-20180328-smi2","cisco-sa-20140605-openssl","cisco-sa-20160323-smi","cisco-sa-20160928-smi","cisco-sa-20150320-openssl","cisco-sa-20180328-lldp","cisco-sa-20130327-smartinstall","cisco-sa-20170629-snmp"],"psirts_unresolved":[],"new_psirts_introduced":[],"bugs_solved":[],"bugs_unsolved":[],"new_bugs_introduced":[],"software_milestones":[],"memory_compatibility":"Compatible","other_info":"BU Base Verison(s) :[15.0(2)SE11]","no_recommendation_reason":null,"error":null},{"rank":"2","os_version":"15.2(2)E8","reward":384.0,"psirts_resolved":["cisco-sa-20150325-tcpleak","cisco-sa-20180328-smi","cisco-sa-20180328-smi2","cisco-sa-20140605-openssl","cisco-sa-20160323-smi","cisco-sa-20160928-smi","cisco-sa-20150320-openssl","cisco-sa-20180328-lldp","cisco-sa-20130327-smartinstall","cisco-sa-20170629-snmp"],"psirts_unresolved":[],"new_psirts_introduced":[],"bugs_solved":[],"bugs_unsolved":[],"new_bugs_introduced":[],"software_milestones":["End Of Sale [Date: 2017-5-1]"],"memory_compatibility":"Compatible","other_info":"BU Base Verison(s) :[15.0(2)SE11]","no_recommendation_reason":null,"error":null},{"rank":"3","os_version":"15.2(4)E5","reward":128.0,"psirts_resolved":["cisco-sa-20150325-tcpleak","cisco-sa-20140605-openssl","cisco-sa-20160323-smi","cisco-sa-20160928-smi","cisco-sa-20150320-openssl","cisco-sa-20130327-smartinstall","cisco-sa-20170629-snmp"],"psirts_unresolved":["cisco-sa-20180328-smi","cisco-sa-20180328-smi2","cisco-sa-20180328-lldp"],"new_psirts_introduced":[],"bugs_solved":[],"bugs_unsolved":[],"new_bugs_introduced":[],"software_milestones":[],"memory_compatibility":"Compatible","other_info":"BU Base Verison(s) :[15.0(2)SE11]","no_recommendation_reason":null,"error":null}]}}],"request_id":"09dd252b-993e-45d1-909c-b7218b21d971"},"errorMessage":null,"status":"SUCCESS","success":true,"requestId":"09dd252b-993e-45d1-909c-b7218b21d971"}""",
+          "createdDate": "2018-01-03 00:00:00",
+          "updatedDate": "2018-01-03 00:00:00",
+          "bugsList": [],
+          "supervisorPid": "WA-C3750X-48T-SUP",
+          "clientId": "mansigo",
+          "osType": "IOS",
+          "preUpgrade": "Yes",
+          "postUpgrade": "No"
+}
+
+
+
+========================================================================
+#Test data asr_feedback
+
+post /asr_feedback/asr_feedback/_search
+{
+  "size":0,
+  "query": {
+    "term": {
+      "feedbackType":  "live"
+    }
+  },
+  "aggs": {
+    "group_by_sr_attachment": {
+      "composite" : {
+        "sources" : [
+          { "sr": 
+            { "terms" : 
+              { "field": "sr.raw"
+              } 
+            } 
+          },
+          { "attachment": 
+            { "terms" : 
+              { "field": "attachment.raw"
+              } 
+            } 
+          }
+        ]
+      },
+      
+      "aggs":{
+        "top_recs":{
+          "top_hits": {
+            "size": 1,
+            "sort": [
+              {"id":{"order":"desc"}}
+            ]
+          }
+        }
+      }
+      
+      
+    }
+    
+  }
+}
+
+GET /asr_feedback/asr_feedback/_search
+
+#1
+PUT /asr_feedback/asr_feedback/715c6635-b3a8-4384-a14a-50e73d57d23a
+{
+	"requestId" :"715c6635-b3a8-4384-a14a-50e73d57d23a",
+	"attachment" :"Sh Tech-Support",
+	"clientId" :"",				
+	"userId" :"",
+	"serialNo" :"FXS1805Q0T0",
+	"sr" :"684139681",
+	"createdDate" :"2018-01-01T00:00:00",
+	"updatedDate" :"2018-01-01T00:00:00",
+	"feedbackType" :"live",
+	
+	"preFeedbackVersion" :"15.5(1)SY1",
+	"preFeedback" :"pre feedback given",
+	"preFeedbackBy" :"test",
+	"preFeedbackDate" :"2018-01-01T00:00:00",
+	"discussed" :"Yes",
+	
+	"upgradeOption" :"15.5(1)SY1",
+	"upgradeVersion" :"15.5(1)SY1",
+	"upgradeVersionType" :"both",
+	"upgradeResult" :"Ok",
+	"postFeedback" :"post feedback given",
+	"issueFixed" :"Yes",
+	"postFeedbackDate" :"2018-01-01T00:00:00",
+	"postFeedbackBy" :"test"
+				
+}
+
+#2
+PUT /asr_feedback/asr_feedback/715c6635-b3a8-4384-a14a-50e73d57d23b
+{
+	"requestId" :"715c6635-b3a8-4384-a14a-50e73d57d23b",
+	"attachment" :"Sh Tech-Support",
+	"clientId" :"",				
+	"userId" :"",
+	"serialNo" :"FXS1805Q0T0",
+	"sr" :"684139681",
+	"createdDate" :"2018-01-02T00:00:00",
+	"updatedDate" :"2018-01-02T00:00:00",
+	"feedbackType" :"live",
+	
+	"preFeedbackVersion" :"15.5(1)SY1",
+	"preFeedback" :"pre feedback given",
+	"preFeedbackBy" :"test",
+	"preFeedbackDate" :"2018-01-02T00:00:00",
+	"discussed" :"Yes",
+	
+	"upgradeOption" :"15.5(1)SY1",
+	"upgradeVersion" :"15.5(1)SY1",
+	"upgradeVersionType" :"both",
+	"upgradeResult" :"Ok",
+	"postFeedback" :"post feedback given",
+	"issueFixed" :"Yes",
+	"postFeedbackDate" :"2018-01-02T00:00:00",
+	"postFeedbackBy" :"test"
+				
+}
+
+#3
+PUT /asr_feedback/asr_feedback/715c6635-b3a8-4384-a14a-50e73d57d23c
+{
+	"requestId" :"715c6635-b3a8-4384-a14a-50e73d57d23c",
+	"attachment" :"Sh Tech-Support",
+	"clientId" :"",				
+	"userId" :"",
+	"serialNo" :"FXS1805Q0T0",
+	"sr" :"684139682",
+	"createdDate" :"2018-01-03T00:00:00",
+	"updatedDate" :"2018-01-03T00:00:00",
+	"feedbackType" :"silent",
+	
+	"preFeedbackVersion" :"15.5(1)SY1",
+	"preFeedback" :"pre feedback given",
+	"preFeedbackBy" :"test",
+	"preFeedbackDate" :"2018-01-03T00:00:00",
+	"discussed" :"Yes",
+	
+	"upgradeOption" :"15.5(1)SY1",
+	"upgradeVersion" :"15.5(1)SY1",
+	"upgradeVersionType" :"both",
+	"upgradeResult" :"Ok",
+	"postFeedback" :"post feedback given",
+	"issueFixed" :"Yes",
+	"postFeedbackDate" :"2018-01-03T00:00:00",
+	"postFeedbackBy" :"test"
+				
+}
+
+
+
+#4
+PUT /asr_feedback/asr_feedback/715c6635-b3a8-4384-a14a-50e73d57d23d
+{
+	"requestId" :"715c6635-b3a8-4384-a14a-50e73d57d23d",
+	"attachment" :"Sh Tech-Support",
+	"clientId" :"",				
+	"userId" :"",
+	"serialNo" :"FXS1805Q0T0",
+	"sr" :"684139682",
+	"createdDate" :"2018-01-04T00:00:00",
+	"updatedDate" :"2018-01-04T00:00:00",
+	"feedbackType" :"silent",
+	
+	"preFeedbackVersion" :"15.5(1)SY1",
+	"preFeedback" :"pre feedback given",
+	"preFeedbackBy" :"test",
+	"preFeedbackDate" :"2018-01-04T00:00:00",
+	"discussed" :"Yes",
+	
+	"upgradeOption" :"15.5(1)SY1",
+	"upgradeVersion" :"15.5(1)SY1",
+	"upgradeVersionType" :"both",
+	"upgradeResult" :"Ok",
+	"postFeedback" :"post feedback given",
+	"issueFixed" :"Yes",
+	"postFeedbackDate" :"2018-01-04T00:00:00",
+	"postFeedbackBy" :"test"
+				
+}	
+
+#5
+PUT /asr_feedback/asr_feedback/715c6635-b3a8-4384-a14a-50e73d57d23e
+{
+	"requestId" :"715c6635-b3a8-4384-a14a-50e73d57d23e",
+	"attachment" :"Sh Tech-Support",
+	"clientId" :"",				
+	"userId" :"",
+	"serialNo" :"FXS1805Q0T0",
+	"sr" :"684139682",
+	"createdDate" :"2018-01-05T00:00:00",
+	"updatedDate" :"2018-01-05T00:00:00",
+	"feedbackType" :"live",
+	
+	"preFeedbackVersion" :"15.5(1)SY1",
+	"preFeedback" :"pre feedback given",
+	"preFeedbackBy" :"test",
+	"preFeedbackDate" :"2018-01-05T00:00:00",
+	"discussed" :"Yes",
+	
+	"upgradeOption" :null,
+	"upgradeVersion" :null,
+	"upgradeVersionType" :null,
+	"upgradeResult" :null,
+	"postFeedback" :null,
+	"issueFixed" :null,
+	"postFeedbackDate" :null,
+	"postFeedbackBy" :null
+				
+}
+
+#6
+PUT /asr_feedback/asr_feedback/715c6635-b3a8-4384-a14a-50e73d57d23f
+{
+	"requestId" :"715c6635-b3a8-4384-a14a-50e73d57d23f",
+	"attachment" :"Sh Tech-Support",
+	"clientId" :"",				
+	"userId" :"",
+	"serialNo" :"FXS1805Q0T0",
+	"sr" :"684139683",
+	"createdDate" :"2018-01-06T00:00:00",
+	"updatedDate" :"2018-01-06T00:00:00",
+	"feedbackType" :"live",
+	
+	"preFeedbackVersion" :"15.5(1)SY1",
+	"preFeedback" :"pre feedback given",
+	"preFeedbackBy" :"test",
+	"preFeedbackDate" :"2018-01-06T00:00:00",
+	"discussed" :"Yes",
+	
+	"upgradeOption" :"15.5(1)SY1",
+	"upgradeVersion" :"15.5(1)SY1",
+	"upgradeVersionType" :"both",
+	"upgradeResult" :"Ok",
+	"postFeedback" :"post feedback given",
+	"issueFixed" :"Yes",
+	"postFeedbackDate" :"2018-01-06T00:00:00",
+	"postFeedbackBy" :"test"
+				
+}
+
+#7
+PUT /asr_feedback/asr_feedback/715c6635-b3a8-4384-a14a-50e73d57d23g
+{
+	"requestId" :"715c6635-b3a8-4384-a14a-50e73d57d23g",
+	"attachment" :"Sh Tech-Support",
+	"clientId" :"",				
+	"userId" :"",
+	"serialNo" :"FXS1805Q0T0",
+	"sr" :"684139684",
+	"createdDate" :"2018-01-07T00:00:00",
+	"updatedDate" :"2018-01-07T00:00:00",
+	"feedbackType" :"live",
+	
+	"preFeedbackVersion" :"15.5(1)SY1",
+	"preFeedback" :"pre feedback given",
+	"preFeedbackBy" :"test",
+	"preFeedbackDate" :"2018-01-07T00:00:00",
+	"discussed" :"Yes",
+	
+	"upgradeOption" :"15.5(1)SY1",
+	"upgradeVersion" :"15.5(1)SY1",
+	"upgradeVersionType" :"both",
+	"upgradeResult" :"minor",
+	"postFeedback" :"post feedback given",
+	"issueFixed" :"Yes",
+	"postFeedbackDate" :"2018-01-07T00:00:00",
+	"postFeedbackBy" :"test"
+				
+}
+
+#8
+PUT /asr_feedback/asr_feedback/715c6635-b3a8-4384-a14a-50e73d57d23h
+{
+	"requestId" :"715c6635-b3a8-4384-a14a-50e73d57d23h",
+	"attachment" :"Sh Tech-Support",
+	"clientId" :"",				
+	"userId" :"",
+	"serialNo" :"FXS1805Q0T0",
+	"sr" :"684139685",
+	"createdDate" :"2018-01-08T00:00:00",
+	"updatedDate" :"2018-01-08T00:00:00",
+	"feedbackType" :"live",
+	
+	"preFeedbackVersion" :"15.5(1)SY1",
+	"preFeedback" :"pre feedback given",
+	"preFeedbackBy" :"test",
+	"preFeedbackDate" :"2018-01-08T00:00:00",
+	"discussed" :"Yes",
+	
+	"upgradeOption" :"15.5(1)SY1",
+	"upgradeVersion" :"15.5(1)SY1",
+	"upgradeVersionType" :"both",
+	"upgradeResult" :"major",
+	"postFeedback" :"post feedback given",
+	"issueFixed" :"Yes",
+	"postFeedbackDate" :"2018-01-08T00:00:00",
+	"postFeedbackBy" :"test"
+				
+}
+
+#9
+PUT /asr_feedback/asr_feedback/715c6635-b3a8-4384-a14a-50e73d57d23i
+{
+	"requestId" :"715c6635-b3a8-4384-a14a-50e73d57d23i",
+	"attachment" :"Sh Tech-Support",
+	"clientId" :"",				
+	"userId" :"",
+	"serialNo" :"FXS1805Q0T0",
+	"sr" :"684139686",
+	"createdDate" :"2018-01-09T00:00:00",
+	"updatedDate" :"2018-01-09T00:00:00",
+	"feedbackType" :"live",
+	
+	"preFeedbackVersion" :"15.5(1)SY1",
+	"preFeedback" :"pre feedback given",
+	"preFeedbackBy" :"test",
+	"preFeedbackDate" :"2018-01-09T00:00:00",
+	"discussed" :"Yes",
+	
+	"upgradeOption" :"15.5(1)SY1",
+	"upgradeVersion" :"15.5(1)SY1",
+	"upgradeVersionType" :"both",
+	"upgradeResult" :"Ok",
+	"postFeedback" :"post feedback given",
+	"issueFixed" :"No",
+	"postFeedbackDate" :"2018-01-09T00:00:00",
+	"postFeedbackBy" :"test"
+				
+}
+
+post /asr_feedback/asr_feedback/_search
+{"size":0,"query":{
+  "term":{"feedbackType":{"value":"live","boost":1.0}}
+},"aggregations":{"group_by_sr_attachment":{"composite":{"size":10,"sources":[{"sr":{"terms":{"field":"sr.raw","order":"asc"}}},{"attachment":{"terms":{"field":"attachment.raw","order":"asc"}}}]},"aggregations":{"latest_record":{"top_hits":{"from":0,"size":1,"version":false,"explain":false,"sort":[{"postFeedbackDate":{"order":"desc"}}]}}}}}}
+
+
+================================================================
+
+#get specific fields
+GET /asr_status/asr_status/_search
+{
+"_source": {
+        "includes": ["requestId", "uniqueId", "attachment", "pid", "supervisorPid", "createdDate", "preUpgrade" ]
+      }
+}
+
+#get by sr, attachment and sort and size  -- not workding
+GET /asr_status/asr_status/_search
+{
+  "_source": {
+        "includes": ["requestId", "uniqueId", "attachment", "pid", "supervisorPid", "createdDate", "preUpgrade" ]
+      },
+  "sort" : [
+    { "createdDate" : {"order" : "desc"}}
+  ],
+  
+  "query": {
+    "term": {
+            "preUpgrade": "Yes"
+          },
+    "bool": {
+      "must": [
+        { "match": { "uniqueId":"682561584" }},
+        { "match": { "attachment":"swt1500-show-tech1.txt" }},
+        { "match": { "pid":"WS-C3750X-48T-T" }},
+        { "match": { "supervisorPid":"WS-C3750X-48T-SUP" }},
+      ]
+    }
+  }
+}
+
+GET asr_status 
+
+GET asr_status/_analyze
+{
+  "field": "attachment", 
+  "text":"swt1500-show-tech1.txt"
+}
+
+#my query - bool correct, - source correct, -
+#sequece 1.pagination 2.sort  3.query   4._source 
+GET /asr_status/asr_status/_search
+{
+  "from": 0, "size": 10, 
+  "sort" : [
+    { "createdDate" : {"order" : "desc"}}
+  ],
+  
+  "query": {
+    "match_phrase":{"attachment": "tech*"}
+  },
+  
+  "_source": {
+        "includes": ["requestId", "uniqueId", "attachment", "pid", "supervisorPid", "createdDate", "preUpgrade" ]
+      }
+      
+    
+  
+}
+
+get asr_status
+#2 my query -- working one -- 10th may 2018 -- exact scenario
+post /asr_status/asr_status/_search
+{
+  "from": 0, "size": 10, 
+  "sort" : [
+    { "createdDate" : {"order" : "desc"}}
+  ],
+  "query": {
+     "bool": {
+      "must": [
+        { "match": { "preUpgrade":"Yes" }},
+        {  "wildcard" : { "uniqueId":"*682*" }},
+        {  "wildcard" : { "attachment":"*tech1*" }},
+        {  "wildcard" : { "pid.raw":"*WC-*" }},
+        {  "wildcard" : { "supervisorPid.raw":"*WA-C3*" }}
+      ]
+    }
+  },
+  
+  "_source": {
+        "includes": ["requestId", "uniqueId", "attachment", "pid", "supervisorPid", "createdDate", "preUpgrade" ]
+      }
+  
+}
+
+post asr_status/asr_status/_search
+{
+  
+  
+  "query": {
+    "field": {
+            "preUpgrade": "Yes"
+          }
+    
+  }
+  
+}
+
+
+=============================
+get asr_status
+
+post /asr_status/asr_status/_search
+
+
+=====================
+curl -X POST "http://ntaapp-dev601.cisco.com:9200/asr_feedback/_delete_by_query?scroll_size=5000" -H 'Content-Type: application/json' -d'
+{
+  "query": {
+    "term": {
+      "sr": "683685802"
+    }
+  }
+}'
+
+
+=========================
+//response
+			/*SearchResponse searchResponse = restClient.search(searchRequest);	
+			System.out.println("total size : "+ searchResponse.getHits().getHits().length);
+			searchResponse.getHits().forEach(obj -> {				
+				if("FAILED".equalsIgnoreCase(obj.getSourceAsMap().get("status").toString())) {
+					failedRecords.add(obj.getSourceAsString());				
+				}else if("SUCCESS".equalsIgnoreCase(obj.getSourceAsMap().get("status").toString())) {
+					successRecords.add(obj.getSourceAsString());		
+				}
+			});
+			System.out.println("successRecords size : "+ successRecords.size());
+			System.out.println("failed size : "+ failedRecords.size());*/
+============================
+			

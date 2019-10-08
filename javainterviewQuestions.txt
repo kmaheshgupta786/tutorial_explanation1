@@ -1,0 +1,472 @@
+Inheritance: 
+The process of inherit attributes and methods from one class to another class is called Inheritance.
+
+Polymorphism:
+The ability to exist in several forms is called polymorphism.
+If the same method var or obj exhibits diff behaviour in different context it is called polymorphism.
+
+Volatile:
+The “volatile” modifier is used on member variables that may be modified simultaneously by other threads.
+Since other threads cannot see local variables, there is no need to mark local variables as volatile. 
+E.g. volatile int number; volatile private List
+listItems = null; etc. 
+The modifier volatile only synchronizes the variable marked as volatile whereas 
+“synchronized” modifier synchronizes all variables.
+
+
+-----------------------------------------------
+By using static imports, we can import the static members from a class rather than the classes from a given package. 
+For example, Thread class has static sleep method, below example gives an idea: 
+
+import static java.lang.Thread; 
+public class MyStaticImportTest { 
+	public static void main(String[] a) { 
+		try{ 
+			sleep(100);  // important line
+		} catch(Exception ex){ } 
+	}
+}
+
+----
+Can we initialise uninitialized final variable?
+
+Yes. We can initialise blank final variable in constructor, only in construtor. 
+The condition here is the final variable should be non-static. 
+
+-----
+
+
+
+Servlet:
+
+Q) What is Filter  
+A filter is typically used to perform a particular piece of functionality either before or after the 
+primary functionality of a web application is performed. 
+As an example, if a request is made for a particular resource such as a servlet and a filter is used, 
+the filter code may execute and then pass the user on to the servlet. 
+As a further example, the filter might determine that the user does not have permissions to access a particular servlet, 
+and it might send the user to an error page rather than to the requested resource. 
+
+
+
+    Authentication Filters.
+
+    Data compression Filters.
+
+    Encryption Filters.
+
+    Filters that trigger resource access events.
+
+    Image Conversion Filters.
+
+    Logging and Auditing Filters.
+
+    MIME-TYPE Chain Filters.
+
+    Tokenizing Filters .
+
+    XSL/T Filters That Transform XML Content.
+
+------------------------------------------------------
+
+Convert hash map to ArrayList:
+
+a) Conversion Of HashMap Keys Into ArrayList :	
+
+HashMap<String, String> map = new HashMap<String, String>();
+Set<String> keySet = map.keySet();
+ArrayList<String> listOfKeys = new ArrayList<String>(keySet);
+
+
+b) Conversion Of HashMap Values Into ArrayList :
+
+HashMap<String, String> map = new HashMap<String, String>();
+Collection<String> values = map.values();
+ArrayList<String> listOfValues = new ArrayList<String>(values);	
+
+c) Conversion Of HashMap’s Key-Value Pairs Into ArrayList :
+
+HashMap<String, String> map = new HashMap<String, String>();
+<Entry<String, String>> entrySet = map.entrySet();
+ArrayList<Entry<String, String>> listOfEntry = new ArrayList<Entry<String,String>>(entrySet);
+
+------------------------------------------------------
+
+class Emp{
+	private int age;
+	
+	Emp(int age){ 
+		this.age=age;
+	}
+	
+	int hashcode(){
+		return age;
+	}
+}
+
+public static void main(String agrs[]){
+	Emp e1 =new Emp(25);
+	sysout(e1.hascode());  // output : 25 as we overriden the hascode mehtod
+	sysout("system generated hashcode " + System.identifyHashcode(e1)); // output : 1234567
+}
+
+even though we overriden the hashcode method in Emp class, still you can get the original hashcode of obj by calling identifyHashcode() method.
+
+-----------------------------------------------------
+
+Java TreeSet Example:
+ 
+Let's see a TreeSet example where we are adding books to set and printing all the books. The elements in TreeSet must be of Comparable type. String and Wrapper classes are Comparable by default. To add user-defined objects in TreeSet, you need to implement Comparable interface.	
+default order of tree set is 'descending' order.
+
+class Book implements Comparable<Book>{  
+    int id;  
+    String name,author,publisher;  
+    int quantity;  
+    public Book(int id, String name, String author, String publisher, int quantity) {  
+        this.id = id;  
+        this.name = name;  
+        this.author = author;  
+        this.publisher = publisher;  
+        this.quantity = quantity;  
+    }  
+    public int compareTo(Book b) {  
+        if(id>b.id){  
+            return 1;  
+        }else if(id<b.id){  
+            return -1;  
+        }else{  
+        return 0;  
+        }  
+    }  
+}  
+
+public class TreeSetExample {  
+    public static void main(String[] args) {  
+        Set<Book> set=new TreeSet<Book>();  
+        //Creating Books  
+        Book b1=new Book(121,"Let us C","Yashwant Kanetkar","BPB",8);  
+        Book b2=new Book(233,"Operating System","Galvin","Wiley",6);  
+        Book b3=new Book(101,"Data Communications & Networking","Forouzan","Mc Graw Hill",4);  
+        //Adding Books to TreeSet  
+        set.add(b1);  
+        set.add(b2);  
+        set.add(b3);  
+        //Traversing TreeSet  
+        for(Book b:set){  
+        System.out.println(b.id+" "+b.name+" "+b.author+" "+b.publisher+" "+b.quantity);  
+        }  
+    }  
+}  
+
+Output:
+101 Data Communications & Networking Forouzan Mc Graw Hill 4
+121 Let us C Yashwant Kanetkar BPB 8
+233 Operating System Galvin Wiley 6
+
+
+--------------------------------------------------------------------------------------------------------
+Comparable vs Comparator
+
+    - Comparable interface can be used to provide single way of sorting whereas Comparator interface is used to provide different ways of sorting.
+    - For using Comparable, Class needs to implement it whereas for using Comparator we don’t need to make any change in the class.
+    - Comparable interface is in java.lang package whereas Comparator interface is present in java.util package.
+    - We don’t need to make any code changes at client side for using Comparable, Arrays.sort() or Collection.sort() methods automatically uses the compareTo() method of the class.
+      For Comparator, client needs to provide the Comparator class to use in compare() method.
+	  
+	class Employee{
+		int empId;
+		String ename;
+		int salary;
+	}
+	
+	- If you use comparable on Employee object - we can sort only one attribute. it wont allow to implement sorting on all attributes exist in Employee class.
+	eg: Collections.sort(emplist);
+	- comparator will allow user to sort on all each fields.
+	eg: Collections.sort(emptlist, comparatorById);
+		Collections.sort(emptlist, comparatorByName);
+		Collections.sort(emptlist, comparatorBySalary);
+		
+	https://www.journaldev.com/780/comparable-and-comparator-in-java-example	
+	
+
+eg:	comparable: Collections.sort(list);
+	comparator: Collections.sort(list, new NameComparator());
+				Collections.sort(list, Comparator.comparing(Employee::getName)
+												 .thenComparing(Employee::getDob));   //equalent to group by 
+	
+--------------------------------------------------------------------------------------------------------
+
+Inheritance:
+
+class Base{
+	public void method(){System.out.println("Base Method");}
+}
+
+class Derived{
+	private void method(){System.out.println("Derived Method");}
+}
+
+public class main(){
+	public static void main(String args[]){
+		Base b = new Derived();
+		b.method();
+	}
+}
+
+A) Base 	B) Derived 		C) compilation Error 		D) Runtime Error
+
+Ans: compilation error : explanation: more restrived access to derived class function which overrides a base class function.
+
+
+
+-----------------------
+
+- super.super.print(); ---- compilation error --- Its not allowed to do super.super.pring().
+
+
+--------------------------
+
+Inheritance:
+
+class Base{
+	public static void method(){System.out.println("Base Method");}
+}
+
+class Derived{
+	public static void method(){System.out.println("Derived Method");}
+}
+
+public class main(){
+	public static void main(String args[]){
+		Base b = new Derived();
+		b.method();
+	}
+}
+
+A) Base Method	B) Derived 	Method	C) compilation Error 		D) Runtime Error
+
+Ans: Base Method -- A.---- when a function is static, runtime polymorphism doesn't happen.
+
+-------------------------------
+
+Is there any compiler error in the below Java program?
+class Point {
+    int m_x, m_y; 
+    public Point(int x, int y) {    m_x = x;    m_y = y;  }
+    public static void main(String args[]) 
+    {
+      Point p = new Point();
+    }
+}
+
+Yes, The main function calls paramaterless constructor, but there is only one constructor defined in class which takes two parameters. Note that if we write our own constructor, then compiler doesn't create default constructor in Java. This behavior is same as C++.	
+
+--------------------------------------------
+
+class Main {
+   public static void main(String args[]) {
+      try {
+         throw 10;
+      }
+      catch(int e) {
+         System.out.println("Got the  Exception " + e);
+      }
+  }
+}
+
+In Java only throwable objects (Throwable objects are instances of any subclass of the Throwable class) can be thrown as exception. So basic data type can no be thrown at all. 
+
+------------------------------------------------
+
+class Test extends Exception { }  --- the definition is empty, thought it will throw compile time exception but not on reality.
+  
+class Main {
+   public static void main(String args[]) { 
+      try {
+         throw new Test();
+      }
+      catch(Test t) {
+         System.out.println("Got the Test Exception");
+      }
+      finally {
+         System.out.println("Inside finally block ");
+      }
+  }
+}
+
+o/p:
+Got the Test Exception
+Inside finally block 
+
+-----------------------------
+
+class Test {
+  int i;
+} 
+class Main {
+   public static void main(String args[]) { 
+     Test t; 
+     System.out.println(t.i); 
+}  
+
+output: compilation error
+
+t is just a reference, the object referred by t is not allocated any memory. Unlike C++, in Java all non-primitive objects must be explicitly allocated and these objects are allocated on heap. The following is corrected program. 
+
+--------------------------------------------
+
+class demo
+{
+    int a, b;
+     
+    demo()
+    {
+        a = 10;
+        b = 20;
+    }
+     
+    public void print()
+    {
+        System.out.println ("a = " + a + " b = " + b + "n");
+    }
+}
+ 
+class Test
+{
+ 
+    public static void main(String[] args)
+    {
+        demo obj1 = new demo();
+        demo obj2 = obj1;  ----- 
+ 
+        obj1.a += 1;
+        obj1.b += 1;
+ 
+        System.out.println ("values of obj1 : ");
+        obj1.print();
+        System.out.println ("values of obj2 : ");
+        obj2.print();
+ 
+    }
+}
+
+output: values of obj1: 
+a = 11 b = 21
+values of obj2: 
+a = 11 b = 21
+
+Assignment of obj2 to obj1 makes obj2 a reference to obj1. Therefore, any change in obj1 will be reflected in obj2 also.
+
+---------------------------------------------------------------
+
+class demoClass
+{
+    int a = 1;
+ 
+    void func()
+    {
+        demo obj = new demo();
+        obj.display();
+    }
+ 
+ 
+    class demo
+    {
+        int b = 2;
+ 
+        void display()
+        {
+            System.out.println("na = " + a);
+        }
+    }
+ 
+    void get()
+    {
+        System.out.println("nb = " + b);
+    }
+}
+ 
+ 
+class Test
+{
+    public static void main(String[] args)
+    {
+        demoClass obj = new demoClass();
+        obj.func();
+        obj.get();
+ 
+    }
+}
+
+output: compilation error
+
+Members of inner class ‘demo’ can not be used in the outer class ‘Test’. Thus, get() of outer class can not access variable ‘b’ of inner class.
+
+-----------------------------------------------
+
+try catch finally interview question? what is the output for the below program.
+
+
+public class TryClass {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+		System.out.println(returnValue());
+		
+	}
+	
+	public static int returnValue() {
+		try {
+			System.out.println("in try");
+			return 1;
+		}catch(Exception e){
+			System.out.println("in catch");
+			return 2;
+		}finally {
+			System.out.println("in finally");
+			return 3;
+		}
+	}
+
+}
+
+
+o/p: Tested
+in try
+in finally
+3
+
+
+--------------------------------------------------------------------------
+
+String interview question
+
+String str = new String ("abc"); how many objects will get created?
+String str = "abc"; how many objects will get created?
+
+
+Ans:
+in case of : new String ("abc") : two objects created.
+1. one is in String pool (String constant pool)
+2. one is in heap (becoz of new operator, obj will be created in heap memory)
+- jvm has to create an obj on heap. due to new. it doesnt matter constant(abc) is already present in string pool or not.
+
+
+incase of : literal : "abc" : one object created 
+- it allways created in string constant pool.
+- jvm searches the string pool to see if equalent string exist already. If yes, rturns the reference to same. If not, adds it to stirng pool and retruns the reference. So a new obj may be created or may not be.
+
+
+- you can call intern() on a stirng obj. this will put the string obj in the pool if it is not already there, and return the ref to the pooled string. (if it was alreday in the pool, it just returns a ref to the obj that was already there.)
+
+
+----------------------------------------------------------------------------
+
+What JVM exactly will do after seeing the serializable interface as its marker interface?
+
+---------------------------------------------------------------------------
+
+String programs:
+https://hackernoon.com/20-string-coding-interview-questions-for-programmers-6b6735b6d31c

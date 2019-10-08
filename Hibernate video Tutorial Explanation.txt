@@ -1,0 +1,10 @@
+
+video 2:
+writing hibernate application
+
+1. JDBC config - hibernate cong
+2. Model obj - wiht Annotations
+3. Service method  to create model obj - use hibernate api
+
+Hibernate.cfg.xml (inside src) 
+-----------------

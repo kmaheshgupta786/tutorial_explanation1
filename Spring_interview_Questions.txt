@@ -1,0 +1,1128 @@
+Windows IP Configuration
+
+
+Wireless LAN adapter Wireless Network Connection:
+
+   Media State . . . . . . . . . . . : Media disconnected
+   Connection-specific DNS Suffix  . :
+
+Ethernet adapter Local Area Connection:
+
+   Connection-specific DNS Suffix  . :
+   Link-local IPv6 Address . . . . . : fe80::81ef:37ff:69da:3386%11
+   Autoconfiguration IPv4 Address. . : 169.254.51.134
+   Subnet Mask . . . . . . . . . . . : 255.255.0.0
+   Default Gateway . . . . . . . . . :
+
+C:\Users\DELL>
+------------------------------------------------------------------------------------------------------------------------------------------
+
+http://www.butterbin.com/38-awesome-small-room-design-ideas/
+
+
+Imp Links to learn with use of code:
+serializable: http://www.beingjavaguys.com/2013/11/inheritance-in-java-serialization_30.html
+Immutable class: http://www.beingjavaguys.com/2014/05/how-to-create-class-immutable-in-java.html
+
+
+Interview Questions:
+HCL: 
+1) What are all differences between IOC and dependency injection
+2) Context Listener and Context Loader
+3) How many types of Controllers Spring have and what are controllers you used in your project or extended
+4) Explain Spring Transactional Mgmt
+5) How many servlets your are used in your project? What is load-on-startup priorities of each servelet? why so?
+6) Checked exception and Unchecked exception example
+7) Differences between String Builder and String Buffer
+8) What are all new features were added in jdk 1.5
+	Generic collection , import of static , enhanced for loop.
+HCL Internal:
+1) Difference b/w @RequestParam @PathVarible 
+2) JSR 303 Validations
+3) Difference between persist and save and saveupdate
+4) Types of Caches supported by Hibernate
+5) How may ways to call controller using ajax call
+6) Difference between @ModelAttribute at method level and at parameter level
+7) JSON configuration in which file we will do. -- pom.xml and context.xml (property name="messageConverters" for class="MapplingHandlers")
+8) JSP implicit Objects -- 9, pageContext implicit obj can holds all remaining 8 implicit objs of jsp.
+9) Diff b/w  JavaBean and POJO -- javabean must implements serializable (or) ext.ser. , must no arg cons(), must public getter and setters, must private varbs.
+	
+NicheoPro:
+Telephonic:
+1. Override rules.
+2. Exception Override rule.
+3. System.out.println(""+1+2); o/p=? Ans: 12
+4. System.out.println(""+1-2); o/p=? Ans: compilation error
+5. Notify and wait concepts.
+6. write thread code t1 and t2 . t1 completes first later t2 coplete
+7. Spring Basic questions.
+F2F
+8. substring function
+9. deep and shallow clone? how to implement
+10. Joins and Inner join example and explanation
+11. Hibernate Obj states
+12. generic classes 
+
+Wipro:
+1. Override rules.
+2. Exception Override rule.
+3. Generic classes
+4. Iterator + Best way to find matching elements in two sets
+5. Iterator and Enumerator differences
+6. Exception Hierarchy and listout few checked and unchecked exceptions
+
+persistent:
+1. can i pass this as perameter in method? (yes u can : Using 'this' keyword to pass current object as parameter. eg: apple.getClassName(this); )
+2. difference b/w tx.commit() and session.flush()
+3. after sess.delete(emp); sess.commit() can i access the emp obj? -- yes, but it wont reflect in db.
+4. use of super can i call parent class variable?-- yes, super.i;(should not be private) call this from either method or constructor of derived class.
+
+CTS:
+1. Explain Concurrent Hash Map
+2. How to create user defined Immutable class. (other than applying final at class and variable level, no setters, and constructor)
+3. Reason on why Hash table not allow key as null -- 
+4. Explain configuration steps to implement transaction management in hibernate
+5. Can there be multiple spring containers per one JVM? (yes, because in single PC we can work on two Spring projects. per each single spring container one singleton ojb. Not per JVM singleton.)
+6. What if super class is not serialized and subclass is serialized. is it possible?
+7. If we close the database connection in try block and finally block then what will happen?--
+8. How can compare two user defined objects? can we compare to objects using .equals()? (We have to override equals method and a)cross check with use of instanceof() is the obj1 belongs to that class b) compare properties bw obj1 and obj2 )
+9. Where static var saved? (in class area at the time of class loading.)
+10. comparable vs comparator (1)lang,util (2) logic should be same class, not req (3)this.compareTo(e2),comapre(e1,e2)
+11. how can initiate garbage collection?  -- (System.gc() and Runtime.gc() but not garantee when JVM will start garbage collecion.)
+12. Can you call one constructor from another if a class has multiple constructors? -- (Yes, with user of this())
+13. Where did you used generics in your project?
+      In DI export data into csv format. 
+	Cisco (Colleague's):
+14. I have one Arrayist with one million records. I have another Arraylist with one and a half million records. Both store a list of Integers. What should I do to
+   get all the integers that are common in both the lists?	-- l3.retainAll(l1);  (eg: l1;l2; List<Integer> l3 = new ArrayList<Integer>(l2);l3.retainAll(l1); )
+15. Explain the differences between a Map and a tree. What are the use cases for each of them?
+16. Explain in detail JSON vs XML. What is the use of XML. Are there any advanages of using XML over JSON?
+17. Hibernate locking. @Entity.class concentrate on @org.hibernate.annotations.Entity ---- @DAOImpl class concentrate on  @Transactional
+	
+Symphony Teleca:
+1. Difference b/w ClassNotFoundException and NoClassDefinitionFound exception.
+2. which is order set will return the elements in same order the way user inserted? To retain the order use List or a LinkedHashSet.(it wont give any error/exception if try to add duplicate eg: lhs.add("A");)
+3. How to create user defined annotations?
+4. How to pass request from one controller to another controller? (RedirectAttributes, it should be one arg of method parameters)
+5. What is meant of ajax?
+6. @Transactional attributes. -- (readOnly = true, propagation = Propagation.REQUIRED, isolation = Isolation.REPEATABLE_READ)
+	  
+Cisco:
+1. comapre struts and JSF
+2. compare json and XML features
+3. Java 7, 8 features
+4. Comparable, comparator
+5. Multithreading
+6. Log4j - how to change the debug level dynamically without getting the server down
+7. SQL Injection
+8. XSS
+9. Spring - Dependency Injection
+10. AOP concepts
+11. Garbage Collection
+12. Permgenspace
+13. how to track the issue which created OutofMemory error, what is the input for this findings
+14. difference between REST and SOAP
+15. when to use REST and SOAP
+1. javascript objects
+2. how to get the list of radio buttons under a div tag
+3. how to dispaly a alert div over a particular div
+4. there are n number of p tags under a div tag, how to get third p tag
+5. CSS selectors
+6. Css style priorities
+7. javascript - Var access level at different locations
+8. wat is abstraction and inheritance
+9. compare IS-A and HAS-A relation
+10. design patterns except factory and singleton
+11. write a json file for employee with the following fields
+ Employee
+   - Name
+   - age
+   - salary
+   - noofcompanies worked
+   - details which again has following fields address, maritalstatus, hobbies
+12. how to write and read json file
+13. ajax call
+14. difference between GET and POST
+15. how to specify GET or POST request type in ajax call
+16. flow from page to business logic execution
+17. how to copy elements from one arraylist to another 
+18. wat is "==" , ".equals" and "===" 
+19. difference between collection.synchronize()  of a list and synchronizing the list using synchronize block
+20. how to change css class dynamically
+21. how to add HTML tag dynamically
+22. wat is overloading, overriding, constructor overloading
+23. why to use constructor overloading
+24. explain <T extends ?>, can T be replaced with Number, String, Integer
+
+Kongsberg:
+1. Can u define Steriotype in spring. How it works internally.
+2. diff between @Component & @Service
+3. in Hibernate how you handle always latest date should be saved.
+4. How to configure db connection pool size
+5. java 8 porgrams
+
+
+EY:
+JAX-RS : which media type will supports all types/formates of input? Ans: wildcard
+Based on url pattern same service at runtime has to instantiate two different beans. How to achive it. -- guessing @conditional
+What are all java specific configurations required while setting up of spring mvc
+
+Morgan stanley:
+1. input stream (integers) how to find top ten values at any point of time. - HEAP Data Structure is the correct Answer. 
+2. list of files with different names but their content might be same. 
+	how to put distinct files in differnt direcotry.
+	condition: assume 1) file has 1to10 numbers and 2) file has 1 to 100 such that 1-10 + 11-100 then we have to consider these two as two diffent files.
+	we cant rely on the file names.
+3. cyclic barrier and countdown latch
+4. how to remove cyclic dependency. how to solve it.
+5. corss origin explanation. (not answered properly)
+6. what is the use of default method in java 8 interface.
+7. i have a interface A() - has only method m1();
+	now i created calass B implemented A(){
+		- overriderd m1()
+		- defined my one method m2();
+		}
+	in main mehtod declared as, A a = new B();
+		shall we call like a.m2(); -- No, we can't, becoz interface reference not understood other thant interface methods;
+
+8. jwt token question: assume firstuser authenticated and got token1, and mean time second user authenticated and got the token2.
+   if the firstuser will use the second token what will happen.
+   
+   
+
+   
+	
+	
+
+
+	  
+--------------------------------------------------------------------------------------------------------------------------
+Q) NoClassDefFoundError Vs ClassNotFoundException(Cheked Exception ie: Compile Time)
+NoClassDefFoundError in Java comes when Java Virtual Machine is not able to find a particular class at runtime which was available during compile time. 
+For example if we have a method call from a class or accessing any static member of a Class and that class is not available during run-time then 
+JVM will throw NoClassDefFoundError. 
+Reason: Class is not available in Java Classpath. so we have to add it in class path.
+It’s important to understand that this is different than ClassNotFoundException which comes while trying to load a class at run-time only 
+and name was provided during runtime not on compile time.
+
+
+--------------------------------------------------------------------------------------------------------------------------
+
+Why Collection doesn’t extend Cloneable and Serializable interfaces?
+
+Collection interface specifies group of Objects known as elements. How the elements are maintained is left up to the concrete implementations of 
+	Collection. For example, some Collection implementations like List allow duplicate elements whereas other implementations like Set don’t.
+A lot of the Collection implementations have a public clone method. However, it does’t really make sense to include it in all implementations 
+	of Collection. This is because Collection is an abstract representation. What matters is the implementation.
+The semantics and the implications of either cloning or serializing come into play when dealing with the actual implementation; so 
+	concrete implementation should decide how it should be cloned or serialized, or even if it can be cloned or serialized.
+So mandating cloning and serialization in all implementations is actually less flexible and more restrictive. The specific implementation 
+	should make the decision as to whether it can be cloned or serialized. 
+
+
+--------------------------------------------------------------------------------------------------------------------------
+
+Q) Where did you used generics in your project?
+1. exporting data into csv format. (each tab data)
+2. assigning result set into list of beans. eg: List<DataProviderMappingPO> result = query.getResultList();
+
+AbstractCsvView.java
+
+protected void writeRow(BufferedWriter writer, List<? extends Object> list)
+			throws Exception {
+
+		if (list != null) {
+			writer.write(StringUtils.join(list, ','));
+			writer.newLine();
+		}
+	}
+	
+JobView.java and repaircodeviewcsv.java
+
+Headders: writeRow(writer, Arrays.asList("Data Provider", "Map", "Description","Transaction Type", "Supplier Name", "Modified Date","Modified By", "Status", "Modified By", "Modified Date"));	
+for data: 
+		List<JobLite> results = (List<JobLite>) model.get(DIConstants.RESULTS);
+		for (JobLite result : results) {
+		  writeRow(writer, Arrays.asList(result.getDataProviderName(),result.getMapName(), result.getMapDesc(),result.getTransType(), result.getSupplierName(),result.getModifiedDate(), result.getModifiedBy(),result.getStatus(), result.getModifiedBy(), modifyDate));
+		} 	
+
+--------------------------------------------------------------------------------------------------------------------------
+
+Concurrent Hash Map Parameters:
+    initialCapacity is 16 by default (understood).
+    loadFactor is 0.75 by default.
+    concurrencyLevel is 16 by default.
+
+--------------------------------------------------------------------------------------------------------------------------
+
+What is Filter ?
+ 
+A filter is typically used to perform a particular piece of functionality either before or after the 
+primary functionality of a web application is performed. 
+As an example, if a request is made for a particular resource such as a servlet and a filter is used, 
+the filter code may execute and then pass the user on to the servlet. 
+As a further example, the filter might determine that the user does not have permissions to access a particular servlet, 
+and it might send the user to an error page rather than to the requested resource. 
+
+types of Filters:
+    Authentication Filters.
+    Data compression Filters.
+    Encryption Filters.
+	MIME-TYPE Chain Filters. (Used in DI check web.xml)
+--------------------------------------------------------------------------------------------------------------------------
+
+Difference b/w @RequestParam @PathVarible 
+@RequestParam : The request parameter to bind to.
+@RequestMapping(method = RequestMethod.GET)
+public String setupForm(@RequestParam("petId") int petId, ModelMap model) 
+
+@PathVarible : The URI template variable to bind to.
+@RequestMapping("/productDetails/{productName}") // Handle any request of the form "/productDetails/XXXXX"
+public String showProduct(Model model, @PathVariable("productName") String productName) {
+        
+--------------------------------------------------------------------------------------------------------------------------
+
+When to do Object Cloning in Java – a sample scenario !!
+	I was getting trained on design patterns and this question came into my mind when we were discussing about ‘Prototype Design Pattern’ – 
+	when should I used object cloning in java ?
+
+Ans:	Finally after a bit of google search, i found a satisfactory answer or scenario where it can be of great help.
+
+	Quite often you want to use immutable objects, in which case cloning is an essential part of your code. 
+	If for example you have an immutable object that has a list or array type field, your getter should always return 
+	a clone of the list or array to preserve immutability.
+
+	The other typical use case is when you want “transactional” modifications, when you call several state changing methods but only want 
+	the result to be visible if all of them are successful.
+--------------------------------------------------------------------------------------------------------------------------
+when to choose inversion of controller
+
+The IoC container manages java objects – from instantiation to destruction – through its BeanFactory. 
+Java components that are instantiated by the IoC container are called beans, and 
+the IoC container manages a bean's scope, lifecycle events, and any AOP features for which it has been configured and coded. 
+
+--------------------------------------------------------------------------------------------------------------------------
+
+
+DispatcherServlet vs ContextLoaderListener?
+
+DispatcherServlet will always load its own configuration file using <servlet_name>-servlet.xml. 
+This file will contain web components such as Controllers, ViewResolvers and LocaleResolvers.( <servletName>-servlet.xml)
+
+The ContextLoaderListener is then used to load the files containing your middle tier and data tier components. 
+(applicationContext.xml, applicationContext-hibernate.xml).
+
+This is used for bootstrap the startup – shutdown the spring application.
+we can define the configuration details and load it during the application startup and save it as context 
+so we can use that configuration in overall application .
+
+For Example : Database Configuration
+
+ContextLoaderListener is the listener to start up and shut down Spring’s root WebApplicationContext. 
+It’s important functions are to tie up the lifecycle of ApplicationContext to the lifecycle of the ServletContext and 
+to automate the creation of ApplicationContext. We can use it to define shared beans that can be used across different spring contexts.
+
+--------------------------------------------------------------------------------------------------------------------------
+
+
+What is a MultipartResolver and when its used?
+
+MultipartResolver interface is used for uploading files – CommonsMultipartResolver and StandardServletMultipartResolver are 
+two implementations provided by spring framework for file uploading. 
+By default there are no multipart resolvers configured but to use them for uploading files, 
+all we need to define a bean named “multipartResolver” with type as MultipartResolver in spring bean configurations.
+
+Once configured, any multipart request will be resolved by the configured MultipartResolver and pass on a wrapped HttpServletRequest.
+Then it’s used in the controller class to get the file and process it. For a complete example, please read Spring MVC File Upload Example.
+
+--------------------------------------------------------------------------------------------------------------------------
+JSON Configuration:
+1. pom.xml (dependencies entry)
+2. in context.xml (property messageConverters)
+
+eg: context.xml 
+<bean id="jacksonMessageConverter" class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter"></bean>
+<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+	<property name="messageConverters">
+		<list>
+		<ref bean="jacksonMessageConverter" />
+		</list>
+	</property>
+</bean>
+
+--------------------------------------------------------------------------------------------------------------------------
+
+Can we have multiple Spring configuration files?
+
+1 way: in web.xml
+<servlet>
+    <servlet-name>appServlet</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <init-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>/WEB-INF/spring/appServlet/servlet-context.xml,/WEB-INF/spring/appServlet/servlet-jdbc.xml</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+</servlet>
+
+2 way: in web.xml
+<context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>/WEB-INF/spring/root-context.xml /WEB-INF/spring/root-security.xml</param-value>
+</context-param>
+
+3 way: in context.xml
+<beans:import resource="spring-jdbc.xml"/>
+
+--------------------------------------------------------------------------------------------------------------------------
+ContextLoaderListener should be defined in web.xml
+
+<context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>/WEB-INF/spring/root-context.xml</param-value>
+</context-param>
+ 
+<listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+</listener>
+
+--------------------------------------------------------------------------------------------------------------------------
+
+What are the minimum configurations needed to create Spring MVC application?
+
+For creating a simple Spring MVC application, we would need to do following tasks.
+
+    Add spring-context and spring-webmvc dependencies in the project.
+    Configure DispatcherServlet in the web.xml file to handle requests through spring container.
+    Spring bean configuration file to define beans, if using annotations then it has to be configured here. Also we need to configure view resolver for view pages.
+    Controller class with request mappings defined to handle the client requests.
+
+--------------------------------------------------------------------------------------------------------------------------
+
+
+How to achieve localization in Spring MVC applications?
+
+Spring provides excellent support for localization or i18n through resource bundles. Basis steps needed to make our application localized are:
+
+    1.Creating message resource bundles for different locales, such as messages_en.properties, messages_fr.properties etc.
+    2.Defining messageSource bean in the spring bean configuration file of type ResourceBundleMessageSource or ReloadableResourceBundleMessageSource.
+    3.For change of locale support, define localeResolver bean of type CookieLocaleResolver and configure LocaleChangeInterceptor interceptor. Example configuration can be like below:
+		<beans:bean id="messageSource"
+			class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+			<beans:property name="basename" value="classpath:messages" />
+			<beans:property name="defaultEncoding" value="UTF-8" />
+		</beans:bean>
+		 
+		<beans:bean id="localeResolver"
+			class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
+			<beans:property name="defaultLocale" value="en" />
+			<beans:property name="cookieName" value="myAppLocaleCookie"></beans:property>
+			<beans:property name="cookieMaxAge" value="3600"></beans:property>
+		</beans:bean>
+		 
+		<interceptors>
+			<beans:bean
+				class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+				<beans:property name="paramName" value="locale" />
+			</beans:bean>
+		</interceptors>
+	4.Use spring:message element in the view pages with key names, DispatcherServlet picks the corresponding value and renders the page in corresponding locale and return as response.
+
+--------------------------------------------------------------------------------------------------------------------------
+
+What is Spring MVC Interceptor and how to use it?
+
+Spring MVC Interceptors are like Servlet Filters and allow us to intercept client request and process it. 
+We can intercept client request at three places – preHandle, postHandle and afterCompletion.
+
+We can create spring interceptor by implementing HandlerInterceptor interface or by extending abstract class HandlerInterceptorAdapter.
+
+We need to configure interceptors in the spring bean configuration file. We can define an interceptor to intercept all the 
+client requests or we can configure it for specific URI mapping too. For a detailed example, please refer Spring MVC Interceptor Example. 
+
+--------------------------------------------------------------------------------------------------------------------------
+	
+Question1: What is IOC or inversion of control?
+
+Answer: This Spring interview question is first step towards Spring framework and many interviewer starts Spring interview from this question. 
+As the name implies Inversion of control means now we have inverted the control of creating the object from our own using new operator to container 
+or framework. Now it’s the responsibility of container to create object as required. 
+We maintain one xml file where we configure our components, services, all the classes and their property. 
+We just need to mention which service is needed by which component and container will create the object for us.
+This concept is known as dependency injection because all object dependency (resources) is injected into it by framework.
+
+ 
+
+Example:
+
+  <bean id="createNewStock" class="springexample.stockMarket.CreateNewStockAccont">
+        <property name="newBid"/>
+  </bean>
+
+In this example CreateNewStockAccont class contain getter and setter for newBid and container will instantiate newBid 
+and set the value automatically when it is used. This whole process is also called wiring in Spring and by using annotation 
+it can be done automatically by Spring, refereed as auto-wiring of bean in Spring.
+
+ 
+--------------------------------------------------------------------------------------------------------------------------
+
+1. What are the different types of IOC (dependency injection) ?
+There are three types of dependency injection:
+    Constructor Injection (e.g. Pico container, Spring etc): Dependencies are provided as constructor parameters.
+    Setter Injection (e.g. Spring): Dependencies are assigned through JavaBeans properties (ex: setter methods).
+    Interface Injection (e.g. Avalon): Injection is done through an interface.
+
+    Note: Spring supports only Constructor and Setter Injection
+
+ -------------------------------------------------------------------------------------------------------------------------
+
+2. What is Spring ?
+	Spring is an open source framework created to address the complexity of enterprise application development. 
+One of the chief advantages of the Spring framework is its layered architecture, which allows you to be selective about 
+which of its components you use while also providing a cohesive framework for J2EE application development.
+The advantages of Spring are as follows:
+    Spring has layered architecture. Use what you need and leave you don't need now.
+    Spring Enables POJO Programming. There is no behind the scene magic here. POJO programming enables continuous integration and testability.
+    Dependency Injection and Inversion of Control Simplifies JDBC
+    Open source and no vendor lock-in.
+
+ -------------------------------------------------------------------------------------------------------------------------
+
+3. What are features of Spring ?
+
+    Lightweight:
+	    spring is lightweight when it comes to size and transparency. The basic version of spring framework is around 1MB. 
+	    And the processing overhead is also very negligible.
+    Inversion of control (IOC):
+	    Loose coupling is achieved in spring using the technique Inversion of Control. 
+	    The objects give their dependencies instead of creating or looking for dependent objects.
+    Aspect oriented (AOP):
+	    Spring supports Aspect oriented programming and enables cohesive development by separating application business logic from system services.
+    Container:
+	    Spring contains and manages the life cycle and configuration of application objects.
+    MVC Framework:
+	    Spring comes with MVC web application framework, built on core Spring functionality. 
+	    This framework is highly configurable via strategy interfaces, and accommodates multiple view technologies like JSP,
+	    Velocity, Tiles, iText, and POI. But other frameworks can be easily used instead of Spring MVC Framework.
+    Transaction Management:
+	    Spring framework provides a generic abstraction layer for transaction management. 
+	    This allowing the developer to add the pluggable transaction managers, and making it easy to demarcate transactions 
+	    without dealing with low-level issues. Spring's transaction support is not tied to J2EE environments 
+	    and it can be also used in container less environments.
+    JDBC Exception Handling:
+	    The JDBC abstraction layer of the Spring offers a meaningful exception hierarchy, which simplifies the error handling strategy. 
+	    Integration with Hibernate, JDO, and iBATIS: Spring provides best Integration services with Hibernate, JDO and iBATIS
+
+
+--------------------------------------------------------------------------------------------------------------------------
+
+
+4) How many modules are there in Spring? What are they?
+
+Spring Framework Modules
+
+       Spring comprises of seven modules. They are..
+
+    The core container:
+    The core container provides the essential functionality of the Spring framework. 
+    A primary component of the core container is the BeanFactory, an implementation of the Factory pattern. 
+    The BeanFactory applies the Inversion of Control (IOC) pattern to separate an application's configuration and dependency specification 
+    from the actual application code.
+
+    Spring context:
+    The Spring context is a configuration file that provides context information to the Spring framework. 
+    The Spring context includes enterprise services such as JNDI, EJB, e-mail, internalization, validation, and scheduling functionality.
+
+    Spring AOP:
+    The Spring AOP module integrates aspect-oriented programming functionality directly into the Spring framework, 
+    through its configuration management feature. As a result you can easily AOP-enable any object managed by the Spring framework. 
+    The Spring AOP module provides transaction management services for objects in any Spring-based application. 
+    With Spring AOP you can incorporate declarative transaction management into your applications without relying on EJB components.
+
+    Spring DAO:
+    The Spring JDBC DAO abstraction layer offers a meaningful exception hierarchy for managing the exception handling 
+    and error messages thrown by different database vendors. The exception hierarchy simplifies error handling and 
+    greatly reduces the amount of exception code you need to write, such as opening and closing connections. 
+    Spring DAO's JDBC-oriented exceptions comply to its generic DAO exception hierarchy.
+
+    Spring ORM:
+    The Spring framework plugs into several ORM frameworks to provide its Object Relational tool, including JDO, Hibernate, and iBatis SQL Maps. 
+    All of these comply to Spring's generic transaction and DAO exception hierarchies.
+
+    Spring Web module:
+    The Web context module builds on top of the application context module, providing contexts for Web-based applications. 
+    As a result, the Spring framework supports integration with Jakarta Struts. 
+    The Web module also eases the tasks of handling multi-part requests and binding request parameters to domain objects.
+
+    Spring MVC framework:
+    The Model-View-Controller (MVC) framework is a full-featured MVC implementation for building Web applications. 
+    The MVC framework is highly configurable via strategy interfaces and accommodates numerous view technologies 
+    including JSP, Velocity, Tiles, iText, and POI.
+
+--------------------------------------------------------------------------------------------------------------------------
+
+
+Maven Project Implementation steps:
+
+http://java-success.blogspot.com.au/2012/11/jsonp-and-jquery-with-spring-mvc.html
+
+ 
+
+ 
+
+
+---------------
+
+ 
+
+Question 3: what is Bean Factory, have you used XMLBeanFactory?
+
+Ans: BeanFactory is factory Pattern which is based on IOC design principles.
+it is used to make a clear separation between application configuration and dependency from actual code.
+
+XmlBeanFactory is one of the implementation of bean Factory which we have used in our project.
+
+org.springframework.beans.factory.xml.XmlBeanFactory is used to create bean instance defined in our xml file.
+
+BeanFactory factory = new XmlBeanFactory(new FileInputStream("beans.xml"));
+
+Or
+
+XmlBeanFactory factory = new XmlBeanFactory(new ClassPathResource("beans.xml"));
+
+ 
+
+---------------
+
+17) What are important ApplicationContext implementations in spring framework? 
+    ClassPathXmlApplicationContext – This context loads a context definition from an XML file located in the class path, treating context definition files as class path resources.
+    FileSystemXmlApplicationContext – This context loads a context definition from an XML file in the filesystem.
+    XmlWebApplicationContext – This context loads the context definitions from an XML file contained within a web application.
+ 
+	1. 	ClassPathXmlApplicationContext : It Loads context definition from an XML file located in the classpath, treating context definitions as classpath resources. The application context is loaded from the application's classpath by using the code .
+		ApplicationContext context = new ClassPathXmlApplicationContext("bean.xml");
+
+    2. 	FileSystemXmlApplicationContext : It loads context definition from an XML file in the filesystem. The application context is loaded from the file system by using the code .
+		ApplicationContext context = new FileSystemXmlApplicationContext("bean.xml");
+
+    3.	XmlWebApplicationContext : It loads context definition from an XML file contained within a web application.
+
+---------------
+
+Question 4: What are the difference between BeanFactory and ApplicationContext in spring?
+
+Answer : This one is very popular spring interview question and often asks in entry level interview. 
+ApplicationContext is preferred way of using spring because of functionality provided by it and interviewer wanted to check whether you are
+familiar with it or not.
+
+ApplicationContext  --         BeanFactory
+Here we can have more than one config files possible  ---  In this only one config file or .xml file
+Application contexts can publish events to beans that are registered as listeners ---- Doesn’t support.
+Support internationalization (I18N) messages  ---  It’s not
+Support application life-cycle events, and validation. -- Doesn’t support.
+Support  many enterprise services such JNDI access, EJB integration, remoting  --- Doesn’t support.
+
+ 
+
+---------------
+
+ 
+
+Question 5: What are different modules in spring?
+
+Answer : spring have seven core modules
+
+1.      The Core container module
+
+2.      Application context module
+
+3.      AOP module (Aspect Oriented Programming)
+
+4.      JDBC abstraction and DAO module
+
+5.      O/R mapping integration module (Object/Relational)
+
+6.      Web module
+
+7.      MVC framework module
+
+ 
+
+---------------
+
+ 
+
+Question 6: What is difference between singleton and prototype bean?
+
+ 
+
+Ans: This is another popular spring interview questions and an important concept to understand. 
+Basically a bean has scopes which defines their existence on the application
+
+Singleton: means single bean definition to a single object instance per Spring IOC container.
+
+Prototype: means a single bean definition to any number of object instances.
+
+Whatever beans we defined in spring framework are singleton beans. 
+There is an attribute in bean tag named ‘singleton’ if specified true then bean becomes singleton and 
+if set to false then the bean becomes a prototype bean. 
+By default it is set to true. 
+So, all the beans in spring framework are by default singleton beans.
+
+ 
+
+  <bean id="createNewStock"     class="springexample.stockMarket.CreateNewStockAccont" singleton=”false”>
+
+        <property name="newBid"/>
+
+  </bean>
+
+ 
+
+ 
+
+---------------
+
+ 
+
+Question 7: What type of transaction Management Spring support?
+
+Ans: This spring interview questions is little difficult as compared to previous questions just because transaction management is a 
+complex concept and not every developer familiar with it. Transaction management is critical in any applications that 
+will interact with the database. The application has to ensure that the data is consistent and the integrity of the data is maintained.  
+Two type of transaction management is supported by spring
+
+ 
+
+1. Programmatic transaction management
+
+2. Declarative transaction management.
+
+ 
+
+ 
+
+---------------
+
+ 
+
+Question 8: What is AOP?
+
+Answer : The core construct of AOP is the aspect, which encapsulates behaviors affecting multiple classes into reusable modules. 
+AOP is a programming technique that allows developer to modularize crosscutting concerns,  
+that cuts across the typical divisions of responsibility, such as logging and transaction management. 
+Spring AOP, aspects are implemented using regular classes or regular classes annotated with the @Aspect annotation
+
+ 
+
+---------------
+
+ 
+
+Question 9: Explain Advice?
+
+Answer: It’s an implementation of aspect; advice is inserted into an application at join points.
+Different types of advice include “around,” “before” and “after” advice
+
+ 
+
+ 
+
+---------------
+
+ 
+
+LDAP Active Directory Authentication in Java Spring Security Example Tutorial
+
+http://javarevisited.blogspot.sg/2011/11/ldap-authentication-active-directory.html
+
+ 
+
+---------------
+
+ 
+
+5) What is the Core container module?
+
+ 
+
+This module is provides the fundamental functionality of the spring framework. 
+In this module BeanFactory is the heart of any spring-based application. 
+The entire framework was built on the top of this module. This module makes the Spring container.
+
+ 
+
+---------------
+
+ 
+
+6) What is Application context module?
+
+ 
+
+The Application context module makes spring a framework. 
+This module extends the concept of BeanFactory, providing support for internationalization (I18N) messages, application lifecycle events, and validation.
+This module also supplies many enterprise services such JNDI access, EJB integration, remoting, and scheduling. 
+It also provides support to other framework.
+
+---------------
+
+ 
+
+7) What is AOP module?
+
+ 
+
+The AOP module is used for developing aspects for our Spring-enabled application.
+Much of the support has been provided by the AOP Alliance in order to ensure the interoperability between Spring and other AOP frameworks. 
+This module also introduces metadata programming to Spring. 
+Using Spring’s metadata support, we will be able to add annotations to our source code that instruct Spring on where and how to apply aspects.
+
+---------------
+
+ 
+
+8)What is JDBC abstraction and DAO module?
+
+ 
+
+Using this module we can keep up the database code clean and simple, and prevent problems that result from a failure to close database resources. 
+A new layer of meaningful exceptions on top of the error messages given by several database servers is bought in this module.
+In addition, this module uses Spring’s AOP module to provide transaction management services for objects in a Spring application.
+
+ 
+
+---------------
+
+ 
+
+9) What are object/relational mapping integration module?
+
+ 
+
+Spring also supports for using of an object/relational mapping (ORM) tool over straight JDBC by providing the ORM module. 
+Spring provide support to tie into several popular ORM frameworks, including Hibernate, JDO, and iBATIS SQL Maps. 
+Spring’s transaction management supports each of these ORM frameworks as well as JDBC.
+
+What is ORM?
+ORM stands for Object-Relational mapping.
+The objects in a Java class which is mapped in to the tables of a relational database 
+using the metadata that describes the mapping between the objects and the database.
+It works by transforming the data from one representation to another.
+
+---------------
+
+ 
+
+10) What is web module?
+
+ 
+
+This module is built on the application context module, providing a context that is appropriate for web-based applications. 
+This module also contains support for several web-oriented tasks such as transparently handling multipart requests for file 
+uploads and programmatic binding of request parameters to your business objects. It also contains integration support with Jakarta Struts.
+
+ 
+
+---------------
+
+ 
+
+11) What is web module?
+
+ 
+
+Spring comes with a full-featured MVC framework for building web applications. 
+Although Spring can easily be integrated with other MVC frameworks, such as Struts, Spring’s MVC framework uses IoC to provide for a clean 
+separation of controller logic from business objects. 
+It also allows you to decoratively bind request parameters to your business objects. 
+It also can take advantage of any of Spring’s other services, such as I18N messaging and validation.
+
+ 
+
+---------------
+
+ 
+
+Q: What are Lazily-instantiated beans?
+
+A:            Spring by default instantiate all beans at startup. This helps in overcoming any problems which came across while instantiating beans at startup only. But sometimes, some beans are not required to be initialized during startup, rather we want them to be initialized in later stages of application. For such beans, we include “lazy-init="true"” while configuring beans.
+
+<bean lazy-init="true">
+
+    <!-- this bean will not be pre-instantiated... -->
+
+</bean>
+
+ 
+
+---------------
+ 
+
+8. What are the types of Dependency Injection Spring supports?>
+
+ 
+
+    Setter Injection:
+
+    Setter-based DI is realized by calling setter methods on your beans after invoking a no-argument constructor or no-argument static factory method to instantiate your bean.
+
+ 
+
+    Constructor Injection:
+
+    Constructor-based DI is realized by invoking a constructor with a number of arguments, each representing a collaborator.
+
+ 
+
+---------------
+
+ 
+
+9. What is Bean Factory ?
+
+ 
+
+A BeanFactory is like a factory class that contains a collection of beans. The BeanFactory holds Bean Definitions of multiple beans within itself and then instantiates the bean whenever asked for by clients.
+
+ 
+
+    BeanFactory is able to create associations between collaborating objects as they are instantiated. This removes the burden of configuration from bean itself and the beans client.
+
+   BeanFactory also takes part in the life cycle of a bean, making calls to custom initialization and destruction methods.
+
+ 
+
+---------------
+
+ 
+
+10. What is Application Context?
+
+ 
+
+A bean factory is fine to simple applications, but to take advantage of the full power of the Spring framework, 
+you may want to move up to Springs more advanced container, the application context. 
+On the surface, an application context is same as a bean factory.
+Both load bean definitions, wire beans together, and dispense beans upon request. But it also provides:
+
+ 
+
+    A means for resolving text messages, including support for internationalization.
+
+    A generic way to load file resources.
+
+    Events to beans that are registered as listeners.
+
+ 
+
+---------------
+
+ 
+
+11. What is the difference between Bean Factory and Application Context ?  Important Question
+
+ 
+
+On the surface, an application context is same as a bean factory. But application context offers much more..
+
+ 
+
+    Application contexts provide a means for resolving text messages, including support for i18n of those messages.
+
+ 
+
+    Application contexts provide a generic way to load file resources, such as images.
+
+ 
+
+    Application contexts can publish events to beans that are registered as listeners.
+
+ 
+
+    Certain operations on the container or beans in the container, which have to be handled in a programmatic fashion with a bean factory, can be handled declaratively in an application context.
+
+ 
+
+    ResourceLoader support: Spring’s Resource interface us a flexible generic abstraction for handling low-level resources. An application context itself is a ResourceLoader, Hence provides an application with access to deployment-specific Resource instances.
+
+ 
+
+    MessageSource support: The application context implements MessageSource, an interface used to obtain localized messages, with the actual implementation being pluggable
+
+ 
+
+---------------
+
+ 
+
+12. What are the common implementations of the Application Context ?
+    
+ 
+
+---------------
+
+ 
+
+15. What do you mean by Bean wiring ?
+
+ 
+
+The act of creating associations between application components (beans) within the Spring container is reffered to as Bean wiring.
+
+ 
+
+---------------
+
+ 
+
+23. What are the ways to access Hibernate using Spring ?
+
+ 
+
+   There are two approaches to Spring’s Hibernate integration:
+
+ 
+
+    Inversion of Control with a HibernateTemplate and Callback
+
+    Extending HibernateDaoSupport and Applying an AOP Interceptor
+
+ 
+
+---------------
+
+ 
+
+24. How to integrate Spring and Hibernate using HibernateDaoSupport?
+
+ 
+
+   Spring and Hibernate can integrate using Spring’s SessionFactory called LocalSessionFactory. The integration process is of 3 steps.
+
+ 
+
+    Configure the Hibernate SessionFactory
+
+    Extend your DAO Implementation from HibernateDaoSupport
+
+    Wire in Transaction Support with AOP
+
+ 
+
+---------------
+
+ 
+
+33. What are the benefits of the Spring Framework transaction management ?
+
+ 
+
+   The Spring Framework provides a consistent abstraction for transaction management that delivers the following benefits:
+
+ 
+
+    Provides a consistent programming model across different transaction APIs such as JTA, JDBC, Hibernate, JPA, and JDO.
+
+    Supports declarative transaction management.
+
+    Provides a simpler API for programmatic transaction management than a number of complex transaction APIs such as JTA.
+
+    Integrates very well with Spring's various data access abstractions.
+
+ 
+
+---------------
+
+ 
+
+37. When to use programmatic and declarative transaction management ?
+
+ 
+
+   Programmatic transaction management is usually a good idea only if you have a small number of transactional operations.
+
+On the other hand, if your application has numerous transactional operations, declarative transaction management is usually worthwhile. It keeps transaction management out of business logic, and is not difficult to configure.
+
+ 
+
+---------------
+
+ 
+
+41. What is Springs JdbcTemplate ?
+
+ 
+
+Springs JdbcTemplate is central class to interact with a database through JDBC. JdbcTemplate provides many convenience methods for doing things such as converting database data into primitives or objects, executing prepared and callable statements, and providing custom database error handling.
+
+ 
+
+JdbcTemplate template = new JdbcTemplate(myDataSource);
+
+ 
+
+---------------
+
+ 
+
+42. What is PreparedStatementCreator ?
+
+ 
+
+   PreparedStatementCreator:
+
+ 
+
+    Is one of the most common used interfaces for writing data to database.
+
+    Has one method – createPreparedStatement(Connection)
+
+    Responsible for creating a PreparedStatement.
+
+    Does not need to handle SQLExceptions.
+
+ 
+
+ 
+
+---------------
+
+
+Interview Question:
+When we have to go for @Repository and @component? in Hibernate DAO Impl
+
+------------------------
+
+11) Difference between save and saveorupdate
+
+save() – This method in hibernate is used to stores an object into the database. It insert an entry if the record doesn’t exist, otherwise  not.
+
+saveorupdate () -This method in the hibernate is used for updating the object using identifier. If the identifier is missing this method calls save(). If the identifier exists, it will call update method.
+
+-------------------------
+
+13) How to invoke stored procedure in hibernate?
+
+{ ? = call thisISTheProcedure() }
+
+----------------------------------
+
+21) What is the hibernate proxy?
+
+An object proxy is just a way to avoid retrieving an object until you need it. Hibernate 2 does not proxy objects by default.
+
+------------------------------------
+
+26) Differentiate between .ear,  .jar and .war files.
+
+.jar files: These files are with the .jar(Java archive) extenstion. The .jar files contains the libraries, resources and accessories files like property files.
+.war files: These files are with the .war extension. The .war file contains jsp, html, javascript and other files for necessary for the development of web applications.
+.ear files: The .ear(enterprise archive) file contains the EJB modules of the application.
+
+
+------------------------------------
+
+27) What is the use of parent dependency in springboot application.
+28) Difference b/w @RequestMapping and @GETMapping
+29) 

@@ -1,0 +1,311 @@
+1.file:///F:/Mahesh/Spring/ajax/AJAX%20Create%20an%20XMLHttpRequest%20Object.htm
+2.file:///F:/Mahesh/Spring/ajax/AJAX%20Send%20an%20XMLHttpRequest%20To%20a%20Server.htm
+3.file:///F:/Mahesh/Spring/ajax/AJAX%20XMLHttpRequest%20Server%20Response.htm
+4.file:///F:/Mahesh/Spring/ajax/AJAX%20The%20XMLHttpRequest%20onreadystatechange%20Event.htm
+5.file:///F:/Mahesh/Spring/ajax/AJAX%20XML.htm
+
+
+They can call me (Arungandhi) on 9448813543 once they reach Cisco Building # 11 reception.
+
+
+JAXB = Java Architecture for XML Binding.
+AJAX = Asynchronous JavaScript and XML.
+
+AJAX is not a new programming language, but a new way to use existing standards.
+
+AJAX is the art of exchanging data with a server, and updating parts of a web page - without reloading the whole page.
+
+
+OnClick on Buttion:
+-------------------
+
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+function loadXMLDoc()
+{
+var xmlhttp;
+if (window.XMLHttpRequest)
+  {// code for IE7+, Firefox, Chrome, Opera, Safari
+  xmlhttp=new XMLHttpRequest();
+  }
+else
+  {// code for IE6, IE5
+  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  }
+xmlhttp.onreadystatechange=function()
+  {
+  if (xmlhttp.readyState==4 && xmlhttp.status==200)
+    {
+    document.getElementById("myDiv").innerHTML=xmlhttp.responseText;
+    }
+  }
+xmlhttp.open("GET","ajax_info.txt",true);
+xmlhttp.send();
+}
+</script>
+</head>
+<body>
+
+<div id="myDiv"><h2>Let AJAX change this text</h2></div>
+<button type="button" onclick="loadXMLDoc()">Change Content</button>
+
+</body>
+</html>
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+2 page:
+AJAX is Based on Internet Standards
+
+AJAX is based on internet standards, and uses a combination of:
+
+    XMLHttpRequest object (to exchange data asynchronously with a server)
+    JavaScript/DOM (to display/interact with the information)
+    CSS (to style the data)
+    XML (often used as the format for transferring data)
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+3 page:
+
+example of page 1
+
+4 page:
+The keystone of AJAX is the XMLHttpRequest object.
+
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+function loadXMLDoc()
+{
+var xmlhttp;
+if (window.XMLHttpRequest)
+  {// code for IE7+, Firefox, Chrome, Opera, Safari
+  xmlhttp=new XMLHttpRequest();
+  }
+else
+  {// code for IE6, IE5
+  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  }
+xmlhttp.onreadystatechange=function()
+  {
+  if (xmlhttp.readyState==4 && xmlhttp.status==200)
+    {
+    document.getElementById("myDiv").innerHTML=xmlhttp.responseText;
+    }
+  }
+xmlhttp.open("GET","ajax_info.txt",true);
+xmlhttp.send();
+}
+</script>
+</head>
+<body>
+
+<div id="myDiv"><h2>Let AJAX change this text</h2></div>
+<button type="button" onclick="loadXMLDoc()">Change Content</button>
+
+</body>
+</html>
+
+---------------------------------------------------------------------------------------------------------------------
+
+examples: An AJAX example with a callback function : Create a XMLHttpRequest with a callback function, and retrieve data from a TXT file. 
+
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+var xmlhttp;
+function loadXMLDoc(url,cfunc)
+{
+if (window.XMLHttpRequest)
+  {// code for IE7+, Firefox, Chrome, Opera, Safari
+  xmlhttp=new XMLHttpRequest();
+  }
+else
+  {// code for IE6, IE5
+  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  }
+xmlhttp.onreadystatechange=cfunc;
+xmlhttp.open("GET",url,true);
+xmlhttp.send();
+}
+function myFunction()
+{
+loadXMLDoc("ajax_info.txt",function()
+  {
+  if (xmlhttp.readyState==4 && xmlhttp.status==200)
+    {
+    document.getElementById("myDiv").innerHTML=xmlhttp.responseText;
+    }
+  });
+}
+</script>
+</head>
+<body>
+
+<div id="myDiv"><h2>Let AJAX change this text</h2></div>
+<button type="button" onclick="myFunction()">Change Content</button>
+
+</body>
+</html>
+
+-------------------------------------------------------------------------------------------------------------------------
+
+Create an XMLHttpRequest to retrieve data from an XML file and display the data in an HTML table. 
+
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+function loadXMLDoc(url)
+{
+var xmlhttp;
+var txt,x,xx,i;
+if (window.XMLHttpRequest)
+  {// code for IE7+, Firefox, Chrome, Opera, Safari
+  xmlhttp=new XMLHttpRequest();
+  }
+else
+  {// code for IE6, IE5
+  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  }
+xmlhttp.onreadystatechange=function()
+  {
+  if (xmlhttp.readyState==4 && xmlhttp.status==200)
+    {
+    txt="<table border='1'><tr><th>Title</th><th>Artist</th></tr>";
+    x=xmlhttp.responseXML.documentElement.getElementsByTagName("CD");
+    for (i=0;i<x.length;i++)
+      {
+      txt=txt + "<tr>";
+      xx=x[i].getElementsByTagName("TITLE");
+        {
+        try
+          {
+          txt=txt + "<td>" + xx[0].firstChild.nodeValue + "</td>";
+          }
+        catch (er)
+          {
+          txt=txt + "<td> </td>";
+          }
+        }
+      xx=x[i].getElementsByTagName("ARTIST");
+        {
+        try
+          {
+          txt=txt + "<td>" + xx[0].firstChild.nodeValue + "</td>";
+          }
+        catch (er)
+          {
+          txt=txt + "<td> </td>";
+          }
+        }
+      txt=txt + "</tr>";
+      }
+    txt=txt + "</table>";
+    document.getElementById('txtCDInfo').innerHTML=txt;
+    }
+  }
+xmlhttp.open("GET",url,true);
+xmlhttp.send();
+}
+</script>
+</head>
+<body>
+
+<div id="txtCDInfo">
+<button onclick="loadXMLDoc('cd_catalog.xml')">Get CD info</button>
+</div>
+
+</body>
+</html>
+
+-------------------------------------------------------------------------------------------------
+
+Retrieve header information of a resource (file). 
+
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+function loadXMLDoc(url)
+{
+var xmlhttp;
+if (window.XMLHttpRequest)
+  {// code for IE7+, Firefox, Chrome, Opera, Safari
+  xmlhttp=new XMLHttpRequest();
+  }
+else
+  {// code for IE6, IE5
+  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  }
+xmlhttp.onreadystatechange=function()
+  {
+  if (xmlhttp.readyState==4 && xmlhttp.status==200)
+    {
+    document.getElementById('p1').innerHTML=xmlhttp.getAllResponseHeaders();
+    }
+  }
+xmlhttp.open("GET",url,true);
+xmlhttp.send();
+}
+</script>
+</head>
+<body>
+
+<p id="p1">The getAllResponseHeaders() function returns the header information of a resource, like length, server-type, content-type, last-modified, etc.</p>
+<button onclick="loadXMLDoc('ajax_info.txt')">Get header information</button>
+
+</body>
+</html>
+
+---------------------------------------
+
+Retrieve specific header information of a resource (file). 
+
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+function loadXMLDoc(url)
+{
+var xmlhttp;
+if (window.XMLHttpRequest)
+  {// code for IE7+, Firefox, Chrome, Opera, Safari
+  xmlhttp=new XMLHttpRequest();
+  }
+else
+  {// code for IE6, IE5
+  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  }
+xmlhttp.onreadystatechange=function()
+  {
+  if (xmlhttp.readyState==4 && xmlhttp.status==200)
+    {
+    document.getElementById('p1').innerHTML="Last modified: " + xmlhttp.getResponseHeader('Last-Modified');
+    }
+  }
+xmlhttp.open("GET",url,true);
+xmlhttp.send();
+}
+</script>
+</head>
+<body>
+
+<p id="p1">The getResponseHeader() function is used to return specific header information from a resource, like length, server-type, content-type, last-modified, etc.</p>
+<button onclick="loadXMLDoc('ajax_info.txt')">Get "Last-Modified" information</button>
+
+</body>
+</html>
+
+----------------------------------------------------------------------------------
+
+
+	
+	

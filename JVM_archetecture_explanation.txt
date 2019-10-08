@@ -1,0 +1,13 @@
+JVM (Java Virtual Machine Archetecture) - Explanation:
+---------------------------------------
+
+https://www.youtube.com/watch?v=ZBJ0u9MaKtM
+- by Ranjith ramachandran
+
+Expined well - covered full video
+
+
+JVM main role:
+to load the classes and execute those.
+
+

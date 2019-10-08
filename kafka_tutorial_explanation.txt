@@ -1,0 +1,1131 @@
+
+kafka: very good in explanation
+
+https://www.youtube.com/playlist?list=PLkz1SCf5iB4enAR00Z46JwY9GGkaS2NON
+
+example:
+Spring Kafka Tutorial – Getting Started with the Spring for Apache Kafka
+http://howtoprogram.xyz/2016/09/23/spring-kafka-tutorial/
+github link source code : https://github.com/howtoprogram/apache-kafka-examples/tree/master/spring-kafka-example
+
+
+
+example:
+Stream Processing With Spring, Kafka, Spark and Cassandra - Part 3 
+http://msvaljek.blogspot.in/2015/12/stream-processing-with-spring-kafka_44.html
+sure code link:
+https://drive.google.com/open?id=0Bz9kDTTW0oRgWXdoTGFtM1dLelE 
+pwd: hello
+
+
+----------------------------------------------------------------------------------------------
+
+video : 1
+Kafka Tutorial - Inaugural 
+
+Not useful.
+
+
+----------------------------------------------------------------------------------------------
+
+
+video 2:
+Introduction
+
+- Kafka is a distributed streaming platform.
+- similar to message queue or enterprize messaging system.
+
+How messaging system works normally?
+
+diagram:
+
+Producer  ---> message broker ---> consumer.
+
+1. producer produces the messages and sends to message broker.
+2. message broker keeps a track on all received messages from different producers.
+3. consumer subscribes to these message brokers and receives (consuems) the meesages.
+
+kafka steaming:
+Kafka is so powerful regarding on through put and scalability that allows you to handle continuous steam of messages.
+
+kafka connectors:
+used to import data from databases to kafka
+and export data from kafka to databases.
+
+
+Summary of video:
+kafka is a distributed streaming platform.
+
+what it can do?
+1. it can be used as an enterprise messaging system.
+2. it can be used for stream processing.
+3. it also provides connectors to import and export bulk data from databases and other systems.
+	(applicatble for 3rd pt only, there is no pluggable frameworks to connectors we have to write our own logic with use of apis) 
+	
+
+Kafka API's:
+message will be send in the format of key and value pair. (but key is not mandatory)	
+----------------------------------------------------------------------------------------------
+
+video : 3_Kafka Tutorial - Core Concepts
+
+terms :
+1. producer : is an application send message to kafka server(or kafka broker)(for kafka message means array of bytes)
+2. consumer : is an application that reads data from kafka ( kafka server wont push the data to consumers until and unless consumers requested to the kafka server ie: consumer is the responsible to pull the data from kafka server or broker)
+3. broker : 
+4. cluster : A group of computers sharing workload for a common purpose.
+5. topic : A topic is a unique name for kafka stream.(giving unique name to given data set)
+			eg: consider flipkart application, muliple users loggedin to system and place different orders. consider the scenario of purchase of diff mobile models.
+			1. user1 (places MotoG) (producer)
+			2. user2 (purchase Samsung)
+			3. user3 (purchase MotoG)
+			4. user4 (purchase iphone)
+			
+			in the above case in kafka cluster we have 3 topics 
+			1. for motog topic
+			2. for samsung topic
+			3. for iphone topic
+			
+			respective manufacturer(consumer) subscribes to relevant topic and pull the order details and do deliver.
+			means: motog manufacturer subscribes to motogtopic and pull order details like that.
+6. partitions : As we know broker saves the data which coming from multiple producers, some times it might be more size of data which not able to put in one system. so, in this case they do portitioin the given topic and saves data in multiple systems of cluster.
+
+now question is how many partions do we need for a particular topic?
+Ans: its totally depend on the requirement and programmer decision.(kafka server wont calculate)
+
+while creating the partitions we have to keep one point in mind that how many systems are exist in the cluster based on that we can judge how many partitions we can able to create.
+
+Note: the number of partitions should not exceed the number of systems in the cluster.
+
+
+7. offset : a sequence id given to messages as they arrive in a partition.
+offsets are local to the partitions, there is no concept of global offsets.
+(as we are partitioning one topic to multiple partitions, you might think there is a concept of global offset but it doesnt exist.)
+
+to find the particular message, we must know the following three things.
+(a) topic name 	(b) partition number 	(c) offsets
+
+8. consumer groups : a group of consumers acting as a single logical unit.
+- kafka won't allow two consumers to read data from same partition.(to eliminate double reading)
+- the number of consumers in consumergroup should not exceed the number of partitions of a topic.
+- the number of partions and the size of consumergroup are the tool for scalability.
+
+
+----------------------------------------------------------------------------------------------
+
+video : 4_Kafka Tutorial - Quick Start Demo
+
+1. download and install apache kafka
+2. start kafka server
+3. create a topic
+4. start a console producer
+5. start a console consumer
+6. send and receive messages.
+
+
+apache zookeeper used to provide some co-ordinations services to distributed system.
+since kafka is distributed system and have multiple brokers so we need a system to 
+co-ordinate various things among these brokers that's why we need zookeeper.
+
+before staring kafka server we need to start the zookeeper.
+open a cmd prompt1:
+cmd to start zookeeper:
+d:/mahesh/kafka> bin/zookeeper-server-start.sh config/zookeeper.properties
+
+default it will run on port : 2181 : (its required, when we start the kafka broker)
+
+open cmd prompt2:
+cmd to start kafka broker:
+d:/mahesh/kafka> bin/kafka-server-start.sh config/server.properties
+
+
+open cmd prompt3:
+cmd to create topic:
+d:/mahesh/kafka> bin/kafka-topics.sh --zookeeper localshot:2181 --create --topic myFirstTopic1 --partions 2 --replication-factor 1 
+
+Q) here the question is, based on above cmds we started only  one kafka broker(cmd prompt2) and while creating topic giving partitions as 2 (two) how it will work out.
+Ans: thats not a problem, kafka will try to distribute partition evenly over the available brokers. in our case we have only one broker so two partitions will be created under same machine.
+
+open cmd prompt4:
+cmd to create producer:
+d:mahesh/kafka> bin/kafka-console-producer.sh --broker-list localhost:9092 --topic MyFirstTopic
+msg1 (type messages which u want to produce and click enter)
+msg2
+msg3
+
+open cmd prompt5:
+cmd to create consumer:
+d:/mahesh/kafka> bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic MyFirstTopic
+msg1 (here u will receive all msgs are typed in cmd prompt4)
+msg2
+msg3
+
+
+----------------------------------------------------------------------------------------------
+
+video : 5_Kafka Tutorial - Fault Tolerance
+
+Q) what is fault tolerance?
+Ans: Enabling a system to continue operating properly in the event of the failure of some of its components.
+
+making your data available in case of failure. (using replication factor we can solve the problem)
+- we have to set the replication factor on topic level (not on partition level)
+
+- kafka follows the leader and follower methodology to replicate (or copy) data on other servers/brokers.
+- leader is the resposible to receives the msg from producer and send the acknowledgement to the producer and also responsible to read the consumer and request and send the response to consumer.
+- Based on 'replication factor' kafka itself will find the followers and keeps the copy of msg in those followers partitions(followers wont interact with producer and consumer and will do copy data from leader).
+
+* to start the kafka server we need one server.properties.
+ means we cant start multiple kafka brokers with user of single server.properites.
+ - if you would like to start multiple brokers on single system then you must and should have the same number of server.properties files.
+ 
+ eg: if would like to start 3 kafka broker then u need three server.properties
+ cmds: bin/kafka-server-start.sh config/server.properites  (first broker)
+		bin/kafka-server-start.sh config/server-1.properites (second broker)
+		bin/kafka-server-start.sh config/server-2.properites  (third broker)
+		
+* the properties which you need to change while starting multiple brokers in server.properties are
+changes in server.properites:
+-------------------------------
+1. broker.id=0
+2. listeners=PLAINTEXT://:9092  ( as we are starting multiple brokers on the same machine we need to change this property other wise its not required to change.)
+3. log.dirs=/tmp/kafka-logs
+
+changes in server-1.properites:
+-------------------------------
+1. broker.id=1
+2. listeners=PLAINTEXT://:9093  ( as we are starting multiple brokers on the same machine we need to change this property other wise its not required to change.)
+3. log.dirs=/tmp/kafka-logs-1
+
+changes in server-2.properites:
+-------------------------------
+1. broker.id=2
+2. listeners=PLAINTEXT://:9094  ( as we are starting multiple brokers on the same machine we need to change this property other wise its not required to change.)
+3. log.dirs=/tmp/kafka-logs-2		
+ 
+ 
+  
+scenario : to check the replication factor we are starting 3 brokers and keeping replication factor as 3 and see the data is exist in all three brokers or not.
+1 step: start first broker
+	bin/kafka-server-start.sh config/server.properites
+
+2 step: start second broker
+	bin/kafka-server-start.sh config/server-1.properites
+
+3 step: start third broker
+	bin/kafka-server-start.sh config/server-2.properites
+	
+4 step: create topic 	
+	bin/kafka-topics.sh --zookeeper localhost:2181 --create --topic TestTopicXYZ --partitions 2 --replication-factor 3
+
+	kafka topic managementtool to check the details of any topic on broker.
+	cmd:
+	bin/kafka-topics.sh --zooker localhost:2181 --describe --topic TestTopicXYZ
+	o/p: 
+	Topic:TestTopicXYZ		PartitionCount:2 	ReplicationFactor:3 Conigs:
+			Topic: TestTopicXYZ 	partition:0  	leader:1  	Replicas: 1,2,0 Isr: 1,2,0
+			Topic: TestTopicXYZ		partition:1 	leader:2 	Replicas: 2,0,1 Isr: 2,0,1
+			
+	explanation: 
+		Topic: TestTopicXYZ 	partition:0  	leader:1  	Replicas: 1,2,0 Isr: 1,2,0
+		- In above example we have three brokers with names 0, 1, 2.
+		- and created topic with partition as 2, partitions are created in brokers 1 and 2 (in broker 0 partition not created)
+		means for the topic 'TestTopicXYZ' messages will be saved in broker1 and broker2.
+		- as we given replication factor 3 - we have to keep data in 3 brokers.
+			as partitions are created under brokers 1 and 2 these brokers are acted as leader for each partition respectively
+			and the remaing two acts as followers.
+			for partion 0 ==> leader is broker 1 and followers are broker 2 and broker 0
+			for partition 1 ==> leader is broker 2 and followers are broker 0 and broker 1
+		Isr will explain that, which are all brokers are sync with respect to the data.	
+		
+----------------------------------------------------------------------------------------------
+
+video : 6_Kafka Tutorial - Broker Configurations
+
+documentation: https://kafka.apache.org/documentation#configuration 
+
+list of important configurations which we need to know:
+1. broker.id
+2. port
+3. log.dirs
+4. zookeeper.connect
+5. delete.topic.enable 
+6. auto.create.topics.enable 
+7. default.replication.factor 
+8. num.partitions 
+9. log.retentions.ms 
+10. log.retentions.bytes 
+
+
+
+zookeeper.connect : holds zookeeper address.
+- this parameter required to create a cluster.
+- as brokers are running on different servers to bridge the communication among all, brokers will use the 'zookeeper.connect' property.
+(based on zookeeper.connect property each broker came to know that to which cluster they belongs)
+
+
+delete.topic.enable :  default value for this property is 'false'.
+with use of topic managementtool (topics.sh) we can remove the topic from cluster.
+But the property (delete.topic.enable=false) as defined defaultly  with 'false' we cant able to remove or delete topic from cluster. In this case you have to chagne value from 'false' to 'true' and then delete topic with use of topic managementtool.
+
+
+auto.create.topics.enable : (default value for this property is 'true')
+- in prod recommanded to keep it as 'false'.
+Becoz, as we know that when producer send the messages to topic which is not exist in the cluster,
+kafka itself creates the topic and push the msgs to that topic as the feature enabled as defaultly.
+
+
+default.replication.factor: (defautl value is 1)
+num.partitions : (defautl value is 1)
+
+
+
+log.retention.ms : (default value is 7 days)
+log.retention.bytes : (not sure about default size, we can keep the size in terms of bytes this property related to partition size not on topic size).
+- above two properties useful to retain the msg in topic.
+
+	we can choose any one of the above option to retain the message in the topic irrespective of msg is consumed by the consumer or not.
+	
+	
+----------------------------------------------------------------------------------------------
+
+video : 7_Kafka Tutorial - Producer API
+
+
+1. we can use to solve complex data integration problem
+2. we can use to create a series of validations, transformations and built complex data pipe lines.
+3. we can use it to record information for later consumption (for example click history)
+4. we can use it log transactions and create applications to respond in real time
+5. we can use it to collect data from mobile phones, smart appliances and sensors in IOTs.
+
+https://kafka.apache.org/090/javadoc/index.html?org/apache/kafka/clients/producer/KafkaProducer.html
+
+git hub location:
+https://github.com/LearningJournal/ApacheKafkaTutorials/blob/master/ProducerExamples/SimpleProducer.java
+https://github.com/apache/kafka/tree/trunk/clients/src/main/java/org/apache/kafka/clients/producer
+
+
+SimpleProducer.java
+--------------------
+import java.util.*;
+import org.apache.kafka.clients.producer.*;
+public class SimpleProducer {
+  
+   public static void main(String[] args) throws Exception{
+           
+      String topicName = "SimpleProducerTopic";
+	  String key = "Key1";
+	  String value = "Value-1";
+      
+      Properties props = new Properties();
+      props.put("bootstrap.servers", "localhost:9092,localhost:9093"); // nothing but list of kafka brokers
+      props.put("key.serializer","org.apache.kafka.common.serialization.StringSerializer");         
+      props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+	        
+      Producer<String, String> producer = new KafkaProducer <>(props);
+	
+	  ProducerRecord<String, String> record = new ProducerRecord<>(topicName,key,value);
+	  producer.send(record);	       
+      producer.close();
+	  
+	  System.out.println("SimpleProducer Completed.");
+   }
+}
+
+
+
+step1: create kafka producer object
+	props.put("bootstrap.servers", "localhost:9092,localhost:9093"); // nothing but list of kafka brokers(not required to keep all brokers)
+	recommanded two brokers (if one fail other will work).
+step 2: create a producerRecord object. (nothing but message in our case)
+step 3 : send the producerRecord object.
+
+kafka broker maintains the time stamp for each message. 
+means: The timestamp is the point of time when broker receives the msg from the producer. The timestamp wont be equalent to the timestamp of msg created.
+
+over loadded methods of producerRecord:
+---------------------------------------
+1. ProducerRecord<>(topicName,key,value);
+2. ProducerRecord<>(topicName,value);
+3. ProducerRecord<>(topicName,partition, key,value);
+4. ProducerRecord<>(topicName,partitionNumber,timestamp,key,value); // this is overloadded method, while creating the msg obj we can assign the timestamp. this timestamp would be greater than the timestamp assigned by the broker when it received from producer.
+
+----------------------------------------------------------------------------------------------
+
+video : 8_Kafka Tutorial   Producer Workflow
+
+Explained how a msg reaches to a broker.
+
+what will happen when we call producer.send(record);?
+1. producer will do serialize the key and value objects (to byte arrys)
+2. serializer send it to partitioner, partitioner will choose the correct partition (assign partition number)
+	if you wont mention key then partitioner will choose default partition (assign default partition number)
+	if you mention the key then partitioner calculates the hash on key object based on value will choose the right partition. 
+3. partitioner will saves the record in partition buffer (the buffer size can be configured while creating the producer object)
+4. finally like batch(all producer records(msgs) which are exist int partition butter) will send to the the broker.
+5. Once broker recevies successfully the producer records it weill send the 'success acknowledgement' to the producer else it will send the error message to the producer. Based on error type the records might go for retry (if error is recoverable type). 
+	we can configure the paramerts like how many times it has to go for retry or after how much time it has to retrigger ....
+	(producer configuration properties)
+
+	
+----------------------------------------------------------------------------------------------
+
+video : 9_Kafka Tutorial - Callback & Acknowledgment
+
+	
+ 	there are 3 ways to send messages to kafka broker.
+	1. fire and forget 
+	2. synchronous send
+	3. asynchronous send
+	
+	fire and send : if you think msg is very critical and imp then dont use this approach.
+	In this approach there is a chance of lossing data(% would be very low) becoz kafka was developed as no-tolerance feature.
+	
+	synchronous send: 
+	- in case of success we will get record meta data information.
+	- in case of failure we will get exception.
+	- You can choose this approach when msg is critical. This approach make to slow down the through put becoz we have to wait for acknowledgement.
+	
+	code snippet:
+	-------------
+	
+	---- same code above program
+	// only change at send method with return type.
+	Producer<String, String> producer = new KafkaProducer <>(props);
+
+          ProducerRecord<String, String> record = new ProducerRecord<>(topicName,key,value);
+
+      try{
+           RecordMetadata metadata = producer.send(record).get();
+           System.out.println("Message is sent to Partition no " + metadata.partition() + " and offset " + metadata.offset());
+           System.out.println("SynchronousProducer Completed with success.");
+      }catch (Exception e) {
+           e.printStackTrace();
+           System.out.println("SynchronousProducer failed with an exception");
+      }finally{
+           producer.close();
+      }
+	  
+	  
+	  asynchronous send:
+	  - if acknowledgement has exception handle it.
+	  - if acknowledgement has no exception ignore it.
+	  - based on configuration we can limit on how many number of msg can send to broker asynchronously. 
+		ie: max.in.flight.requests.per.connection (default value is 5) 
+		we can increase this value but we have to consider few more points those he explained in later vedios.
+	  - asynchronous send will give you better throghput comapre to synchronous(synchronous send has to wait for acknowledgement)	
+		
+	  
+	  code snippet:
+	  // same as above.. diff at send method.
+	   producer.send(record, new MyProducerCallback());  // call back method implementation.
+      System.out.println("AsynchronousProducer call completed");
+      producer.close();
+	}}
+   
+    class MyProducerCallback implements Callback{
+
+       @Override
+       public  void onCompletion(RecordMetadata recordMetadata, Exception e) {
+        if (e != null)
+            System.out.println("AsynchronousProducer failed with an exception");
+                else
+                        System.out.println("AsynchronousProducer call Success:");
+       }
+   }
+	  
+	
+----------------------------------------------------------------------------------------------
+
+video : 10_Kafka Tutorial - Custom Partitioner
+
+Default partitioner:
+1. if the partition is specified in the record, use it.
+2. if no partion is specified, but key is present choose a partition based on a hash of the key.
+3. if no partition or key is present choose a partition in a round-robin fashion.
+
+Q) when to choose default partitioner?
+Ans: there are 3 scenarios leads to choose default partitioner, those are
+1. if you don't care about in which partition data is landing.
+
+
+Q) why do we have to choose custom partitioner, even though we have a default partitioner to choose a partition?
+Ans:
+	Based on follwing two problem scenarios, default partitioner will fail to choose the correct partition to save the data. So it leads to write our own custom partitioner logic.
+	
+	(problem1)
+	consider following problem.
+	thre are 3 tables named as TableA,TableB and TableC now you would like to send all records of one table to any one partitioner.
+	like TableA --> records to --> partition1
+		 TableB --> records to --> partition2
+		 TableC --> records to --> partition3
+	
+	Based on problem you might think better to send key as 'table name' while creating the producerRecord so that all records of particular table will be saved into one particular partition. But some times it wont be happen, becoz we will get same partition number even though keys are different ( partition will be choosen based on hashing of key, means there is a chance of probability to get the same hash code for two different keys.) in this scenario two different tables data will be saved into single partition (this is problem 1).
+	
+	(problem2)
+	//hash the keybytes to choose a partition
+	return Utils.toPositive(Utils.murmur2(keybytes))%numPartitions; (numPartitions = total num of partitions on a topic)
+	
+	the partition number is the mod of the hash value of the key and that total number of partitions on the topic, so if you are increasing the number of partitions on your topic the default partitioner will start returning different numbers that may be the problem if you are relying on a key for achieving a particular partition. (this is problem 2)   
+	
+		
+	Based on above two problems better to write our own custom partitioner.
+	ex: if application demands such a way that few specific types msgs always should be saved in specific partitions then we have to implement the custom partitioner logic to choose partition.
+
+ 	
+	
+	sample code:
+	https://github.com/LearningJournal/ApacheKafkaTutorials/blob/master/ProducerExamples/SensorProducer.java
+	
+	SensorProducer.java:
+	---------------------
+	import java.util.*;
+	import org.apache.kafka.clients.producer.*;
+	public class SensorProducer {
+
+	   public static void main(String[] args) throws Exception{
+
+		  String topicName = "SensorTopic";
+
+		  Properties props = new Properties();
+		  props.put("bootstrap.servers", "localhost:9092,localhost:9093");
+		  props.put("key.serializer","org.apache.kafka.common.serialization.StringSerializer");
+		  props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+		  props.put("partitioner.class", "SensorPartitioner");
+		  props.put("speed.sensor.name", "TSS");
+
+		  Producer<String, String> producer = new KafkaProducer <>(props);
+
+			 for (int i=0 ; i<10 ; i++)
+			 producer.send(new ProducerRecord<>(topicName,"SSP"+i,"500"+i));
+
+			 for (int i=0 ; i<10 ; i++)
+			 producer.send(new ProducerRecord<>(topicName,"TSS","500"+i));
+
+		  producer.close();
+
+			  System.out.println("SimpleProducer Completed.");
+	   }
+	}
+	
+	
+	
+	SensorPartitioner.java
+	------------------------
+	import java.util.*;
+	import org.apache.kafka.clients.producer.*;
+	import org.apache.kafka.common.*;
+	import org.apache.kafka.common.utils.*;
+	import org.apache.kafka.common.record.*;
+
+	public class SensorPartitioner implements Partitioner {
+
+		 private String speedSensorName;
+
+		 // below method will be called only once while creating the producer object. its similar to initializer method.
+		 public void configure(Map<String, ?> configs) { 
+			  speedSensorName = configs.get("speed.sensor.name").toString();
+
+		 }
+
+		 public int partition(String topic, Object key, byte[] keyBytes, Object value, byte[] valueBytes, Cluster cluster) {
+
+			   List<PartitionInfo> partitions = cluster.partitionsForTopic(topic);
+			   int numPartitions = partitions.size();
+			   int sp = (int)Math.abs(numPartitions*0.3);
+			   int p=0;
+
+				if ( (keyBytes == null) || (!(key instanceof String)) )
+					 throw new InvalidRecordException("All messages must have sensor name as key");
+
+				if ( ((String)key).equals(speedSensorName) )
+					 p = Utils.toPositive(Utils.murmur2(valueBytes)) % sp;
+				else
+					 p = Utils.toPositive(Utils.murmur2(keyBytes)) % (numPartitions-sp) + sp ;
+
+					 System.out.println("Key = " + (String)key + " Partition = " + p );
+					 return p;
+	  }
+	    // below method will be called only once while creating the producer object. its similar to cleaning activity method.
+		  public void close() {}
+
+	}
+	
+	
+----------------------------------------------------------------------------------------------
+
+video : 11_Kafka Tutorial   Custom Serializer
+
+In built kafka serializers are four. Those are
+1. IntegerSerializer
+2. DoubleSerializer
+3. LongSerializer
+4. StringSerializer
+
+If you would like to send custom object as message to kafka server then above four serializers wont suitable for our custom object so we have to go for customSerializer.
+
+Example : Serialize and Deserialize
+step1. create a supplier class 
+step2. create a producer
+step3. create a serializer
+step4. create a deserilizer
+step5. create a consumer
+
+
+https://github.com/LearningJournal/ApacheKafkaTutorials/blob/master/ProducerExamples/Supplier.java
+Supplier.java
+-------------
+public class Supplier{
+        private int supplierId;
+        private String supplierName;
+        private Date supplierStartDate;
+
+        public Supplier(int id, String name, Date dt){
+                this.supplierId = id;
+                this.supplierName = name;
+                this.supplierStartDate = dt;
+        }
+		// all getters
+}		
+
+https://github.com/LearningJournal/ApacheKafkaTutorials/blob/master/ProducerExamples/SupplierSerializer.java
+SupplierSerializer.java
+------------------------
+import org.apache.kafka.common.serialization.Serializer;
+import org.apache.kafka.common.errors.SerializationException;
+import java.io.UnsupportedEncodingException;
+import java.util.Map;
+import java.nio.ByteBuffer;
+
+public class SupplierSerializer implements Serializer<Supplier> {    // this line important
+    private String encoding = "UTF8";
+
+    @Override
+    public void configure(Map<String, ?> configs, boolean isKey) {
+                // nothing to configure
+    }
+
+    @Override
+    public byte[] serialize(String topic, Supplier data) {
+
+                int sizeOfName;
+                int sizeOfDate;
+                byte[] serializedName;
+                byte[] serializedDate;
+
+        try {
+            if (data == null)
+                return null;
+                            serializedName = data.getName().getBytes(encoding);
+                                sizeOfName = serializedName.length;
+                                serializedDate = data.getStartDate().toString().getBytes(encoding);
+                                sizeOfDate = serializedDate.length;
+
+                                ByteBuffer buf = ByteBuffer.allocate(4+4+sizeOfName+4+sizeOfDate);
+                                buf.putInt(data.getID());
+                                buf.putInt(sizeOfName);
+                                buf.put(serializedName);
+                                buf.putInt(sizeOfDate);
+                                buf.put(serializedDate);
+
+
+                return buf.array();
+
+        } catch (Exception e) {
+            throw new SerializationException("Error when serializing Supplier to byte[]");
+        }
+    }
+
+    @Override
+    public void close() {
+        // nothing to do
+    }
+}
+
+https://github.com/LearningJournal/ApacheKafkaTutorials/blob/master/ProducerExamples/SupplierDeserializer.java
+SupplierDeserializer.java
+--------------------------
+import java.nio.ByteBuffer;
+import java.util.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import org.apache.kafka.common.errors.SerializationException;
+import org.apache.kafka.common.serialization.Deserializer;
+import java.io.UnsupportedEncodingException;
+import java.util.Map;
+
+public class SupplierDeserializer implements Deserializer<Supplier> {
+    private String encoding = "UTF8";
+
+    @Override
+    public void configure(Map<String, ?> configs, boolean isKey) {
+                //Nothing to configure
+        }
+
+    @Override
+    public Supplier deserialize(String topic, byte[] data) {
+
+        try {
+            if (data == null){
+                System.out.println("Null recieved at deserialize");
+                                return null;
+                                }
+            ByteBuffer buf = ByteBuffer.wrap(data);
+            int id = buf.getInt();
+
+            int sizeOfName = buf.getInt();
+            byte[] nameBytes = new byte[sizeOfName];
+            buf.get(nameBytes);
+            String deserializedName = new String(nameBytes, encoding);
+
+            int sizeOfDate = buf.getInt();
+            byte[] dateBytes = new byte[sizeOfDate];
+            buf.get(dateBytes);
+            String dateString = new String(dateBytes,encoding);
+
+            DateFormat df = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy");
+
+            return new Supplier(id,deserializedName,df.parse(dateString));
+
+
+
+        } catch (Exception e) {
+            throw new SerializationException("Error when deserializing byte[] to Supplier");
+        }
+    }
+
+    @Override
+    public void close() {
+        // nothing to do
+    }
+}
+
+here we have to remember one point: is that : currently we have only 3 properties in supplier object in future if you add extra one more property to the supplier class what will happen? 
+Ans: in this case our serialization and deserialization will get failed, so we have to modify these logic based on number of properites in custom object and also we have to make changes in producer and consumer classes as well. As we made the changes in current serialisers and deserialize classes with use of these updated classes you cant read the old supplier objects reside in the topic this is one more drawback.
+
+So, this approach is not the correct one, to overcome from this we have one more approach that is 'Generic serialisers like abro will be helpful' in such cases.
+
+https://github.com/LearningJournal/ApacheKafkaTutorials/blob/master/ProducerExamples/SupplierProducer.java
+SupplierProducer.java
+---------------------
+import java.util.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import org.apache.kafka.clients.producer.*;
+public class SupplierProducer {
+
+   public static void main(String[] args) throws Exception{
+
+      String topicName = "SupplierTopic";
+
+      Properties props = new Properties();
+      props.put("bootstrap.servers", "localhost:9092,localhost:9093");
+      props.put("key.serializer","org.apache.kafka.common.serialization.StringSerializer");
+      props.put("value.serializer", "SupplierSerializer"); // 1st change at SupplierSerializer
+
+      Producer<String, Supplier> producer = new KafkaProducer <>(props); // 2nd change at Producer<String, Supplier>
+
+          DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+          Supplier sp1 = new Supplier(101,"Xyz Pvt Ltd.",df.parse("2016-04-01"));
+          Supplier sp2 = new Supplier(102,"Abc Pvt Ltd.",df.parse("2012-01-01"));
+
+         producer.send(new ProducerRecord<String,Supplier>(topicName,"SUP",sp1)).get();
+         producer.send(new ProducerRecord<String,Supplier>(topicName,"SUP",sp2)).get();
+
+                 System.out.println("SupplierProducer Completed.");
+         producer.close();
+
+   }
+}
+
+https://github.com/LearningJournal/ApacheKafkaTutorials/blob/master/ProducerExamples/SupplierConsumer.java
+SupplierConsumer.java
+---------------------
+import java.util.*;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+
+public class SupplierConsumer{
+
+        public static void main(String[] args) throws Exception{
+
+                String topicName = "SupplierTopic";
+                String groupName = "SupplierTopicGroup";
+
+                Properties props = new Properties();
+                props.put("bootstrap.servers", "localhost:9092,localhost:9093");
+                props.put("group.id", groupName);
+                props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+                props.put("value.deserializer", "SupplierDeserializer");
+
+
+                KafkaConsumer<String, Supplier> consumer = new KafkaConsumer<>(props);
+                consumer.subscribe(Arrays.asList(topicName));
+
+                while (true){
+                        ConsumerRecords<String, Supplier> records = consumer.poll(100);
+                        for (ConsumerRecord<String, Supplier> record : records){
+                                System.out.println("Supplier id= " + String.valueOf(record.value().getID()) + " Supplier  Name = " + record.value().getName() + " Supplier Start Date = " + record.value().getStartDate().toString());
+                        }
+                }
+
+        }
+}
+
+
+
+----------------------------------------------------------------------------------------------
+
+video : 12_Kafka Tutorial - Producer Configs
+
+recap of all above videos related to producer.
+
+kafka producer configuration:
+1. bootstrap.server ---> kafka broker names (to connect to kafka cluster)
+2. key.serializer
+3. value.serializer
+4. partitioner.class ---> custom partitioner
+
+3 more imp configurations : these have a direct impact on reliability and performace of kafka.
+5. acks ---> for acknowledgement values are (0, 1, all)
+	if acks=0 => No acknowledgement may causes
+				 - Possible loss of messages
+				 - high throughput
+				 - no retries
+	if acks=1 => producer will wait for response. 
+				leader will send the response once it receives from producer and it wont check the follower received the data or not.
+				 - possbile loss of message (chance of loosing msg is thinner compare wiht above)
+					it might happen when leader will crash while reading data, in this case even replicas also wont have the copy of data becoz followers do get copy from leader.
+	if acks=all => broker will send the response to user after successfull data replication at 	follwers side as well.	So, this is more reliable.
+				- but slow downs the throughput.
+6. retries : default value is zero
+	there is another parameter ie: 'retry.backof.ms' that controlls the time between two retires. default value is : 100 ms. 
+7. max.in.flight.requests.per.connection : curcial
+	- this property useful only if we are using 'asynchronous callback approach' while sending the data to kafka.
+	- if u have enough memory then assign large value to this property, so that it leads to high thoroughput as well.
+	- with asynchronous approcah - you may loose the order how you send the messages to kafka.
+		scenario: u send two msg to kafka asynchronously.
+		assume first msg failed while sending and second send successfully as first failed it will retry sending the failed one this time it succeed. in this case order at receiver side of msgs is '2nd and 1st' but expectation is '1st and 2nd'.
+		
+If you think order of sending msgs are important then keep in mind the follwoing two things.
+1. Use synchronous send
+2. max.in.flight.requests.per.connection=1.
+(banks and inventory applications should use the above two configurations.)
+
+Few more imp configurations are : (following are not explained in video)
+- buffer.memory
+- compression.type
+- batch.size
+- linger.ms
+- client.id
+- max.request.size
+
+----------------------------------------------------------------------------------------------
+
+video : 13_Kafka Tutorial - Consumer Groups
+
+how do we read  in parallel?
+meaning that how to parallel read in a single application?
+kafka wont support parallel read of same topic by multiple applications at a time.(it is not about two applications reading in parallel).
+
+Limitation is that:
+for better through put - no of partitions == consumer group size
+
+no of partions on topic			size of group
+------------------------        ---------------
+4                                4         ===> each consumer read one partition
+4                                3         ===> might : 0 - 1 consumer
+														1 - 2 consumer
+														2,3 - 3 (consumer)
+
+4                               5          ===> might : 1 consumer wont read any partition.
+														0  - 1
+														1 -  2
+														2  - 3 
+														3  - 4
+														as partitions no more final 5th consumer wont read data from any partition.
+
+
+jhie
+
+Q) how consumer enter / exit groups?
+Ans: group co-ordinator will take care of 'things need to do' when new consumer added to the group or exit from the group.
+the activities like 
+- which are all partitions needs to be assigned to the new consumer to consume.
+- if consumer left from group, then lefted consumer partition assigned to any one of the running consumer.
+- re-arranging partition assignments in the existing group consumers.
+
+Co-ordinator : one of the kafka broker elected as a co-ordinator. (assue in cluster u have 5 broker among those one elected as co-ordinator)
+when consumer wants to add in the group it sends the request to the co-ordinator. Later co-ordinator makes consumer as leader in the group.
+Leader : the first added consumer in the group acts as leader.
+
+Co-ordinator Responsibilities:
+------------------------------
+- Manage the list of group members (consumers)
+- initiates a rebalance activity (assignment of partitions to consumers when ever new consumer added to the group or consumer left from the group)
+- communicate about new assignment to consumer.
+
+Note that: while in 'initiation of rebalance activity' kafka brokers block the read for all members (consumers).
+
+Leader Responsibilities:
+------------------------
+- executes the rebalance activity.
+- sends new partition assignment to co-ordinator.
+
+ 
+summary of video:
+- consumer groups : used to read and process data in parallel
+- partitions : are never shared among members of same group at the same time.
+- group co-ordinator : maintains a list of active consumers.
+- rebalance : initiated when the list of consumers is modified.
+- group leader : executes a rebalance activity.
+
+
+----------------------------------------------------------------------------------------------
+
+video : 14_Kafka Tutorial CreatingConsumer
+
+
+SupplierConsumer.java
+----------------------
+import java.util.*;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+
+public class SupplierConsumer{
+
+        public static void main(String[] args) throws Exception{
+
+                String topicName = "SupplierTopic";
+                String groupName = "SupplierTopicGroup";
+
+                Properties props = new Properties();
+                props.put("bootstrap.servers", "localhost:9092,localhost:9093");
+                props.put("group.id", groupName);  // consumer group name.
+                props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+                props.put("value.deserializer", "SupplierDeserializer");
+
+
+                KafkaConsumer<String, Supplier> consumer = new KafkaConsumer<>(props);
+                consumer.subscribe(Arrays.asList(topicName)); // subscribing to particular topic.
+				
+				// consuming the msgs from topic 
+                while (true){
+                        ConsumerRecords<String, Supplier> records = consumer.poll(100);
+                        for (ConsumerRecord<String, Supplier> record : records){
+                                System.out.println("Supplier id= " + String.valueOf(record.value().getID()) + " Supplier  Name = " + record.value().getName() + " Supplier Start Date = " + record.value().getStartDate().toString());
+                        }
+                }
+
+        }
+}
+
+- its not required to create a group first.
+- if u add the group.id as one of the configuration property while creating the consumer object it solves all problems.( means assigning of co-ordinator and adding the consumer in the group all will taken care by the API itself.) At the same time the property 'group.id' is not a mandatory (if you ignore then u cant add multiple consumer.)
+
+
+explanation of API : consumer.poll(100)
+-poll method retruns some number of messages, you process them and again fetch for some more messages.
+- the parameter for poll method is timer(100 in this case).
+- poll method is very powerful and take care of lot of things
+	like - connect to group co-ordinator (the following activities happen in sequence when u call poll method at first time)
+		 - join the group
+		 - receives partition assignment
+		 - sends heartbeat
+		 - fetches you messages
+		 - and many other more things .....
+	when ever you calls the poll method it shares the heartbeat information to the co-ordinator.
+	
+- make sure that each iteration completes in less than 3 seconds
+- if you dont poll() for a while the co-ordinator can assume the consumer is dead and trigger a partition rebalance activity.
+
+ 
+----------------------------------------------------------------------------------------------
+
+video : 15_Kafka Tutorial   Offset Management
+
+kafka offsets:
+1. current offset.
+2. committed offset.
+
+kafka maintains two types of offsets 1) current offset and 2) committed offset.
+
+current offset:
+1. assume we have 100 msgs in the topic (from 1 - 100 msgs)
+2. when u call the poll first time assume u received 20 msg as response to process.
+	at this point of time 'current offset' value is '20'.
+3. when u make over next request it will send some more msgs starting from '20' assume this time it send the next 10 mesgs (form 20 to 30) 	at this point the 'current offset' value is '30'.
+4. due to this property consumer doesnt get the same record twice.
+
+committed offset:
+- the offset position that is already processed by a consumer.
+- committed offset is very critical in case of partition rebalance.
+- in the event of rebalancing when a new consumer is assigned to the same partition it should ask a question where to start what is already process by previous owner the answer for the question is committed offset.
+
+summary :
+current offset - sent records
+- is used to avoid resending same record again to same consumer.
+committed offset - processed records (means apply some work after receiving of msgs like saving in db or save in file or share to other resources etc...)
+- it is ued to avoid resending same records to new consumer in the event of partition rebalance.
+
+Q) How to commit an offset?
+Ans: two ways to commit an offset 
+1. auto commit
+2. manual commit
+
+Auto commit:
+1. enable.auto.commit - default value true
+2. auto.commit.interval.ms - default value is 5 sec.
+
+Manual commit: 
+two approcahes to manual commit those are 
+1. commit sync
+2. commit async
+
+- manual commit is better solution for commit of an offset.
+
+https://github.com/LearningJournal/ApacheKafkaTutorials/blob/master/ConsumerExample/ManualConsumer.java
+
+ManualConsumer.java
+-------------------
+import java.util.*;
+import java.io.*;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+
+public class ManualConsumer{
+
+    public static void main(String[] args) throws Exception{
+
+        String topicName = "SupplierTopic";
+        String groupName = "SupplierTopicGroup";
+
+        Properties props = new Properties();
+        props.put("bootstrap.servers", "localhost:9092,localhost:9093");
+        props.put("group.id", groupName);
+        props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        props.put("value.deserializer", "SupplierDeserializer");
+        props.put("enable.auto.commit", "false");
+
+        KafkaConsumer<String, Supplier> consumer = null;
+
+        try {
+            consumer = new KafkaConsumer<>(props);
+            consumer.subscribe(Arrays.asList(topicName));
+
+            while (true){
+                ConsumerRecords<String, Supplier> records = consumer.poll(100);
+                for (ConsumerRecord<String, Supplier> record : records){
+                    System.out.println("Supplier id= " + String.valueOf(record.value().getID()) + " Supplier  Name = " + record.value().getName() + " Supplier Start Date = " + record.value().getStartDate().toString());
+                }
+                consumer.commitAsync(); //
+            }
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }finally{
+            consumer.commitSync(); // before closing the consumer better to call sync commit. so that we will wait to get the ack on commit offset.
+            consumer.close();
+        }
+    }
+}
+
+
+----------------------------------------------------------------------------------------------
+
+video : 16_Kafka Tutorial   Rebalance Listener
+
+in this session we will learn committing a particular offset and also rebalance listener.
+
+
+
+consumerRebalanceListener: 
+1. maintain a list of offsets that are processed and ready to be commiited.
+2. commit the offset when partitions are going away.
+
+
+
+
+
+
+----------------------------------------------------------------------------------------------
+
+http://docs.confluent.io/current/avro.html
+
+
+AVRO - Serialize and Deserialize - concept:
+
+http://self-learning-java-tutorial.blogspot.in/2015/04/apache-avro.html (serializing and de-serializing the Employee object using Avro tool.)
+http://self-learning-java-tutorial.blogspot.in/2015/04/apache-avro-serializing-and.html ( Serializing and deserializing without code generation )
+
+
+eg: src/main/avro/book.avsc  (book.avsc  - is the avro schema configuration file)
+{
+	"namespace": "com.hascode.entity",
+	"type": "record",
+	"name": "Book",
+	"fields": [
+		{"name": "name", "type": "string"},
+		{"name": "id",  "type": ["int", "null"]},
+		{"name": "category", "type": ["string", "null"]}
+	 ]
+}
+----------------------------------------------------------------------------------------------
+
+spring boot + apache kafka example (simple send string and receive string msg)
+https://www.codenotfound.com/2016/09/spring-kafka-consumer-producer-example.html
+
+----------------------------------------------------------------------------------------------
+
+Kafka + Mavaen example:
+https://github.com/MohammadRasool-Shaik/Kafka
+https://mohammadrasoolshaik.wordpress.com/2017/04/26/kafka-introduction/
+
+----------------------------------------------------------------------------------------------
+
+Interview Questions:
+--------------------
+3) Mention what is the benefits of Apache Kafka over the traditional technique?
+
+Apache Kafka has following benefits above traditional messaging technique
+
+•  Fast: A single Kafka broker can serve thousands of clients by handling megabytes of reads and writes per second
+•  Scalable: Data are partitioned and streamlined over a cluster of machines to enable larger data
+•  Durable: Messages are persistent and is replicated within the cluster to prevent data loss
+•  Distributed by Design: It provides fault tolerance guarantees and durability
+
+
+5) Mention what is the maximum size of the message does Kafka server can receive?
+	The maximum size of the message that Kafka server can receive is 1000000 bytes.
+
+6) Explain what is Zookeeper in Kafka? Can we use Kafka without Zookeeper?
+Zookeeper is an open source, high-performance co-ordination service used for distributed applications adapted by Kafka.
+No, it is not possible to bye-pass Zookeeper and connect straight to the Kafka broker. Once the Zookeeper is down, it cannot serve client request.
+
+•  Zookeeper is basically used to communicate between different nodes in a cluster
+•  In Kafka, it is used to commit offset, so if node fails in any case it can be retrieved from the previously committed offset
+•  Apart from this it also does other activities like leader detection, distributed synchronization, configuration management, identifies when a new node leaves or joins, the cluster, node status in real time, etc.
+
+
+8) Explain how you can improve the throughput of a remote consumer?
+If the consumer is located in a different data center from the broker, you may require to tune the socket buffer size to amortize the long network latency.
+
+12) What does it indicate if replica stays out of ISR for a long time?
+If a replica remains out of ISR for an extended time, it indicates that the follower is unable to fetch data as fast as data accumulated at the leader.
+
+13) Mention what happens if the preferred replica is not in the ISR?
+If the preferred replica is not in the ISR, the controller will fail to move leadership to the preferred replica.
+
+
+9) Explain how you can get exactly once messaging from Kafka during data production?
+During data, production to get exactly once messaging from Kafka you have to follow two things avoiding duplicates during data consumption and avoiding duplication during data production.
+Here are the two ways to get exactly one semantics while data production:
+•  Avail a single writer per partition, every time you get a network error checks the last message in that partition to see if your last write succeeded
+•  In the message include a primary key (UUID or something) and de-duplicate on the consumer
+
+10) Explain how you can reduce churn in ISR? When does broker leave the ISR?
+ISR is a set of message replicas that are completely synced up with the leaders, in other word ISR has all messages that are committed. ISR should always include all replicas until there is a real failure. A replica will be dropped out of ISR if it deviates from the leader.
+
+Communication between the clients and the servers is done with a simple, high-performance, language agnostic ___TCP______ protocol.

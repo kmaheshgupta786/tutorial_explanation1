@@ -1,0 +1,191 @@
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------
+saveRepairCodes : function(event) {
+				var target = event.target
+				var self = this;
+				var isAnyCheckBoxChecked = false;
+				var isAddValidate = false;
+				var idEditValidate = false;
+				self.manageRepairCodeForm = new ManageRepairCodeForm();
+				$(".jobErrorBox").empty();
+				$(".jobErrorBox").append("<p class='errorLabel bold'>Please correct the following fields.</p><ul class='errorDetails'></ul>");
+				var i = 0;
+				$.each(	$("input[name^='editRepairCB']:checked"),function() {
+									isAnyCheckBoxChecked = true;
+									var eventType = $(this).attr("mode");
+									if (eventType == 'editEvent') {
+										editableMapNameId = $(this).closest('tr').attr("dpMapId");
+										var selectedAtaId = $(this).closest('tr').find("select#ddlAtaMinorCode :selected").val();
+										var selectedAtaMajorId = $(this).closest('tr').find("select#ddlAtaMajorCode :selected").val();
+										var editableCustomerRepairCode1 = $(this).closest('tr').attr("repairCode1");
+										var editableCustomerRepairCode2 = $(this).closest('tr').attr("repairCode2");
+										var editableCustomerRepairCode3 = $(this).closest('tr').attr("repairCode3");
+										editableCustomerRepairCodeDesc = $(this).closest('tr').attr("repairCodeDesc");
+										var editablerepairCodeMappingId = $(this).closest('tr').attr("repaircodeid");
+										$(this).closest('tr').find("#ddlAtaMinorCode").removeClass("errorBorder");
+										$(this).closest('tr').find("#ddlAtaMajorCode").removeClass("errorBorder");
+										if (isAddValidate == true) {
+											isAnyCheckBoxChecked = false;
+										}
+										var ataMinorCode = $('.errorDetails li#ataMinorCode').text();
+										var ataMajorCode = $('.errorDetails li#ataMajorCode').text();
+										if (selectedAtaId == "none"	|| selectedAtaMajorId == "none") {
+											isAnyCheckBoxChecked = false;
+											idEditValidate = true;
+											if (selectedAtaId == "none") {
+												if (ataMinorCode !== "ATAMajorCode") {
+													$(".errorDetails").append("<li id=ataMinorCode>AtaMinorCode</li>");
+												}
+												$('.jobErrorBox').removeClass("displayNone");
+												$(this).closest('tr').find("#ddlAtaMinorCode").addClass("errorBorder");
+											}
+											if (selectedAtaMajorId == "none") {
+												if (ataMajorCode !== "ATAMajorCode") {
+													$(".errorDetails").append("<li id=ataMajorCode>AtaMajorCode</li>");
+												}
+												$('.jobErrorBox').removeClass("displayNone");
+												$(this).closest('tr').find("#ddlAtaMajorCode").addClass("errorBorder");
+											}
+										} 
+										else {
+											self.manageRepairCodeForm.set('repairlite['+i+'].dpMapId',editableMapNameId);
+											self.manageRepairCodeForm.set('repairlite['+i+'].ataId',selectedAtaId);
+											self.manageRepairCodeForm.set('repairlite['+i+'].repairCodeMappinId',editablerepairCodeMappingId);
+											self.manageRepairCodeForm.set('repairlite['+i+'].custRepairCode1',editableCustomerRepairCode1);
+											self.manageRepairCodeForm.set('repairlite['+i+'].custRepairCode2',editableCustomerRepairCode2);
+											self.manageRepairCodeForm.set('repairlite['+i+'].custRepairCode3',editableCustomerRepairCode3);
+											self.manageRepairCodeForm.set('repairlite['+i+'].custRepairCodeDesc',editableCustomerRepairCodeDesc);
+											self.manageRepairCodeForm.set('repairlite['+i+'].eventType','editEvent');
+										}
+
+									} 
+									else {
+										var selectedDPMapId = $(this).closest('tr').attr("dpMapId");
+										var selectedDPMapName = $(this).closest('tr').find('#manageRepairCodeMapName :selected').text();
+										var selectedCustomerRepairCode1 = $(this).closest('tr').find('#customerRepairCode1').val();
+										var selectedCustomerRepairCode2 = $(this).closest('tr').find('#customerRepairCode2').val();
+										var selectedCustomerRepairCode3 = $(this).closest('tr').find('#customerRepairCode3').val();
+										var selectedCustomerRepairCodeDesc = $(this).closest('tr').find('#customerRepairCodeDesc').val();
+										var selectedATAId = $(this).closest('tr').find('#ddlAtaMinorCode :selected').val();
+										var selectedATAMajorId = $(this).closest('tr').find('#ddlAtaMajorCode :selected').val();
+										$(this).closest('tr').find('#manageRepairCodeMapName').removeClass("errorBorder");
+										$(this).closest('tr').find('#customerRepairCode1').removeClass("errorBorder");
+										$(this).closest('tr').find('#customerRepairCodeDesc').removeClass("errorBorder");
+										$(this).closest('tr').find('#ddlAtaMinorCode').removeClass("errorBorder");
+										$(this).closest('tr').find('#ddlAtaMajorCode').removeClass("errorBorder");
+
+										if (idEditValidate == true) {
+											isAnyCheckBoxChecked = false;
+										}
+
+										var repairMapName = $('.errorDetails li#reapirMap').text();
+										var repaicode1 = $('.errorDetails li#repairCode1').text();
+										var repairDesc = $('.errorDetails li#repairCodeDesc').text();
+										var ataMinorCode = $('.errorDetails li#ataMinorCode').text();
+										var ataMajorCode = $('.errorDetails li#ataMajorCode').text();
+										
+										if (selectedDPMapName == "none"|| selectedCustomerRepairCode1 == ""
+												|| selectedCustomerRepairCodeDesc == ""|| selectedATAId == "0"|| selectedATAMajorId == "0") 
+										{
+											isAnyCheckBoxChecked = false;
+											isAddValidate = true;
+											if (selectedDPMapName == "none") {
+												if (repairMapName !== "MapName") {
+													$(".errorDetails").append("<li id=reapirMap>MapName</li>");
+												}
+												$('.jobErrorBox').removeClass("displayNone");
+												$(this).closest('tr').find('#manageRepairCodeMapName').addClass("errorBorder");
+											}
+											if (selectedCustomerRepairCode1 == "") {
+												if (repaicode1 !== "CustomerRepairCode1") {
+													$(".errorDetails").append("<li id=repairCode1>CustomerRepairCode1</li>");
+												}
+												$('.jobErrorBox').removeClass("displayNone");
+												$(this).closest('tr').find('#customerRepairCode1').addClass("errorBorder");
+											}
+											if (selectedCustomerRepairCodeDesc == "") {
+												if (repairDesc !== "CustomerRepairCodeDesc") {
+													$(".errorDetails").append("<li id=repairCodeDesc>CustomerRepairCodeDesc</li>");
+												}
+												$('.jobErrorBox').removeClass("displayNone");
+												$(this).closest('tr').find('#customerRepairCodeDesc').addClass("errorBorder");
+											}
+											if (selectedATAId == "0") {
+												if (ataMinorCode !== "ATAMinorCode") {
+													$(".errorDetails").append("<li id=ataMinorCode>ATAMinorCode</li>");
+												}
+												$('.jobErrorBox').removeClass("displayNone");
+												$(this).closest('tr').find('#ddlAtaMinorCode').addClass("errorBorder");
+											}
+											if (selectedATAMajorId == "0") {
+												if (ataMajorCode !== "ATAMajorCode") {
+													$(".errorDetails").append("<li id=ataMajorCode>ATAMinorCode</li>");
+												}
+												$('.jobErrorBox').removeClass("displayNone");
+												$(this).closest('tr').find('#ddlAtaMajorCode').addClass("errorBorder");
+											}
+										}
+										else 
+										{
+											self.manageRepairCodeForm.set('repairlite[' + i+ '].dpMapId',selectedDPMapId);
+											self.manageRepairCodeForm.set('repairlite[' + i+ '].mapName',selectedDPMapName);
+											self.manageRepairCodeForm.set('repairlite[' + i+ '].ataId',selectedATAId);
+											self.manageRepairCodeForm.set('repairlite['+ i+ '].custRepairCode1',selectedCustomerRepairCode1);
+											self.manageRepairCodeForm.set('repairlite['+ i+ '].custRepairCode2',selectedCustomerRepairCode2);
+											self.manageRepairCodeForm.set('repairlite['+ i+ '].custRepairCode3',selectedCustomerRepairCode3);
+											self.manageRepairCodeForm.set('repairlite['+ i+ '].custRepairCodeDesc',selectedCustomerRepairCodeDesc);
+											self.manageRepairCodeForm.set('repairlite[' + i+ '].eventType','addEvent');
+										}
+									}
+							i++;
+				});
+
+				if (isAnyCheckBoxChecked) {
+					var errorCheck = false;
+					var url = "managerepaircode/dbConstraintCheck";
+					queryString = decodeURIComponent($.param(self.manageRepairCodeForm.toJSON()));
+					var callback = function(response) 
+					{
+						var index = 0;
+						for ( var i = 0; i < response.length; i++) {
+							error = response[i].hasError;
+							// this condition will check if this row is having
+							// co violation
+							if (error == "Y") {
+								errorCheck = true;
+								var repairCodeMappinId = response[i].repairCodeMappinId;
+								message = response[i].errorMessage;
+								index = response[i].index;
+								index = parseInt(index) + 1;
+								if (repairCodeMappinId == null) {
+									$("#tblAllProvider tbody tr:nth-child("+ index + ")").addClass('borderRed');
+								} 
+								else {
+									$("tr[repaircodeid="+ repairCodeMappinId + "]").addClass('borderRed');
+								}
+								$(".jobErrorBox").find(".errorDetails").addClass("displayNone");
+								$(".jobErrorBox").find(".errorLabel").addClass("displayNone");
+								$(".jobErrorBox").empty().append("<div class='errorLabel'>" + message+ "</div>").removeClass('displayNone');
+							}
+						}
+						if (errorCheck == false) {
+							var queryString = "";
+							var url = "managerepaircode/save";
+							queryString = decodeURIComponent($.param(self.manageRepairCodeForm.toJSON()));
+							var searchQuery = "&" + self.getQueryString();
+							queryString = queryString + searchQuery;
+							var pageSize = $('#pageSize :selected').val();
+							var sortQuery = '&page.sort=modifiedDate&page.sort.dir=DESC&page.size='+pageSize;
+							queryString = queryString + sortQuery;
+							var callback = function(response) {
+								$('#diDataManager').html(response);
+								self.hidePopupDialogRepair();
+							};
+							$.get(url, queryString, callback, 'html');
+						}
+					};
+					$.get(url, queryString, callback, 'json');
+					self.hidePopupDialogRepair();
+				}
+			},

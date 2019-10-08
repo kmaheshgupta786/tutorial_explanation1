@@ -1,0 +1,52 @@
+
+
+Load balancing:
+	
+
+Good explanation
+
+https://anturis.com/blog/nginx-vs-apache/
+
+
+Two apporaches explained 
+1. Apache commons - follows process and Threads
+2. NGINX - follows event driven 
+
+
+Apache commons load balancing setup: cent os, readhat
+https://www.youtube.com/watch?v=ha1PZEOMwb4
+
+NGINX load balancing setup:
+https://www.youtube.com/watch?v=v81CzSeiQjo
+
+
+
+
+load balancing centOS:
+configuration location: /etc/nginx/conf.d/nginx.conf
+
+vi nginx.conf:
+-------------
+
+upstream cluster{
+	server localhost:8080;
+	server localhost:8081;
+	server localhost:8082;
+}
+
+// this server object is mandatory 
+server{
+
+	listen 80;
+	server_name _; //default server name ie: current server name
+	
+	location /{
+		proxy_pass http://cluster;
+		proxy_http_version  1.1;
+		proxy_set_header Host $host;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Real-IP $remote_addr;
+	}
+
+}
+

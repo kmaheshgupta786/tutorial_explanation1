@@ -1,0 +1,146 @@
+
+
+Linked List:
+------------
+
+/* Function to reverse the linked list */
+
+explanation : 
+original Linked list :		     1 --> 2 --> 3 --> 4 --> 5 --> null
+reverse linked list  :			 1 --> 2 --> 3 --> 4 <-- 5
+								 1 --> 2 --> 3 <-- 4 <-- 5
+								 1 --> 2 <-- 3 <-- 4 <-- 5
+								 1 <-- 2 <-- 3 <-- 4 <-- 5
+						null <-- 1 <-- 2 <-- 3 <-- 4 <-- 5
+
+Node reverse(Node head) {
+	Node prev = null;
+	Node current = head;
+	Node next = null;
+	while (current != null) {
+		next = current.next;
+		current.next = prev;
+		prev = current;
+		current = next;
+	}
+	head = prev;
+	return node;
+}
+
+
+Binary search tree :
+http://algorithms.tutorialhorizon.com/binary-search-tree-complete-implementation/
+
+
+
+
+
+---------------------------------------------------------------------------------------------------
+
+Bubble Sort:
+-----------
+
+public class BubbleSortExample {  
+	static void bubbleSort(int[] arr) {  
+		int n = arr.length;  
+		int temp = 0;  
+		 for(int i=0; i < n; i++){  
+				 for(int j=1; j < (n-i); j++){  
+						  if(arr[j-1] > arr[j]){  
+								 //swap elements  
+								 temp = arr[j-1];  
+								 arr[j-1] = arr[j];  
+								 arr[j] = temp;  
+						 }  
+						  
+				 }  
+		 }  
+  
+	}  
+	public static void main(String[] args) {  
+				int arr[] ={3,60,35,2,45,320,5};  
+				 
+				System.out.println("Array Before Bubble Sort");  
+				for(int i=0; i < arr.length; i++){  
+						System.out.print(arr[i] + " ");  
+				}  
+				System.out.println();  
+				  
+				bubbleSort(arr);//sorting array elements using bubble sort  
+				 
+				System.out.println("Array After Bubble Sort");  
+				for(int i=0; i < arr.length; i++){  
+						System.out.print(arr[i] + " ");  
+				}  
+   
+		}  
+}  
+
+Merge Sort:
+-----------
+ 
+public class MyMergeSort {
+     
+    private int[] array;
+    private int[] tempMergArr;
+    private int length;
+ 
+    public static void main(String a[]){
+         
+        int[] inputArr = {45,23,11,89,77,98,4,28,65,43};
+        MyMergeSort mms = new MyMergeSort();
+        mms.sort(inputArr);
+        for(int i:inputArr){
+            System.out.print(i);
+            System.out.print(" ");
+        }
+    }
+     
+    public void sort(int inputArr[]) {
+        this.array = inputArr;
+        this.length = inputArr.length;
+        this.tempMergArr = new int[length];
+        doMergeSort(0, length - 1);
+    }
+ 
+    private void doMergeSort(int lowerIndex, int higherIndex) {
+         
+        if (lowerIndex < higherIndex) {
+            int middle = lowerIndex + (higherIndex - lowerIndex) / 2;
+            // Below step sorts the left side of the array
+            doMergeSort(lowerIndex, middle);
+            // Below step sorts the right side of the array
+            doMergeSort(middle + 1, higherIndex);
+            // Now merge both sides
+            mergeParts(lowerIndex, middle, higherIndex);
+        }
+    }
+ 
+    private void mergeParts(int lowerIndex, int middle, int higherIndex) {
+ 
+        for (int i = lowerIndex; i <= higherIndex; i++) {
+            tempMergArr[i] = array[i];
+        }
+        int i = lowerIndex;
+        int j = middle + 1;
+        int k = lowerIndex;
+        while (i <= middle && j <= higherIndex) {
+            if (tempMergArr[i] <= tempMergArr[j]) {
+                array[k] = tempMergArr[i];
+                i++;
+            } else {
+                array[k] = tempMergArr[j];
+                j++;
+            }
+            k++;
+        }
+        while (i <= middle) {
+            array[k] = tempMergArr[i];
+            k++;
+            i++;
+        }
+ 
+    }
+}
+
+

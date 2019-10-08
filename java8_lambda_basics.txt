@@ -1,0 +1,372 @@
+Java8 Lambda Basics
+
+
+1.1 Introduction
+
+Welcome to the course 'Java 8 Lambda Basics'. This video is a quick introduction to this course and its contents.
+
+- Understanding Lambdas
+- Using lambdas
+- functional interface
+- method reference
+- collections improvement
+
+--------------------------------------------------------------------------
+
+1.2 Why Lambdas
+
+Let's look at some high level benefits of Lambdas in Java 8.
+
+- lambdas enables functional programming
+- readable and concise code (eliminates boiller code)
+- easier to use aps and libraries
+- enables support for parallel processing (biggest advantage)
+
+--------------------------------------------------------------------------
+
+1.3 Dev setup
+
+Let's set up our development environment to start writing code in Java 8.
+
+--------------------------------------------------------------------------
+
+1.4 Functional vs Object Oriented Programming
+
+In this video, I address a common concern about functional programming in Java and if it can work with object oriented programming.
+
+--------------------------------------------------------------------------
+
+
+1.5 Passing Behavior in OOP
+
+Let's look at behavior parameterization - how we can pass behaviors to methods in Java 8 or earlier.
+
+- code in oop, everything is an object
+- all code blocks are associated with classes and objects
+
+Greeter.java
+-------------
+
+public class Greeter {
+
+	public void greet(Greeting greeting){
+		greeting.perform();
+	}
+	public static void main(String args[]){
+		
+		Greeter greeter = new Greeter();
+		HellowWorldGreeting hellowWorldGreeting = new HellowWorldGreeting();
+		greeter.greet(hellowWorldGreeting);
+	}
+}
+
+Greeting.java
+--------------
+
+public interface Greeting {
+
+		public void perform();
+		
+}
+
+HellowWorldGreeting.java
+---------------------------
+public class HellowWorldGreeting implements Greeting{
+
+	public void perform(){
+		System.out.println("Hellow World Greeting!");
+	}
+}
+
+
+above code used normal java... not used lambdas
+
+in next video we will see with lambdas expression how can we get the same output
+
+--------------------------------------------------------------------------
+1.6
+
+Java 8 Lambda Basics 6 - Introducing Lambda Expressions
+
+lambda expression means function as value
+
+ie: assign block of code to the variable
+
+in java 7: 
+public void perform(){
+	sysout("Perform");
+}
+
+in java 8:
+aBlockOfCode = () -> {
+	sysout("perform");
+	}
+
+1. as we are assigning mehtod code (method definition) to variable its not required to keep
+the method name.
+2. public or private access specifiers are at class level.
+   in the lambda case the method block is isolated code, so not required to keep the access specifiers.
+3. not required return type becoz block of code assign to the variable.
+
+
+--------------------------------------------------------------------------
+
+1.7 Lambda Expression Examples
+
+Let's now get familiar with the lambda syntax by writing a few more expressions.   
+
+examples:	 
+
+1. greetingFunction = () -> sysout("hellow world");
+
+2. greet(greetingFunction);
+or
+greet(() -> sysout("hellow world"));
+
+3. doubleNumberFunction = (int a) -> {return a*2};
+or
+doubleNumberFunction = (int a) ->  a*2;
+
+	 -you should not keep return keyword, if ur lambda expression has only one line code.
+	 -if ur lambda expression one line of code enclosed with {} then we can keep return keyword
+	 like (int a) -> {return a*2}; ---> its correct syntax
+	 (int a) -> return a*2;   ---> wrong syntax
+	 
+4. addFunction = (int a, int b) -> a+b;
+
+5.safeDivideFunction = (int a, int b) -> {
+											if(b==0) return 0;
+											return a/b;
+										};
+										
+6. stringLength = (String s) -> s.length();		
+
+
+--------------------------------------------------------------------------
+	
+1.8 Lambda as interface type
+
+What is the type of a lambda expression? How do you declare a variable and assign it to a lambda expression? This video provides the answers.
+
+
+
+
+code :
+-------
+
+public class Greeter {
+
+	public void greet(Greeting greeting){
+		greeting.perform();
+	}
+	
+	public static void main(String args[]){
+		
+		//java7 - way of implementation
+		Greeter greeter = new Greeter();
+		HellowWorldGreeting hellowWorldGreeting = new HellowWorldGreeting();
+		greeter.greet(hellowWorldGreeting);
+		
+		//java8 - way of lambda implementation
+		myLambda myLambdaExpression = () -> System.out.println("Hellow World by Lambda Expression");	
+		Greeting myLambdaExpression2 = () -> System.out.println("Hellow World by Lambda Expression");
+		/*
+		 * 1. based on right side lambda expression, we should have return type as interface reference variable
+		 * 2. At the same time we should not declare multiple methods in the interface, if we are using these 
+		 *    interfaces as return type of lambda expressions.
+		 *    
+		 *    eg: Assume myLambda interface has two methods like
+		 *    public void test1();
+		 *    public void test2(int a, int b);
+		 *    
+		 *    and if u run the code like below
+		 *    myLambda myLambdaExpression = () -> System.out.println("Hellow World by Lambda Expression");
+		 *    it will give compilation error becoz, compiler confuse which method your are going to implement
+		 *    even though you has different method signatures.
+		 *    
+		 *    code snippet:
+		 *    public interface myLambda{
+					public void test();
+					public int add(int a, int b);
+				}
+	
+			  calling time:
+			  myLambda myLambdaExpression = () -> System.out.println("Hellow World by Lambda Expression");	
+			  right side compiler error :
+			  - The target type of this expression must be a functional interface (means it should have only one method declaration in interface).
+	
+		 */
+	}
+	
+	public interface myLambda{
+		public void test();
+	}
+}
+
+	
+	
+	the following two stmts are valid
+	myLambda myLambdaExpression = () -> System.out.println("Hellow World by Lambda Expression");	
+		Greeting myLambdaExpression2 = () -> System.out.println("Hellow World by Lambda Expression");
+	
+	becoz we have declared two interface which have the same method signatures.
+		
+
+--------------------------------------------------------------------------
+
+1.9 Lambdas vs Interface Implementations
+
+This video compares the similarity between lambda expressions and anonymous inner class types.
+
+
+
+		//java8 - way of lambda implementation
+		myLambda myLambdaExpression = () -> System.out.println("Hellow World by Lambda Expression");	
+		Greeting myLambdaExpression2 = () -> System.out.println("Hellow World by Lambda Expression");
+		
+		myLambdaExpression.test();     // becoz test() defined in myLambda interface
+		myLambdaExpression2.perform();  // becoz perform() defined in greeting interface
+
+		console output:
+		Hellow World by Lambda Expression
+		Hellow World by Lambda Expression
+		
+		
+		------
+		anonymous inner class implementation example
+		
+		
+		Greeting myLambdaExpression3 = () -> System.out.println("Hellow World by Lambda Expression3");
+		Greeting anonymousInterface = new Greeting(){
+			public void perform(){
+				System.out.println("Hellow World :: Anonymous Interface Implementation. ");
+			}
+		};
+		
+		myLambdaExpression3.perform();
+		anonymousInterface.perform();
+		
+		console out put:
+		Hellow World by Lambda Expression3
+		Hellow World :: Anonymous Interface Implementation. 
+
+--------------------------------------------------------------------------
+
+1.10 Type Inference
+
+Learn how the Java compiler and runtime infers type information about a lambda expression based on the type it is assigned to.
+
+TypeInterfaceExample.java
+-------------------------
+
+public class TypeInterfaceExample {
+
+	public static void main(String[] args) {
+		
+		StringLengthLambda lengthOfStr = (String s) -> s.length();
+		System.out.println("lengthOfStr  " + lengthOfStr.getLenght("Test"));
+		
+		StringLengthLambda lengthOfStr2 = ( s ) -> s.length();  // need not to keep the iput data type as well, from the reference it understands
+		System.out.println("lengthOfStr2  " + lengthOfStr2.getLenght("Test2"));
+		
+		StringLengthLambda lengthOfStr3 = s  -> s.length();// if ur interface has only one argument then need not to keep the braces ()
+		System.out.println("lengthOfStr3  " + lengthOfStr3.getLenght("Test Three"));
+
+	}
+
+	interface StringLengthLambda{
+		int getLenght(String s);
+	}
+}
+
+
+console output:
+lengthOfStr  4
+lengthOfStr2  5
+lengthOfStr3  10
+
+
+-------------------------------------------------------------------------------
+
+Functional Interface:
+e.g. Comparator is a functional interface even though it declared two abstract methods. Why? 
+Because one of these abstract methods “equals()” which has signature equal to public method in Object class.
+
+Sample code snippets:
+
+
+forEach:
+
+forEach on List: 
+1) al.forEach(obj -> System.out.println(obj)); //lamda expression
+2) al.forEach(System.out::println); // Method Reference
+3) Consumer<Integer> action = System.out::println; // using consumer object. Here Collection object is List<Integer>.
+   al.forEach(action);
+   
+eg:  al.stream().filter(i -> i%2 == 0).forEach(e -> System.out.println(e)); // printing only even numbers using stream.
+
+forEach on Map:
+Map<String,String> myMap = new HashMap<>();
+1) myMap.forEach((k,v) -> Sytem.out.println(k + " - " + v));
+2) myMap.entrySet().forEach(System.out::println);
+   myMap.entrySet().forEach(e -> System.out.println(e.getKey()+" - "+e.getValue()));
+3) map.keySet().forEach(System.out::println);   
+4) map.values().forEach(System.out::println);
+
+
+filter with predicate:
+	employees.stream().filter( predicate ).collect(Collectors.<Employee>toList());
+	
+	//predicate defination
+	 public static Predicate<Employee> isAgeMoreThan(Integer age) {
+        return p -> p.getAge() > age;
+    }
+	employees.stream().filter( isAgeMoreThan(35) ).collect(Collectors.<Employee>toList());
+	
+	
+	
+
+Stream:
+
+1) Stream of integers
+		Stream<Integer> stream = Stream.of(1,2,3,4,5,6,7,8,9);
+		stream.forEach(p -> System.out.println(p));
+		
+2) Stream of arrays
+		 Stream<Integer> stream = Stream.of( new Integer[]{1,2,3,4,5,6,7,8,9} );
+         stream.forEach(p -> System.out.println(p));
+		 
+3) 	list.stream().forEach(p -> System.out.println(p));
+4)  list.stream().filter(i -> i%2 == 0).collect(Collectors.toList()); // even numbers list	 
+	list.stream().filter(i -> i%2 == 0).toArray(Integer[]::new);
+	list.parallelStream().filter(i -> i%2 == 0).toArray(Integer[]::new);  // parallel stream
+
+
+comparable : comparator:
+
+Its important to understand the importance of both interfaces in code collection APIs which provide implicit behavior sort list of objects by property. Such APIs are for example SortedMap or SortedSet.
+
+These collections store elements in sorted order. To determining the sorting, they also use compare() method. Always remember if you Employee class does not implement Comparable interface and you are not using Comparator also, then adding elements in sorted collections will give you error.
+
+in java 7:
+		Collections.sort(al); //comparable
+		Collections.sort(al, new EmployeeByFirstName()); // comparator
+		
+in Java 8: 
+		employees.sort(Comparator.comparing(e -> e.getFirstName())); //comparator
+		employees.sort(Comparator.comparing(e -> e.getFirstName()).reversed()); // getfirstname and reverse order.
+		
+		
+		eg: Comparator<Employee> groupByComparator = Comparator.comparing(Employee::getFirstName).thenComparing(Employee::getLastName);
+			employees.sort(groupByComparator); //Sorting on multiple fields; Group by.
+			
+		
+		SortedSet<Employee> set = new TreeSet<Employee>();
+		SortedSet<Employee> set = new TreeSet<Employee>(new FirstNameSorter()); //check howtodoinjava site.
+		
+------------------------------------------------------------------------------------
+
+   
+   
+		
+		

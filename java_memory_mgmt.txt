@@ -1,0 +1,118 @@
+java memory management:
+--------------------------
+
+https://www.youtube.com/watch?v=UnaNQgzw4zY&feature=youtu.be
+
+- objects are allocated(eg: new) in the "heap" memory.
+- static members, class definition (metadata) stored in "Permgen/metaspace" memory.
+- garbage collector is deamon thread
+- System.gc(), but not gurantee that gc will happen.
+- java.lang.OutOfMemoryError (error) will throw when heap space full.
+
+Garbage collection : involves:
+its 3 step process
+1. mark - starts from root node of applicaiton(main) walks the object graph, marks objs that are reachable as live.
+2. delete/sweep - Delete unreachable objects
+3. compactiong - compact the memory by moving around the objects and making the allocation contiguous than fragmented.
+	means after deleted the unreachable objects, will keep all reachable objects as contiguous memory  in heap.
+	
+
+diagram:
+
+Heap memory = young generation space + old generation space
+			= (Eden Space + Survivor space from + survivor to) + (old generation space)
+			= (Eden space + s1 + s2) + (old generation space)
+
+
+			
+small/minor garbage collection vs major garbage collection
+- Assume eden space is full and we created new object then, it will trigger garbage collection and finds the all reachable and unreachable objects in eden space and deletes all unreachable objects from eden space and finally moves the reachable objects to s1 space. this process called as minor garbage collection.
+ As the object survived from minor garbage and moved to s1 space due to this they kept name as "survivor space from" (minor gc).
+
+- cache objects will be in old generation. (intially it will be in young generation after multiple minor gcs it will moves to old generation)
+
+
+-XX:MaxTenuringThreshold
+	After running certain number of minor gcs, still young generation founds any reachable objectss
+	then it will move those to "old generation". 
+	The number of minor gcs defined as "MaxTenuringThreshold" value.
+	
+- If old generation memory gets full then garbage collector executes the major garbase collection.
+		menas it performs gc on full heap memory (young + old)
+
+- minor garbage collection happens on young generation space of heap
+- major garbage collection happens on (yound + old) generation space ie: on full heap memory.
+
+
+
+- definition of throughput
+	throughput focuses on maximizing the amount of work by an application in a specific period of time.
+	
+	how to thoughput might be measured:
+	- the no: of trs completed in a given time.
+	- the no: of jobs that a batch program can complete in an hour.
+	- the no: of db quereis that can be completed in an hour.
+	
+	
+- Types of garbage collectors:
+		1. Serial collector
+		2. concurrent collector
+		3. parallel collector
+		4. G1 garbage collector (from java 1.7 on words)
+		
+		-Serial: basic garbage collector that runs in single thread
+		can be used for basic applications.
+		- concurrent: a thread that peforms gc along with application execution as the application runs, does not wait for the old gen to be full.
+		"stops the application" only during mark/re-mark.
+		- parallel: Uses multple cups (multi core) to perform gc. Multiple threads doing mark/sweep etc. Does not kick in until heap is full/near-full. 
+		"stop the application" when it runs.
+		
+
+when to choose concurrent and parallel?
+- concurrent: there is more memory
+			  there is high number of CPUs
+			  application demands short pauses
+			  
+- parallel: there is less memory
+			lesser no of cpus
+			applicaiton demands high through put and can with stand pauses.
+			
+			
+-XX:+UseSerialGC 		: Sigle-thread gc on yound and old. To be used only on small heaps.
+-XX:+UseParallelGC		: young gen uses parallel gc, old gen uses single-threaded gc.
+-XX:+UseParallelOldGC	: both yound and old gens have multi-threaded gc.
+-XX:+UseParNewGC		: multi-threaded young gen gc.
+-XX:+UseConcMarkSweepGC : enables concurrent collector. auto enables parNewGC by default.
+-XX:+UseG1GC			: use G1.
+
+defaults: java 1.6 = parallel,   java 1.7 = G1	
+
+
+- finalizer: protected void finalize() throws Trowable (do not use).
+
+
+Tune the heap  memory : options
+
+-Xmsvalue : minimum heap memory value.
+-Xmxvalue (default: 256m):
+-XX:NewRatio = ratio (2 means 1/3 Y+2/3 o) = 1/3 of young, 2/3 of old gen
+-XX:NewSize : size
+-XX:MaxNewSize : size
+-XX:permSize
+-XX:MaxPermSize (default: 64m)	
+
+
+
+-How to print GC details:
+	-verbose:gc
+	-XX:+PrintGCDetails
+	-Xloggc:gc.log (gc.log is the log file to write the log data)
+	
+
+-to view GC
+	jvisualvm with visual gc logging
+	
+	
+- to dump use jhat tool (java heap analyser tool)	
+
+- terracota

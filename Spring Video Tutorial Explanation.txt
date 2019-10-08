@@ -1,0 +1,1050 @@
+Spring Tutorials : 
+
+video:4
+
+1. What  what is Bean Factory?
+Ans: Bean factory is machinsm to create bean obj in Spring.
+There are 2 ways to create bean obj in Spring those are:
+a) Using Bean and XML Bean Factory method.
+	BeanFactory factory = new XmlBeanFactory(new FileInputStream("beans.xml"));
+	XmlBeanFactory factory = new XmlBeanFactory(new ClassPathResource("beans.xml"));
+	
+b) Using Application Context object. it is mother of Bean Factory.
+
+	1. 	ClassPathXmlApplicationContext : It Loads context definition from an XML file located in the classpath, treating context definitions as classpath resources. The application context is loaded from the application's classpath by using the code .
+		ApplicationContext context = new ClassPathXmlApplicationContext("bean.xml");
+
+    2. 	FileSystemXmlApplicationContext : It loads context definition from an XML file in the filesystem. The application context is loaded from the file system by using the code .
+		ApplicationContext context = new FileSystemXmlApplicationContext("bean.xml");
+
+    3.	XmlWebApplicationContext : It loads context definition from an XML file contained within a web application.
+
+   // Piece of code in Main Mehtod
+   BeanFactory factory = new XmlBeanFactory(new FileInputStream("beans.xml"));
+   Triangle Obj=(Triable)factory.getBean("triangle"); --- Means it reads beans.xml file and searches for bean which has the beanid attribute with "trigable" and creates object.
+   obj.draw();
+
+   beans.xml
+   ---------
+   <beans>
+	<beand id="triangle" class="org.test.Triangle">
+	    <propery name="type" value="Equilateral"/>
+	</bean>
+   </beans>
+
+   Triangle.java
+   -------------
+   Class Triangle
+   {
+	private String type;
+	// getters and setter of type vairable
+	public void draw()
+	{
+	    System.out.println("Triangle Drawn mehtod");
+	}
+   }
+
+----------------------------------------------------------
+
+video:5
+
+Using application context mechanism we can create bean object.
+
+// Piece of code in Main Mehtod
+   ApplicaionContext context = new ClassPathXmlApplicationContext("beans.xml");  --- in this case the beans.xml file should be in the save level in which Main method class is resides.
+   Triangle Obj=(Triable)context.getBean("triangle");
+
+//BeanFactory factory = new XmlBeanFactory(new FileInputStream("beans.xml"));
+//ApplicaionContext context = new ClassPathXmlApplicationContext("beans.xml"); 
+   
+----------------------------------------------------------------
+
+video:6
+
+What are the types of Dependency Injection Spring supports?
+Ans: 2 Types 
+     a) Setter injection (eg: video 3 check the beans.xml file)
+     b) Constructor injection
+
+     beans.xml
+     ---------
+    <beans>
+	<beand id="triangle" class="org.test.Triangle">
+	    <constructor-arg value="Equilateral"/>
+	    <constructor-arg value="20"/>
+	</bean>
+    </beans>
+
+
+
+    beans.xml
+     ---------
+    <beans>
+	<beand id="triangle" class="org.test.Triangle">
+	    <constructor-arg type="int" value="20"/>
+	</bean>
+    </beans>
+
+
+    beans.xml
+     ---------
+    <beans>
+	<beand id="triangle" class="org.test.Triangle">
+	    <constructor-arg index="0" value="Equilateral"/>
+	    <constructor-arg index="1" value="20"/>
+	</bean>
+    </beans>
+
+
+-----------------------------------------------------------------------------
+
+video 7: 
+Injection of object in another class.
+if Triangle class has a variable of point class. then beans.xml would be like this.
+
+     beans.xml
+     ---------
+    <beans>
+	<beand id="triangle" class="org.test.Triangle">
+	    <propery name="pointA" ref="point1"/>
+	    <propery name="pointB" ref="point2"/>
+	    <propery name="pointC" ref="point3"/>
+	</bean>
+
+	<bean id="point1" class="org.test.Point">
+	    <property name="x" value="0"/>
+	    <property name="y" value="0"/>
+	</bean>
+
+	<bean id="point2" class="org.test.Point">
+	    <property name="x" value="-20"/>
+	    <property name="y" value="0"/>
+	</bean>
+
+	<bean id="point3" class="org.test.Point">
+	    <property name="x" value="0"/>
+	    <property name="y" value="20"/>
+	</bean>
+
+    </beans>
+
+    Triangle.java:
+    --------------
+    class Triangle
+    {
+        private Point pointA;
+	private Point pointB;
+	private Point pointC;
+
+	// getters and setters
+
+    }
+
+    Point.java
+    ----------
+    class Point
+    {
+        private int x;
+	private int y;
+	//getters and setters
+    }
+
+
+----------------------------------------------------------------------------------------
+
+video 8:
+Inner beans and alias name
+
+beans.xml
+     ---------
+    <beans>
+	<beand id="triangle" class="org.test.Triangle"  name="triangle-alias-two"> // This is another way to create bean objectt in main using getbean method using bean "name" property.
+	    <propery name="pointA" ref="point1"/>
+	    
+	    <propery name="pointB" />        // for inner beans ref attribute not required
+		<bean  class="org.test.Point"> // And alos id attribute not required because we are restricting bean def to single property.
+		    <property name="x" value="-20"/>
+		    <property name="y" value="0"/>
+		</bean>
+
+	    <propery name="pointC" />
+                <bean id="point3" class="org.test.Point">
+		    <property name="x" value="0"/>
+		    <property name="y" value="20"/>
+		</bean>
+	        
+	</bean>
+
+	<bean id="point1" class="org.test.Point">
+	    <property name="x" value="0"/>
+	    <property name="y" value="0"/>
+	</bean>
+
+	<alias name="triangle" alias="triangle-alias" /> // using triangle-alias u can create bean objectt in main using getbean method. 
+
+    </beans>
+
+
+----------------------------------------------------------------------------------------
+
+
+
+                                                                     
+                                                                     
+                                                                     
+                                             
+vidoe 9:
+To initialise list through beans.xml
+
+beans.xml
+---------
+<beans>
+	<bean id="triangle" name="org.test.Triangle">
+		<property name="points">
+			<list>
+				<ref bean="pointA"/>
+				<ref bean="pointB"/>
+				<ref bean="pointC"/>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="pointA" name="org.test.Point">
+		<property name="x" value="0"/>
+		<property name="y" value="0"/>
+	</bean>
+
+	<bean id="pointB" name="org.test.Point">
+		<property name="x" value="-20"/>
+		<property name="y" value="0"/>
+	</bean>
+
+	<bean id="pointc" name="org.test.Point">
+		<property name="x" value="0"/>
+		<property name="y" value="20"/>
+	</bean>
+</beans>
+
+Triangle.java
+-------------
+class Triangle
+{
+	private List<Point> points;
+	//getters and setters
+	for(Point point : points)
+		point.getx()+" " + point.gety();
+}
+
+
+------------------------------------------------------------------
+
+video 10
+Autowireing: if you want to do autowireing we should concentrate on membervars of classes should be same as beans dependencies ids.
+Three way are existig to dow autowire:
+a) autowire="byName"
+b) autowire="byType"
+c) autowire="constructor"
+	byType and constructor has limitations. the imp one is that if your class has more than one member var of same type then it wont work.
+	In the below example Traingle has three "Point" varibale if u defined the autowire byType then for spring go for confusion which dependecy
+	bean have to implement like pointA or pintB or pointC becoz all are same type "Point" class. Same will applicable to constructor as well.
+
+	Recommanded is implement code without autowire functionality. if proj is small prefer autowire="byName"
+
+	
+beans.xml
+---------
+<beans>
+	<bean id="triangle" name="org.test.Triangle" autowire="byName"> // as we are keepoing attribute autowire as byName
+	</bean>
+
+	<bean id="pointA" name="org.test.Point"> // 
+		<property name="x" value="0"/>
+		<property name="y" value="0"/>
+	</bean>
+
+	<bean id="pointB" name="org.test.Point">
+		<property name="x" value="-20"/>
+		<property name="y" value="0"/>
+	</bean>
+
+	<bean id="pointc" name="org.test.Point">
+		<property name="x" value="0"/>
+		<property name="y" value="20"/>
+	</bean>
+</beans>
+
+Triangle.java
+-------------
+class Triangle
+{
+	private Point pointA;   // This variable name should be same as beanid name in xml
+	private Point pointB;
+	private Point pointC;
+
+	//getters and setters
+	
+}
+
+
+------------------------------------------------------------------
+
+
+video: 11
+
+How bean object will create:
+	it wont create bean object at a time calling function context.getbean() method. 
+	All bean(which are all listed in xml) objects will created while creation or loading of application context object. later it will assign to requested obj reference.
+
+
+Scopes of the Beans:
+
+Stand alone application bean factory scopes:
+a) singleton - singleton only once per spring container (this is default scope)
+b) prototype - new bean created with every request or reference.
+
+web-aware context bean scopes:
+a) Request - New bean object per Servlet request
+b) session - New bean per session
+c) globalsession - New bean per global Http Session (portlet Context)
+
+
+beans.xml
+---------
+<beans>
+	<bean id="triangle" name="org.test.Triangle" scope="singleton"> 
+	</bean>
+</beans>
+
+scope="prototype"
+scope="request"
+scope="session"
+scope="globalsession"
+
+
+
+
+------------------------------------------------------------------
+
+video 12: not fully understood
+Application context aware:
+
+class Triable implements ApplicatonContextAware,BeanNameAware
+{
+	private ApplicationContext context;
+	private Point point;
+
+	// implementation of ApplicationContextAware
+	// implementation of BeanNameAware
+}
+
+
+------------------------------------------------------------------
+
+video 13: Bean Definition Inheritance
+
+
+beans.xml
+---------
+<beans>
+	<bean id="parenttriangle" name="org.test.Triangle" > 
+	    <propety name="pointA" ref="pointA"/>
+	</bean>
+
+	<bean id="triangle1" name="org.test.Triangle" parent="parenttriangle" >  // parent attribute
+	    <propety name="pointB" ref="pointB"/>
+	    <propety name="pointC" ref="pointC"/>
+	</bean>
+
+	<bean id="triangle2" name="org.test.Triangle" parent="parenttriangle" > 
+	    <propety name="pointB" ref="pointB"/>
+	</bean>
+
+	<bean id="pointA" name="org.test.Point"> // 
+		<property name="x" value="0"/>
+		<property name="y" value="0"/>
+	</bean>
+
+	<bean id="pointB" name="org.test.Point">
+		<property name="x" value="-20"/>
+		<property name="y" value="0"/>
+	</bean>
+
+	<bean id="pointc" name="org.test.Point">
+		<property name="x" value="0"/>
+		<property name="y" value="20"/>
+	</bean>
+</beans>
+
+Triangle.java
+-------------
+class Triangle
+{
+	private Point pointA;   
+	private Point pointB;
+	private Point pointC;
+
+	//getters and setters
+	
+}
+
+Main.java
+----------
+Triangle obj=(Traiangle)context.getBean("triangle1"); // output will display 3 points
+Triangle obj=(Traiangle)context.getBean("triangle2"); // output will display 2 points and will give NULL pointer exception becoz triable2 has not defined with pointC
+
+
+
+------------------------------------------------------------------
+
+video 14:
+
+
+
+
+
+
+----------------------------------------------------------------------------------------
+ video 15:
+ bean post processor:
+
+ Bean post processors are separate classes. If you want implement/add any piece of extran functionality by Spring after initialisation of
+ Bean then you have to choose the Bean Post Proccessors.
+
+1. one Extra class that should implements BeanPostProcessor interface.
+2. Entry of this bean in beans.xml
+
+beans.xml
+---------
+<beans>
+    <bean id="triangle" class="org.test.Triangle">
+    </bean>
+    <bean class="org.test.beanpostprocessor"/>
+</beans>
+
+class beanpostprocessor
+{
+	@override metthos
+	public Objecct postProcessBeforeIntialization(Object bean,String beanName)
+	{
+		sop();
+		return beanName;
+	}
+	public Objecct postProcessAfterIntialization(Object bean,String beanName)
+	{
+		sop();
+		return beanName;
+	}
+}
+
+----------------------------------------------------------------------------------------
+
+
+video 16: Bean Factor Post Processor
+
+If you want to implement any piece of code before initialistion of beanfactory. Then we have to choose this.
+The best example when we have to use this is loading of properties files.
+
+myprops.properties
+------------------
+pointA.valuex=0
+pointA.valuey=0
+
+
+beans.xml
+---------
+<beans>
+	<bean id="triangle" class="org.test.Triangle">
+	    <property name="pointA" ref="pointA"/>
+	    <property name="pointB" ref="pointB"/>
+	    <property name="pointC" ref="pointC"/>
+	</bean>
+
+	<bean id="pointA" class="org.test.Point">
+	    <propety name="x" value=${pointA.vlauex}/>
+    	    <propety name="y" value=${pointA.vlauey}/>
+	</bean>
+	---
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+	     <property name="locations" value="myprops.properties"/> // if properties file ans beans.xml file at same place 
+	     <property name="locations" value="classpath:myprops.properties"/> //if properties file ans beans.xml file at differnt place. we can give relative path as well. 
+	</bean>
+
+</beans>
+
+
+we can implement beanfactorypostprocessor like above (vidoe 15) creating separate calss implementing BeanFactoryPostProcesser interface.
+
+
+----------------------------------------------------------------------------------------
+
+
+video: 17
+simple interface implementation example
+
+----------------------------------------------------------------------------------------
+
+video 18:
+
+Required annotation:
+
+class Circle
+{
+    private Point circle;
+
+    @Required
+    public void setCircle(Point circle)
+    {
+        this.circle=circle;
+    }
+}
+
+beans.xml
+---------
+<beans>
+	<bean id="circle" class="org.test.Circle"> 	
+	</bean>
+</beans>
+
+<bean class="org.springframework.beans.factory.annotation.RequiredAnnotaionBeanPostProcessor"/>
+
+// in Circle class we defined one circle var. but while defining in xml we not defined property. If yo run the code we will encounter
+	with the runtime exception. So we are implementing now required anntoation post processor so that when we ran this code we can see the
+	error message on console as "circle property is required pls define or initialyze"
+
+----------------------------------------------------------------------------------------
+
+video 19:
+
+Autowired annotation : basically used for defining of bean propery.
+while defining the property it will follows the following rules.
+1. First checks the property variable type
+2. Name of the property variable
+3. Qualifier name
+	
+	In the first case, the property which was defined as @Autowired reads the property type. And checks is thery any beans id are present
+	in the .xml wiht the same type. If xml has only one bean wiht the same type then directly the property would initialised by spring
+	If suppose the @Autowired property type has multiple entries in xml file then it checks the name (beanid). Like is any bean id as same 
+	name as @autowired propety name if so it would initialyze with that other wise it checks is any bean has property value of "Qualifier".
+
+
+
+class Circle
+{
+    private Point circle;
+
+    @Autowired
+    @Qualifier("circlerelated")
+    public void setCircle(Point circle)
+    {
+        this.circle=circle;
+    }
+}
+
+beans.xml
+---------
+<beans>
+	
+	<bean id="pointA" class="org.test.Point">
+	    <qualifier="circlerelated"/>
+	    <propety name="x" value=${pointA.vlauex}/>
+    	    <propety name="y" value=${pointA.vlauey}/>
+	</bean>
+	<bean id="pointB" class="org.test.Point">
+	    <propety name="x" value=${pointA.vlauex}/>
+    	    <propety name="y" value=${pointA.vlauey}/>
+	</bean>
+	<bean id="pointC" class="org.test.Point">
+	    <propety name="x" value=${pointA.vlauex}/>
+    	    <propety name="y" value=${pointA.vlauey}/>
+	</bean>
+
+
+	<bean id="circle" class="org.test.Circle"> 	// it should not have the property tag then only autowired will come to the picture.
+	</bean>
+</beans>
+
+<contex: annotaion-config/>
+
+inther above example when spring encountered by keyword @Autowired it searches in xml file how many beans are present with type of "Point" class
+in this example it found three so it got confused to which bean suppose to initialise, So checks the second criteria like is there any bean defined 
+wiht the name as "circle" in xml as it not found any entries it will search for third criteria qualifier "circlerelated" is defined in any bean 
+as it found one bean so it would intialysed with that.
+
+If you want to keep keyword qualifier you have to change the syntax of <beans> tag.
+it should be like <beans xmlns:https://-- schemabeans; https://--extra > --- </beans>
+
+----------------------------------------------------------------------------------------
+
+video 20:
+JSR250 Annotations: java specification request (these are javas standard annotations not belongs to spring)
+
+@Resource (similar to Autowired)
+@PostConstruct
+@PreDestroy
+
+
+class Circle
+{
+    private Point circle;
+
+    @Resource (name="pointC")       // initialysed with pointC as bean id.
+    public void setCircle(Point circle)
+    {
+        this.circle=circle;
+    }
+
+    @PostConstruct
+    public void Iinital()
+    {
+	Sop("After initialysation");
+    }
+    @PreDestroy
+    public void destroy()
+    {
+	Sop("before destory");
+    }
+	
+}
+
+
+main class:
+-----------
+	AbstractApplicationContex context= new ClassPathXmlApplicationContext("beans.xml");
+	context.registerShutdownHook();
+
+if you not done the registrater the hook then destory method wont execute.
+
+----------------------------------------------------------------------------------------
+
+video 21:
+
+@component tag and stereotypes
+
+	As you know that if you want to create any bean object using the getbean() method you have to create a call separately and must have
+	to made an entry in .xml file as <bean id="" class=""/>.
+	If you dont want to made entry in .xml file then you have to define @Component annotation on top of the class definition. And you must
+	have to make one new entry in xml file with the tag <context:component-scan> other wise the class which was annotated wiht @component wont
+	be initialysed.
+
+@Componet
+class Circle 
+{
+	private Point circle;
+	//getters and setters with @Autowired
+}
+
+beans.xml
+---------
+<beans schemas>
+	<beand id="pointA" class="org.test.Point">
+	    <property name="" value=""/>
+	</bean>
+
+	// not required to make entry for circle class
+	<contex:annotation-config />
+	<context:componet-scan base-package="org.test" />
+</bean>
+
+main class:
+-----------
+context.getBean("circle"); // Even though class name Circle has first letter as Capital, while calling getBean() treated as "circle" small's.
+
+@Component
+@Controller
+@Repository -- Its a (DAO)Data Access Object.
+@Service
+
+the above four annotations are called as stereotype annotations. These has its own functionalities. These were used in Spring MVC projects.
+
+----------------------------------------------------------------------------------------
+
+video 22:
+
+Message Sources: To display user defined messages using place holders.
+
+beans.xml
+---------
+<bean id="messageSource" class="org.springframework.contex.support.ResourceBundleMessageSource">
+	<property name="basenames">
+		<list>
+			<value>mymessages</value>
+		</list>
+	</property>
+</bean>
+
+mymessages.properties
+---------------------
+message1=Test
+message2=Test({0},{1})
+
+we can implement in two ways one is in mainclass or in individula class.
+In Main class:
+--------------
+contex.getMessage("message",null,"Default Message",null);
+
+In Circle Class:
+----------------
+private MessageSource messageSource;
+//getters and setters
+void draw()
+{
+	this.messageSource.getMessage("message1",null,"Default Message",null);
+	this.messageSource.getMessage("message2",new Objecct[]{center.getx(),center.gety()},"default message",null);
+}
+
+
+----------------------------------------------------------------------------------------
+
+video 23:
+
+Event handling  Listen one more time
+
+----------------------------------------------------------------------------------------
+
+video 24:
+
+
+
+
+-----------------------------------------------------------------------------------------
+
+------------------------------------------------------------------
+
+video 38:
+Adding spring and DataSource Configuration
+
+spring.xml
+----------
+<beans xmls:----->
+	
+	<context:annotation-config/>
+	<context:component-scan base-package="org.koushik.javabrains"/>
+	
+	<bean id="dataSource" name="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="org.apache.derby.jdbc.ClientDriver"/>
+		<property name="url" value="jdbc://localhost:1527//db;create=true"/>
+	</bean>
+	
+</beans>
+
+pooling mechanism
+-----------------
+<beans xmls:----->
+	
+	<context:annotation-config/>
+	<context:component-scan base-package="org.koushik.javabrains"/>
+	
+	<bean id="dataSource" name="org.apache.commons.dbcp.BasicDataSource">
+		<property name="driverClassName" value="org.apache.derby.jdbc.ClientDriver"/>
+		<property name="url" value="jdbc://localhost:1527//db;create=true"/>
+		<property name="initialsize" value="2"/>
+		<property name="maxActive" value="5"/>
+	</bean>
+	
+</beans>
+
+
+pkg org.koushik.javabrains.jdbcdao
+jdbcdaoImpl.java
+-----------------
+@component
+class jdbcdaoImpl
+{
+	@Autowired
+	private DataSource datasource;
+	//getters and setters
+
+	public Circle getCircle(int circleId)
+	{
+		try{
+			Connection conn=dataSource.getConnection();
+			Pstmt pstmt=conn.PStmt("select * from cicle where circleId=?");
+			pstmt.setInt(1,circleId);
+			ResultSet rs=ps.executeQuery();
+			if(rs.next())
+			{
+			   Circle c= new Circle(circleId,rs.getString("name"));
+			}
+			pstmt.close();
+			rs.close();
+			return c;
+		}
+
+		catch(){
+		}
+	}
+}
+
+main class
+----------
+pkg org.koushik.javabrains;
+public class JdbcDemo
+{
+	psvm()
+	{
+		ApplicationContext context=new ClasspathXMLApplicationContext("spring.xml");
+		jdbcdaoImpl di=context.getBean("jdbcdaoImpl",jdbcdaoImpl.class);
+		Circle c=di.getCircle(1);
+		sop(c.getName());
+	}
+
+}
+
+
+------------------------------------------------------------------
+
+video 39:
+JDBC Template class - Basically will be used for to minimise the code snippet.
+with adding functionalities like "before execution of query" and "after execution of Query".
+when ever we want to retrive data from db that time create of connection obj and traversing restultset is common in all situations.
+
+pkg org.koushik.javabrains.jdbcdao
+jdbcdaoImpl.java
+-----------------
+@component
+class jdbcdaoImpl
+{
+	@Autowired
+	private DataSource datasource;
+	private JdbcTemplate jdbcTemplate= new JdbcTemplate(); // This is the not right place to create jdbctemplate object.
+	//getters and setters
+
+	public Circle getCircle(int circleId)
+	{
+		try{
+			Connection conn=dataSource.getConnection();
+			Pstmt pstmt=conn.PStmt("select * from cicle where circleId=?");
+			pstmt.setInt(1,circleId);
+			ResultSet rs=ps.executeQuery();
+			if(rs.next())
+			{
+			   Circle c= new Circle(circleId,rs.getString("name"));
+			}
+			pstmt.close();
+			rs.close();
+			return c;
+		}
+
+		catch(){
+		}
+	}
+
+	public int getNumberofCircles();
+	{
+		String sql="select count(*) from circle";
+		jdbcTemplate.setDataSource(getDataSource());
+		return jdbcTemplate.queryForInt(sql);
+	}
+}
+
+main class
+----------
+SOP(di.getNumberofCircles());
+
+
+Another ways to initialyse jdbctemplate object.
+1. while initialysing of data source itself.
+2. making new bean entry in xml file for "jdbcTemplate"
+
+1.jdbcdaoImpl.java
+-----------------
+@component
+class jdbcdaoImpl
+{
+	private DataSource datasource;
+	private JdbcTemplate jdbcTemplate;
+	//getters and setters
+
+	@Autowired
+	public void setDataSource(DataSource dataSource)
+	{
+		this.jdbcTemplate= new jdbcTemplate(dataSource);	
+	}
+
+	public int getNumberofCircles();
+	{
+		String sql="select count(*) from circle";
+		return jdbcTemplate.queryForInt(sql);
+	}
+}
+
+------------------------------------------------------------------
+
+
+video 40 and 41:
+
+returning Sting datatypes from jdbctemplate
+
+public String getCircleName(int circleid)
+{
+	String sql="selct name from circle where id=?"
+	return jdbcTemplate.queryForObject(sql,new Object[]{circleid},String.class);
+	// 1. Sql query
+	// 2. Runtime passed parameters to the query
+	// 3. Type of the objects which return from query after execution
+}
+
+
+returning modle object datatypes from jdbctemplate
+
+public Circle getCircleforId(int circleid)
+{
+	String sql="select * from circle where id=?";
+	return jdbcTemplate.queryForObject(sql,new Object[]{circleid},new circleMapper());
+}
+
+public List<Circle> getallCircles()
+{
+	String sql="select * from circle ";
+	return jdbcTemplate.queryForObject(sql,new circleMapper());   // in mani--> SOP( di.getallCircles().size());
+}
+
+private static final class circleMapper implements RowMapper<Circle>() // its imp
+{
+	public Circle mapRow(ResultSet rs,int rowNum) throws SQLExcetpion
+	{
+		Circel c=new Ciecle();
+		c.setId(rs.getInt("id"));
+		c.setName(rs.getString("name"));
+		return c;
+	}
+}
+
+------------------------------------------------------------------
+
+video 42:
+
+write data into db using jdbctemplate
+
+
+public void insertCircle(Circle circle)
+{
+	String sql="insert into circle (id,name) values(?,?)";
+	jdbcTemplate.update(sql,new Object[]{circle.getId(),circle.getName()});  // in main--> dao.insertCircle(new Circle(2,"second circle"));
+}
+
+
+//DDL stmt
+
+public void createTable()
+{
+	String sql="create table triangle (id integer, name varchar(50)) ";
+	jdbcTemplate.execute(sql);
+}
+
+
+------------------------------------------------------------------
+
+video 43:
+
+Named parameter jdbc template
+
+the limitation of normal "jdbctemplate" that it wont support named paramers in SQL query. means its supports only "?" place holders.
+To support this functionality there is a separate class existing that class name is "NamedParamebterJdbcTemplate".
+
+It similar to the JdbcTemplate.
+
+1.jdbcdaoImpl.java
+-----------------
+@component
+class jdbcdaoImpl
+{
+	private DataSource datasource;
+	private JdbcTemplate jdbcTemplate;
+	private NamedParameterJdbcTemplate namedparameterjdbcTemplate;
+	//getters and setters
+
+	@Autowired
+	public void setDataSource(DataSource dataSource)
+	{
+		this.jdbcTemplate= new JdbcTemplate(dataSource);
+		this.namedparameterjdbcTemplate=new NamedParameterJdbcTemplate(dataSource);
+	}
+
+	public int getNumberofCircles();
+	{
+		String sql="select count(*) from circle";
+		return jdbcTemplate.queryForInt(sql);
+	}
+
+	public void insertCircle(Circle circle)
+	{
+		String sql="insert into circle (id,name) values(:id,:name)"; // named parameters
+		sqlParameterSource namedparameters = new MapsqlParameterSource("id",circle.getId()).addValue("name",circle.getName()); 
+		namedparameterjdbcTemplate.update(sql,namedparameters);		
+	}
+}
+
+
+Using SimpleJdbcTemplate we can implement both namedparameter placeholders and as well as "? parameter" placeholders.
+But it wont have much features. It has limited features.
+
+
+
+
+
+
+-----------------------------------------------------------------------------------------
+
+video 45:
+
+Using Hibernate wiht Spring
+
+beans.xml
+---------
+
+<bean id="sessionFacotry" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactory">
+	<propery name="dataSource" ref="dataSource"/>
+	<property name="packagetoScan" value="org.test.model"/>
+	<property name="hibernateProperties">
+		<props>
+			<prop key="diaelct"> org.hibernate.dialect.DerbyDialect </prop> 
+		</props>
+	</property>
+</bean>
+
+@Repository
+class HibernateDaoImpl
+{
+	@Autowired
+	private SessionFactory sessionFactory;
+	//gettters and setters
+
+	public int getCircleCount()
+	{
+		String hql="select count(*) from circle";
+		Query query=getsessionFactory().openSession().createQuery(hql);
+		return ((Long)query.uniqueResult()).intValue();
+	}
+}
+
+
+
+------------------------------------------------------------------------
+
+Spring Security 3.0.1
+https://www.youtube.com/watch?v=Q3yStECBuAg
+
+3 jars imprt
+
+1. spring-security-config-3.0.1.release.jar
+2. spring-security-core-3.0.1.release.jar
+3. spring-security-web-3.0.1.release.jar
+
+
+step 1: add filters in web.xml
+<web.xml>
+//
+<!-- spring security -->
+
+<filter>
+	<filter-name>springSecurityFilterChain</filter-name>
+	<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+</filter>
+
+<filter-mapping>
+	<filter-name>springSecurityFilterChain</filter-name>
+	<url-pattern>/*</url-pattern>
+</filter-mapping>
+
+step 2:

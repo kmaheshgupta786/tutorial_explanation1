@@ -1,0 +1,591 @@
+1. we cant start thread twice will get exception : IllegalThreadStateException
+2. Thread sleep() and yield() methods are static.
+3. volatile: When we use volatile keyword with a variable, all the threads read it’s value directly from the memory and don’t cache it. 
+   This makes sure that the value read is the same as in the memory. 
+   
+   why volatile keyword assigned to variables only not for methods?
+   Assume a scenario, method has reference of other class. Useually object references are created in heap, threads will be saved in stack. And thread wont access the heap memory due to this reason volatile cant apply on method level.
+   
+4. create daemon thread : Thread class setDaemon(true) can be used to create daemon thread in java.
+   We need to call this method before calling start() method else it will throw IllegalThreadStateException. 
+   eg: public class DaemonThread extends Thread{     
+			public DaemonThread(){
+				setDaemon(true);
+			}
+			public void run(){
+				System.out.println("Is this thread Daemon? - "+isDaemon());
+			}
+			public static void main(String a[]){
+				DaemonThread dt = new DaemonThread();
+				// even you can set daemon constrain here also
+				// it is like dt.setDeamon(true)
+				dt.start();
+			}
+		}   
+5. Thread dump is list of all the threads active in the JVM, 
+   thread dumps are very helpful in analyzing bottlenecks in the application and analyzing deadlock situations.		
+   Tools:  Profiler, Kill -3 command, jstack(in built of JDK) tool etc. In Unix Syntax: jstack PID
+   
+   
+6. java.util.Timer: is a utility class that can be used to schedule a thread to be executed at certain time in future.  
+   Java Timer class can be used to schedule a task to be run one-time or to be run at regular intervals.   
+   eg: http://www.journaldev.com/1050/java-timer-and-timertask-example-tutorial   -- timer.scheduleAtFixedRate(timerTask, 0, 10*1000);
+   
+   
+7. Thread pool: A thread pool manages the pool of worker threads, it contains a queue that keeps tasks waiting to get executed.
+   java.util.concurrent.Executors provide implementation of java.util.concurrent.Executor interface to create the thread pool in java.  
+
+   
+8. t1 complete first; later t2 ; later t3 (seq exec of threads) - using join; for the first thread t1 we have to use t1.join(millisec);
+   http://www.journaldev.com/1024/java-thread-join-example-with-explanation
+ 
+
+9. What are Concurrent Collection Classes? -- to over come from fail-fast issue.
+   List: CopyOnWriteArrayList
+   Set:  CopyOnWriteArraySet
+   Map: ConcurrentHashMap
+   
+   
+10. Blocking Queue:
+    java.util.concurrent.BlockingQueue is a Queue that supports operations that wait for the queue to become non-empty when 
+		retrieving and removing an element, and wait for space to become available in the queue when adding an element.
+	BlockingQueue doesn’t accept null values and throw NullPointerException if you try to store null value in the queue.
+	BlockingQueue implementations are thread-safe. All queuing methods are atomic in nature and use internal locks or other forms 
+		of concurrency control.   
+    eg: ArrayBlockingQueue, LinkedBlockingQueue, PriorityBlockingQueue, SynchronousQueue etc.
+		BlockingQueue<Message> queue = new ArrayBlockingQueue<>(10);
+		http://www.journaldev.com/1034/java-blockingqueue-example-implementing-producer-consumer-problem
+   
+11. Lock vs synchronized
+	http://www.journaldev.com/2377/java-lock-example-and-concurrency-lock-vs-synchronized
+	Based on above details and program, we can easily conclude following differences between Lock and synchronization.
+    - Lock provides more visibility and options for locking, unlike synchronized where a thread might end up waiting indefinitely for the lock, 
+	  we can use tryLock() to make sure thread waits for specific time only.
+    - Synchronization code is much cleaner and easy to maintain whereas with Lock we are forced to have try-finally block to make sure Lock is 
+	  released even if some exception is thrown between lock() and unlock() method calls.
+    - synchronization blocks or methods can cover only one method whereas we can acquire the lock in one method and release it in 
+	  another method with Lock API.
+    - synchronized keyword doesn’t provide fairness whereas we can set fairness to true while creating ReentrantLock object so that longest 
+	  waiting thread gets the lock first.
+    - We can create different conditions for Lock and different thread can await() for different conditions.
+   
+12. Atomic classes:
+	http://www.journaldev.com/1095/java-atomic-operations-atomicinteger-example
+	Atomic operations are performed in a single unit of task without interference from other operations. Atomic operations are necessity in multi-threaded 
+	environment to avoid data inconsistency.    
+	
+	import java.util.concurrent.atomic.AtomicInteger; 				AtomicLong; 				AtomicReference
+	import java.util.concurrent.atomic.AtomicIntegerArray;			AtomicLongArray;			AtomicReferenceArray;
+	import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;	AtomicLongFieldUpdater;		AtomicReferenceFieldUpdater;
+	import java.util.concurrent.atomic.AtomicBoolean;
+	eg: private final AtomicInteger number = new AtomicInteger();
+		public void incrementNumber() {
+			number.getAndIncrement();
+		}
+		public int getNumber() {
+			return this.number.get();
+		}
+
+13. What is the difference between static synchronized and synchronized methods?
+	- Static synchronized methods synchronize on the class object. If one thread is executing a static synchronized method, all other threads trying to execute any static synchronized methods will be blocked.
+	- Non-static synchronized methods synchronize on this ie the instance of the class. If one thread is executing a synchronized method, all other threads trying to execute any synchronized methods will be blocked. 
+	
+
+
+--------------------------------------
+
+Durga : 
+
+video 1: Core Java-Multi-Threading-Synchronization-Part 1
+
+If u declare any method as synchronzied then if a thread wants to execute that synchronized method
+it (thread) should first acquire the lock of that instance(object) then only jvm will allow that
+thread to execute the synchronized method to access the data from instance.
+
+
+video 2 : Core Java-Multi-Threading-Synchronization-Part 2 
+
+
+---------------------------------------------------------------------------------------
+https://www.youtube.com/watch?v=Hysb7hXp8B0&list=PLd3UqWTnYXOlHj_fVVjUIVHjD5uEy2kk4
+
+
+
+
+-------------------------------------------------------------------------------------------
+producer - consumer - problem - wait , notify, notifyall
+
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Random;
+
+/**
+ * Simple Java program to demonstrate How to use wait, notify and notifyAll()
+ * method in Java by solving producer consumer problem.
+ * 
+ * @author Javin Paul
+ */
+public class ProducerConsumerInJava {
+
+    public static void main(String args[]) {
+        System.out.println("How to use wait and notify method in Java");
+        System.out.println("Solving Producer Consumper Problem");
+        
+        Queue<Integer> buffer = new LinkedList<>();
+        int maxSize = 10;
+        
+        Thread producer = new Producer(buffer, maxSize, "PRODUCER");
+        Thread consumer = new Consumer(buffer, maxSize, "CONSUMER");
+        
+        producer.start();
+        consumer.start();
+        
+
+    }
+
+}
+
+/**
+ * Producer Thread will keep producing values for Consumer
+ * to consumer. It will use wait() method when Queue is full
+ * and use notify() method to send notification to Consumer
+ * Thread.
+ * 
+ * @author WINDOWS 8
+ *
+ */
+class Producer extends Thread {
+    private Queue<Integer> queue;
+    private int maxSize;
+    
+    public Producer(Queue<Integer> queue, int maxSize, String name){
+        super(name);
+        this.queue = queue;
+        this.maxSize = maxSize;
+    }
+    
+    @Override
+    public void run() {
+        while (true) {
+            synchronized (queue) {
+                while (queue.size() == maxSize) {
+                    try {
+                        System.out .println("Queue is full, "
+                                + "Producer thread waiting for "
+                                + "consumer to take something from queue");
+                        queue.wait();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+
+                Random random = new Random();
+                int i = random.nextInt();
+                System.out.println("Producing value : " + i);
+                queue.add(i);
+                queue.notifyAll();
+            }
+
+        }
+    }
+}
+
+/**
+ * Consumer Thread will consumer values form shared queue.
+ * It will also use wait() method to wait if queue is
+ * empty. It will also use notify method to send 
+ * notification to producer thread after consuming values
+ * from queue.
+ * 
+ * @author WINDOWS 8
+ *
+ */
+class Consumer extends Thread {
+    private Queue<Integer> queue;
+    private int maxSize;
+    
+    public Consumer(Queue<Integer> queue, int maxSize, String name){
+        super(name);
+        this.queue = queue;
+        this.maxSize = maxSize;
+    }
+    
+    @Override
+    public void run() {
+        while (true) {
+            synchronized (queue) {
+                while (queue.isEmpty()) {
+                    System.out.println("Queue is empty,"
+                            + "Consumer thread is waiting"
+                            + " for producer thread to put something in queue");
+                    try {
+                        queue.wait();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+
+                }
+                System.out.println("Consuming value : " + queue.remove());
+                queue.notifyAll();
+            }
+
+        }
+    }
+}
+
+Output
+How to use wait and notify method in Java
+Solving Producer Consumper Problem
+Queue is empty,Consumer thread is waiting for producer thread to put something in queue
+Producing value : -1692411980
+Producing value : 285310787
+Producing value : -1045894970
+Producing value : 2140997307
+Producing value : 1379699468
+Producing value : 912077154
+Producing value : -1635438928
+Producing value : -500696499
+Producing value : -1985700664
+Producing value : 961945684
+Queue is full, Producer thread waiting for consumer to take something from queue
+Consuming value : -1692411980
+Consuming value : 285310787
+Consuming value : -1045894970
+Consuming value : 2140997307
+Consuming value : 1379699468
+Consuming value : 912077154
+Consuming value : -1635438928
+Consuming value : -500696499
+Consuming value : -1985700664
+Consuming value : 961945684
+Queue is empty,Consumer thread is waiting for producer thread to put something in queue
+Producing value : 1182138498
+
+
+Read more: https://javarevisited.blogspot.com/2015/07/how-to-use-wait-notify-and-notifyall-in.html#ixzz5u6FxhOeI
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Blocking queue - producer - consumer - problem
+
+ import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public class ProducerConsumerPattern {
+
+    public static void main(String args[]){
+  
+     //Creating shared object
+     BlockingQueue sharedQueue = new LinkedBlockingQueue();
+ 
+     //Creating Producer and Consumer Thread
+     Thread prodThread = new Thread(new Producer(sharedQueue));
+     Thread consThread = new Thread(new Consumer(sharedQueue));
+
+     //Starting producer and Consumer thread
+     prodThread.start();
+     consThread.start();
+    }
+ 
+}
+
+//Producer Class in java
+class Producer implements Runnable {
+
+    private final BlockingQueue sharedQueue;
+
+    public Producer(BlockingQueue sharedQueue) {
+        this.sharedQueue = sharedQueue;
+    }
+
+    @Override
+    public void run() {
+        for(int i=0; i<10; i++){
+            try {
+                System.out.println("Produced: " + i);
+                sharedQueue.put(i);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Producer.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
+}
+
+//Consumer Class in Java
+class Consumer implements Runnable{
+
+    private final BlockingQueue sharedQueue;
+
+    public Consumer (BlockingQueue sharedQueue) {
+        this.sharedQueue = sharedQueue;
+    }
+  
+    @Override
+    public void run() {
+        while(true){
+            try {
+                System.out.println("Consumed: "+ sharedQueue.take());
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Consumer.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+  
+  
+}
+
+Output:
+Produced: 0
+Produced: 1
+Consumed: 0
+Produced: 2
+Consumed: 1
+Produced: 3
+Consumed: 2
+Produced: 4
+Consumed: 3
+Produced: 5
+Consumed: 4
+Produced: 6
+Consumed: 5
+Produced: 7
+Consumed: 6
+Produced: 8
+Consumed: 7
+Produced: 9
+Consumed: 8
+Consumed: 9
+
+Read more: https://javarevisited.blogspot.com/2012/02/producer-consumer-design-pattern-with.html#ixzz5u6KtXXQ3
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Executor service:
+
+ExecutorService executorService1 = Executors.newSingleThreadExecutor();
+ExecutorService executorService2 = Executors.newFixedThreadPool(10);
+ExecutorService executorService3 = Executors.newScheduledThreadPool(10);
+
+
+execute(Runnable)				-- void
+submit(Runnable)				-- FutureObject
+submit(Callable)				-- FutureObject
+invokeAny(List<Callable>)		-- one FutureObject		
+invokeAll(List<Callable>)		-- List of FutureObject
+
+
+example: execute(Runnable)
+--------------------------
+ExecutorService executorService = Executors.newSingleThreadExecutor();
+
+executorService.execute(new Runnable() {
+    public void run() {
+        System.out.println("Asynchronous task");
+    }
+});
+
+executorService.shutdown();
+
+
+
+example: submit(Runnable)
+-------------------------
+Future future = executorService.submit(new Runnable() {
+    public void run() {
+        System.out.println("Asynchronous task");
+    }
+});
+
+future.get();  //returns null if the task has finished correctly.
+
+
+example: submit(Callable)
+-------------------------
+Future future = executorService.submit(new Callable(){
+    public Object call() throws Exception {
+        System.out.println("Asynchronous Callable");
+        return "Callable Result";
+    }
+});
+
+System.out.println("future.get() = " + future.get());
+
+
+example: invokeAny(...)
+-------------------------
+ExecutorService executorService = Executors.newSingleThreadExecutor();
+
+Set<Callable<String>> callables = new HashSet<Callable<String>>();
+
+callables.add(new Callable<String>() {
+    public String call() throws Exception {
+        return "Task 1";
+    }
+});
+callables.add(new Callable<String>() {
+    public String call() throws Exception {
+        return "Task 2";
+    }
+});
+callables.add(new Callable<String>() {
+    public String call() throws Exception {
+        return "Task 3";
+    }
+});
+
+String result = executorService.invokeAny(callables);
+
+System.out.println("result = " + result);
+
+executorService.shutdown();
+
+
+- explanation:  
+The invokeAny() method takes a collection of Callable objects, or subinterfaces of Callable. Invoking this method does not return a Future, but returns the result of one of the Callable objects. You have no guarantee about which of the Callable's results you get. Just one of the ones that finish.
+
+If one of the tasks complete (or throws an exception), the rest of the Callable's are cancelled. 
+
+This code example will print out the object returned by one of the Callable's in the given collection. I have tried running it a few times, and the result changes. Sometimes it is "Task 1", sometimes "Task 2" etc. 	
+
+
+
+
+
+example: invokeAll(...)
+-------------------------
+
+ExecutorService executorService = Executors.newSingleThreadExecutor();
+
+Set<Callable<String>> callables = new HashSet<Callable<String>>();
+
+callables.add(new Callable<String>() {
+    public String call() throws Exception {
+        return "Task 1";
+    }
+});
+callables.add(new Callable<String>() {
+    public String call() throws Exception {
+        return "Task 2";
+    }
+});
+callables.add(new Callable<String>() {
+    public String call() throws Exception {
+        return "Task 3";
+    }
+});
+
+List<Future<String>> futures = executorService.invokeAll(callables);
+
+for(Future<String> future : futures){
+    System.out.println("future.get = " + future.get());
+}
+
+executorService.shutdown();
+
+- explanation:  
+ The invokeAll() method invokes all of the Callable objects you pass to it in the collection passed as parameter. The invokeAll() returns a list of Future objects via which you can obtain the results of the executions of each Callable.
+
+Keep in mind that a task might finish due to an exception, so it may not have "succeeded". There is no way on a Future to tell the difference. 
+
+
+
+
+
+
+Runnable vs Callable:
+------------------------
+public interface Runnable {
+    public void run();
+}
+
+public interface Callable{
+    public Object call() throws Exception;
+}
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Q) How to handle runtime exception.
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Q) how to achieve get some responses from thread1 later from thread2 then thread1 .... and so on, using compleatableFuture object
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Author: Defog Tech
+
+Topics: 
+Countdown Latch - Main thread will wait till, all child threads called the latch countdown.
+Cyclic Barrier - Main thread continues, all child threads waits until all initialization completes and starts task at a time and repeasts the action.
+phaser - its combination of countdown Latch + cyclicBarrier
+thread fork and join - Main task divided into small tasks (independent to each other) and merges the all tasks results and then return the final result.
+
+
+countdown latch example:
+-----------------------
+Countdown Latch - Main thread will wait till, all child threads called the latch countdown.
+
+
+class Test{
+
+	ExecutorService executor = Executors.newFixedThreadPool(5);
+	CountdownLatch latch = new CountdownLatch(3);
+	
+	executor.submit(new TaskRunnable(latch));
+	executor.submit(new TaskRunnable(latch));
+	executor.submit(new TaskRunnable(latch));
+	
+	latch.await();
+
+}
+
+class TaskRunnable implements runnable{
+
+	private CountdownLatch latch;
+	TaskRunnable(CountdownLatch latch){
+		this.latch = latch;
+	}
+	public void run(){
+		latch.countdown();
+		
+	}
+}
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+cyclicBarrier - Main thread continues, all child threads waits until all initialization completes and starts task at a time and repeasts the action.
+
+class Test{
+	ExecutorService executor = Executors.newFixedThreadPool(5);
+	CyclicBarrier barrier = new CyclicBarrier(3);
+	
+	executor.submit(new TaskRunnable(barrier));
+	executor.submit(new TaskRunnable(barrier));
+	executor.submit(new TaskRunnable(barrier));
+}
+
+class TaskRunnable implements runnable{
+
+	private CyclicBarrier barrier;
+	
+	TaskRunnable(CyclicBarrier barrier){
+		this.barrier = barrier;
+	}
+	public void run(){		
+		while(true){
+			barrier.await();
+		}		
+	}
+}
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+

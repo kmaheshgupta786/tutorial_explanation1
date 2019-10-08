@@ -1,0 +1,82 @@
+Micro Services:
+
+https://www.knowledgehut.com/interview-questions/microservices -- good one 46 questions
+
+
+
+Q) Define MicroServices Architecture.
+
+Ans:
+Microservices Architecture is a style of developing a scalable, distributed & highly automated system made up of many small autonomous services. It is not a technology but a new trend evolved out of SOA.
+
+There is no single definition that fully describes the term "microservices". Some of the famous authors have tried to define it in the following way:
+
+    Microservices are small, autonomous services that work together.
+    Loosely coupled service-oriented architecture with bounded contexts.
+    Microservice architecture is a natural consequence of applying the single responsibility principle at the architectural level.
+	
+	Architecture diagram:
+	Requests come from various devices (browser, mobile, iot device) 
+		----> API Gateway
+				----> mircroservices
+						----> its own dbs
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Q) When should one consider the microservice type of architecure?
+
+There are two cases.
+
+i) If you already have a monolith application and it grows to an extent where there are problems in scaling or we are not able to reutilize the components/modules/services across different projects/platforms and there is a need to do so. As well as at the same time implementing new features is painful and more error-prone and it is difficult to scale further.
+
+ii) For new applications where implementation has not started yet started, we can think of a business case to be efficiently implemented, which can be easily maintainable, testable and scalable in the future and might be used across other projects/products/platforms at the same time.
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Q) What is service discovery? how it helpful
+
+Ans: 
+
+In a cloud environment where docker images are dynamically deployed on any machine or IP + Port combination, it becomes difficult for dependent services to update at runtime. Service discovery is created due to that purpose only.
+
+Service discovery is one of the services running under microservices architecture, which registers entries of all of the services running under the service mesh. All of the actions are available through the REST API. So whenever the services are up and running, the individual services registers themselves to service discovery service and service discovery services maintains heartbeat to make sure that those services are alive. That also serves the purpose of monitoring services as well. Service discovery also helps in distributing requests across services deployed in a fair manner. ie: loadbalancing
+
+Q) find example how it works internally. what are all configurataions required for the same?
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Q) What is client side and server side service discovery?
+
+Ans:
+
+Instead of clients directly connecting to load balancer, in this architectural pattern the client connects to the service registry and tries to fetch data or services from it.
+
+Once it gets all data, it does load balancing on its own and directly reaches out to the services it needs to talk to.
+
+This can have a benefit where there are multiple proxy layers and delays are happening due to the multilayer communication.
+
+In server-side discovery, the proxy layer or API Gateway later tries to connect to the service registry and makes a call to appropriate service afterward. Over here client connects to that proxy layer or API Gateway layer.
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Q) How can you scale a microservice based system?
+
+Ans:
+
+
+Assuming that the majority of providers using microservices architecture,
+
+A. One can scale the system by increasing the number of instances of service by bringing up more containers.
+
+B. One can also apply to cache at microservice layer which can be easy to manage as an invalidation of the cache can be done very easily as the microservice will be the single source of truth.
+
+C. Caching can also be introduced at the API Gateway layer where one can define caching rules like when to invalidate the cache.
+
+D. One can also shut down some containers when the requirement is less. That is, scale down.
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+

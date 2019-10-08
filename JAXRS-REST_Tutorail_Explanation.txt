@@ -1,0 +1,1018 @@
+REST JAX RS - Tutorial Explanation
+----------------------------------
+Video 10: What is JAX RS?
+
+There are good no of libriers are exist to implement REST APIs.
+But all libraries implements JAX RS interfaces.
+So, if you learn any one libraries then you can able to implement REST api with any libraries.
+eg: libraries are : REST EASY
+					APache wing
+					Jersey
+					
+why jersey?
+"Reference implementation" for the jax-rs specification.
+
+----------------------------
+
+Video 11 : Setting Up 
+
+new -> Maven project ->  choose type as jersey-quickstat-webapp		
+
+if you not find "jersey-quickstat-webapp" project type in ecliplse
+you can add the archetype by clicking on add archetype.	
+add archetype:
+group id : org.glassfish.jersey.archetypes
+artifact : jersey-quickstat-webapp
+version : 2.16 (latest one)
+click ok
+
+url : http://localhost:8080/messenger
+-------------------------------
+
+Video 12 : understanding the application structure
+
+web.xml:
+
+<web-app>
+	<servlet>
+		<servlet-name>Jersey web application</servlet-name>
+		<servlet-class> org.glassfish.jersey.servlet.ServletContainer </servlet-class>
+		<init-param>
+			<param-name> jersey.config.server.provider.packages </param-name>
+			<param-value> org.koushik.javabrains.messenger </param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name> jersey web application</servlet-name>
+		<url-pattern> /webapi/*</url-pattern>
+	</servlet-mapping>
+</web-app>
+
+--------------------------------------
+
+Video 13 : creating a resource
+
+resource is a class,  url path var or url pattern
+
+@Path("/messages")
+public class MessageResource{
+
+	@GET
+	@Produces(MediaType.TEXT_PLAINN)
+	public String getMessages(){
+		return "hello Message";
+	}
+}
+
+
+url: to access : http://localhost:8080/messenger/webapi/messages
+
+---------------------------------------
+
+Video 14 : Returning XML response
+
+create Message class:
+
+public class Message{
+	private int id;
+	private String message;
+	private Date created;
+	private String author;
+	
+	//getters and setters
+}		
+
+public class MessageService{
+	public List<Message> getAllMessages(){
+	
+		List<Message> list = new List<Message>();
+		Message m1 = new Message(1,"message1","author1");
+		Message m2 = new Message(1,"message1","author1");
+		list.add(m1);
+		list.add(m2);
+		return list;
+	}
+}
+
+@Path("/messages")
+public class MessageResource{
+
+	MessageService m = new MessageService();
+	
+	@GET
+	@Produces(MediaType.APPLICATION_XML)
+	public List<Message> getAllMessages(){
+		return m.getAllMessages();
+	}
+}
+
+url : http://localhost:8080/messenger/webapi/messages --> when you tried to access url it throws exception becoz method return type xml but 
+service method returns the list of Message objs.
+To over come out from this error you have to add annotation "@XmlRootElement" at class level of bean obj which is returned as response.
+
+ie: eg: 
+@XmlRootElement
+public class Message{
+}
+
+After this change, u can access url through browser.
+
+------------------------------
+
+Video 15 : Installing a REST API Client
+
+explained how to use postman plugin
+
+----------------------------------------
+
+Video 16 : Building Service Stubs
+
+eg: getMessage(long id);
+	addMessage(Message m);
+	updateMessage(long id);
+	removeMessagae(long id);
+explained, added few more methods in service class and executed and shows the data.
+------------------------------------------
+
+Video 17 : Accessing Path Params
+
+
+@Path("/messages")
+public class MessageResource{
+
+	MessageService m = new MessageService();
+	
+	@GET
+	@Produces(MediaType.APPLICATION_XML)
+	public List<Message> getAllMessages(){
+		return m.getAllMessages();
+	}
+	
+	@Path("{messageid}")
+	@GET
+	@Produces(MediaType.APPLICATION_XML)
+	public String getMessage(@PathParam("messageid") long messageid){
+	}
+	
+}
+
+---------------------------
+
+Video 18 : Returning JSON Response
+
+to get response as json format, 1. we have to keep mediatype as "APPLICATION_JSON"
+								2. Need to declare artifact in pom.xml (for convert java object to json object)
+								<groupId> org.glassfish.jersey.media</groupId>
+								<artifactId>jersey-media-moxy</artifactId>
+
+@Path("/messages")
+public class MessageResource{
+
+	MessageService m = new MessageService();
+	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<Message> getAllMessages(){
+		return m.getAllMessages();
+	}
+	
+	@Path("{messageid}")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public String getMessage(@PathParam("messageid") long messageid){
+	}
+	
+}
+
+-------------------------------------------------------
+
+Video 19 : Implementing POST Method
+
+
+@Path("/messages")
+public class MessageResource{
+
+	MessageService m = new MessageService();
+	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<Message> getAllMessages(){
+		return m.getAllMessages();
+	}
+	
+	@Path("{messageid}")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public String getMessage(@PathParam("messageid") long messageid){
+	}
+	
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Message addMessage(Message message){
+		return message;
+	}
+}
+
+--------------------------------------------------------------
+
+Video 20 :  Implementing Update and Delete
+
+	@PUT
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Message updateMessage(@PathParam("messageid") long messageid, Message message){
+		return message;
+	}
+
+	@DELETE
+	@Path("{messageid}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public void deleteMessage(@PathParam("messageid") long messageid){
+		
+	}
+	
+----------------------------------------------------------------
+
+Video 21 : Implementing Profile Resource
+
+Explained all above methods with respect to profile object similar to Message object.
+Diff is in message service all methods took input as long(messageid) but here String (profilename) thats all.
+
+public class Profile{
+	private int profileId;
+	private String profileName;
+	private String firstName;
+	private String lastName;
+}	
+
+------------------------------------------------------------------------
+
+Video 22 : Pagination and Filtering
+
+public class MessageService{
+	private Map<long,Message> messages = DatabaseClass.getMessages();
+	
+	public MessageService(){
+		messages.put(1L, new Message(1,"name1","created1"));
+		messages.put(1L, new Message(1,"name2","created2"));
+	}
+	
+	// Filter - get all messages by year
+	public List<Message> getallmessagesbyyear(int year){
+		List<Message> list = new ArrayList<Message>();
+		Calendar cal = Calendar.getInstance();
+		for(Message m : messages.values()) {// return all messages
+			cal.setTime(m.getCreated());
+			if(cal.get(Calendar.YEAR) == year){
+				list.add(m);
+			}
+		}
+		return list;
+	}
+	
+	//pagination
+	public List<Message> getallmessagesbypaginated(int start, int size){
+		ArrayList<Message> list = new ArrayList<Message>(messages.values());
+		if(start+size > list.size()) return new ArrayList<Message>();
+		return list.sublist(start, start+size);
+	}
+}
+
+// Resource call
+
+@GET
+public List<Message> getMessages(@QueryParam("year") int year){
+	if(year > 0){
+		return messageService.getallmessagesbyyear(year);
+	}
+	return messageService.getAllMessages();
+}
+
+// for pagination you have to update the same method not required to add new method.
+@GET
+public List<Message> getMessages(@QueryParam("year") int year,
+								@QueryParam("start") int start,
+								@QueryParam("size") int size){
+	if(year > 0){
+		return messageService.getallmessagesbyyear(year);
+	}
+	if(start > 0 && size > 0){
+		return messageService.getallmessagesbypaginated(start,size);
+	}
+	return messageService.getAllMessages();
+}
+
+------------------------------------------
+
+Video 23 : The Param Annotations
+
+//creating new resource
+@Path
+@Produces(MediaType.TEXT_PLAINN)
+@Consumes(MediaType.TEXT_PLAINN)
+public class InjectDemoResource{
+	
+	@GET
+	@Path("annotations")
+	public String getParamusingAnnotations(@MatrixParam("param") String matrixParam,
+											@HeaderParam("customheadervalue") string headervlaue,
+											@CookieParam("name") String cookie){
+		return "Matrix param is : "+ matrixParam+ "customheadervalue : "+ headervlaue +"cookie :"+ cookie;
+	}
+}
+
+difference between query param and matrix param?
+Ans: you can check the diff in url pattern.
+for query params - we use ? as differentiator
+for matrixParam -  we use ; as differentiator
+
+
+URL to access matrixParam are: 
+http://localhost:8080/messenger/webapi/injetcdemo/annotations;param=testvalue
+
+o/p: Matrix param is : testvalue
+
+-------------------------------------------------------
+
+Video 24 : Using Context and Bean param annotations
+
+instead of adding/keeping all types of params as method input params we can use context param.
+
+@GET
+@Path("context")
+public String getParamsUsingContext(@Context UriInfo uriInfo){
+	String path = uriInfo.getAbsoluetePath().toString();
+	return "Path : "+path;
+	//to get all parms - uriInfo.getALLParamNames return Map
+	// to get all query parms - uriInfo.getALLQueryParams return Map
+}
+
+url : http://localhost:8080/messenger/webapi/context
+
+o/p: Path : http://localhost:8080/messenger/webapi/context
+
+
+code snippet:
+@Path("context")
+public String getParamsUsingContext(@Context UriInfo uriInfo, 
+									@Context HttpHeaders headers){
+	String path = uriInfo.getAbsoluetePath().toString();
+	String cookies = headers.getCookies().toString();
+	return "Path : "+path+"cookies : "+cookies;
+	
+}
+
+Bean param class creation:
+
+public class MessageFilterBean{
+	private @QueryParam("year") int year,
+	private @QueryParam("start") int start,
+	private @QueryParam("size") int size
+	//getters and setters
+}
+
+In resource class:
+
+@GET
+public List<Message> getMessages(@BeanParam MessageFilterBean filterbean){
+	if(filterbean.getyear() > 0){
+		return messageService.getallmessagesbyyear(filterbean.getyear());
+	}
+	if(filterbean.getstart() > 0 && filterbean.getsize() > 0){
+		return messageService.getallmessagesbypaginated(filterbean.getstart(),filterbean.getsize());
+	}
+	return messageService.getAllMessages();
+}
+
+-----------------------------------------------------------------------------------------------------
+
+Video 25 : Implementing subresources (comments)
+
+-------------------------------------------------------------------------
+
+Video 26 : Sending status codes and location headers
+
+//implementation of add message method with use of Response object as return ltype.
+
+in resource class:
+
+@POST
+public Response addMessage(Message msg){
+	Message m = messageService.addMessage(msg);
+	return Response.status(Status.CREATED)
+					.entity(m)
+					.build();
+}
+
+if u call above method, we get response code as 201, created.
+
+--
+@POST
+public Response addMessage(Message msg) throws URIException{
+	return Response.created(new URI("/messenger/webapi/messages/"+m.getId()))
+					.entity(m)
+					.build();
+}
+
+compilation error if u wont keep throws URIException
+--
+if u dont want to keep hard coded uri of application you can use the context annotation
+
+@POST
+public Response addMessage(Message msg, @Context UriInfo uriInfo) throws URIException{
+	//String path = uriInfo.getAbsoluetePath;
+	String newlyaddedmessageid=String.valueOf(m.getId());
+	URI uri = uriInfo.getAbsoluetePathBuilder().path(newlyaddedmessageid).build();
+	return Response.created(uri)
+					.entity(m)
+					.build();
+}		
+
+location header contains the value of newly added message url to access through browser.
+eg: Location path -> http://localhost:8080/messenger/webapi/messages/4	
+
+------------------------------------------------------------------------
+
+Video 27 : Handling Exceptions
+
+// consider scenario retrieve msg object which not exit in map.
+
+User defined Exception class:
+public class DataNotFoundExcetion extends RunTimeException{
+	DataNotFoundExcetion(String str){
+		super(str);
+	}
+}	
+
+In service class:
+public void getMessage(long messageid){
+	Message m = messagesmap.get(messageid);
+	if(m == null){
+		throw new MyExcetion("Message id not found : "+ messageid)
+	}
+	return m;
+}	
+
+after bove code chagnes execute url to get 200 msgid which not exist in map -- what will happen.
+Ans: as we not implemented handling exception in resource class, jersey servlet throw its own exception like 500 internal exception.(html response not like json format exception response)
+
+so, we have to make changes in resource class to handle exception properly.
+As consumer cant understand the exception what we are throwing, so better to share detailed userdefined exception with rectifyable msg it would be good to over come from exceptions.
+
+create Message error class:
+
+@XmlRootElement
+public class ErrorMessage{
+	private String errorMessage;
+	private int errorCode;
+	private String documentation;
+	// getters and setters
+	ErrorMessage(){} //default constructor
+	ErrorMessage(String errorMessage, int errorCode, String documentation){
+		this.errorMessage = errorMessage;
+		this.errorCode = errorCode;
+		this.documentation = documentation;
+	}
+}
+
+create new class datanotfoundexceptionMapper :
+
+@Provider     // its imp annotation
+public class DataNotFoundExceptionMapper implements ExceptionMapper<DataNotFoundExcetion>{
+	
+	@override
+	public Response toResponse(DataNotFoundExcetion  ex){
+		return Response.status(Status.NOT_FOUND).build();
+	}
+}
+
+
+after above code chagnes: exectue below url
+http://localhost:8080/messenger/webapi/messages/4000	
+
+now u can get the response as 404 (not found) ---> before provider call  u got 500 internal error.
+but still not seeing the json format error msg.
+
+@Provider     // updated few changes in toResponse method
+public class DataNotFoundExceptionMapper implements ExceptionMapper<DataNotFoundExcetion>{
+	
+	@override
+	public Response toResponse(DataNotFoundExcetion  ex){
+		ErrorMessage errmsg = new ErrorMessage(ex.getMessage(), 404, "http://documentation/link")
+		return Response.status(Status.NOT_FOUND)
+						.entity(errmsg)
+						.build();
+	}
+}
+
+after makeing above code chages : execute below url:
+http://localhost:8080/messenger/webapi/messages/4000	
+
+now u can get see the full fledege error msg in json format.
+eg:  o/p:
+{
+	"documentation" : "http://documentation/link",
+	"errorCode" : 404,
+	"errorMessage" : "Message not found with id : 4000"
+}
+
+
+-----
+
+ implementation of generic exception mapper
+ 
+@Provider     
+public class DataNotFoundExceptionMapper implements ExceptionMapper<Throwable>{
+	
+	@override
+	public Response toResponse(Throwable  ex){
+		ErrorMessage errmsg = new ErrorMessage(ex.getMessage(), 500, "http://documentation/link")
+		return Response.status(Status.INTERNAL_SERVER_ERROR)
+						.entity(errmsg)
+						.build();
+	}
+}
+
+--------------------------------------------------------------------------------------------------------------
+
+Video 28 : Using Web application Exception 
+
+consider get comment from message object - if it throws some type of exceptions 
+
+// inside service class
+
+public Comment getComment(long mid, long cid){
+	Message m = messages.get(mid);
+		if(m == null){
+			return throw new WebApplicationException(status.NOT_FOUND);
+		}
+	Map<long, Comment>	comments = messages.get(mid).getComments();
+	Comment comment = comments.get(commetId);
+	if(comment == null){
+			return throw new WebApplicationException(status.NOT_FOUND);
+		}
+		
+		return comment;
+}
+
+above code throws tomcat error page (html content), not found.
+
+updated code as:
+public Comment getComment(long mid, long cid){
+	
+	ErrorMessage errmsg = new ErrorMessage("not found", 404, "http://documentation/link")
+	Response response = Response.status(Status.NOT_FOUND)
+						.entity(errmsg)
+						.build();
+	Message m = messages.get(mid);
+		if(m == null){
+			return throw new WebApplicationException(response);
+		}
+	Map<long, Comment>	comments = messages.get(mid).getComments();
+	Comment comment = comments.get(commetId);
+	if(comment == null){
+			return throw new WebApplicationException(response);
+		}
+		
+		return comment;
+}
+
+after above code changes we will see error msg as json error msg.
+
+// other short cut - for standard status codes like 200 to 299, 300 - 399, 400-499, 500-599
+updated code as:
+public Comment getComment(long mid, long cid){
+	
+	ErrorMessage errmsg = new ErrorMessage("not found", 404, "http://documentation/link")
+	Response response = Response.status(Status.NOT_FOUND)
+						.entity(errmsg)
+						.build();
+	Message m = messages.get(mid);
+		if(m == null){
+			return throw new WebApplicationException(response);
+		}
+	Map<long, Comment>	comments = messages.get(mid).getComments();
+	Comment comment = comments.get(commetId);
+	if(comment == null){
+			return throw new NotFoundException(response);   //
+		}
+		
+		return comment;
+}
+
+ --------------------------------------------------------------------
+ 
+ 
+ ##########################################################################
+ 
+ Advance JAX-RS
+ 
+ Video 13 : JAX RS Client
+ 
+ just definition of client.
+ with use of client we can consumes rest return data in our app.(app was implemented in any technology)
+ 
+ ---------------------------------------------------------------------------
+ 
+ 
+ Video 14 : writing a jax-rs client
+ 
+ // create a call with main
+ 
+ public class RestApiClient{
+	public static void main (String args){
+	
+		Client client = ClientBuilder.newClient();
+		Response response = client
+							.target("http://localhost:8080/messenger/webapi/messages/4") // which url need to execute
+							.request() // as we are requesting server to get data from service it should be request
+							.get();  // either get or post
+		
+		System.out.println(response);  // it prints object address, so cant see exact object data
+		
+		// so convering raw data to Message class format and later reading from it.
+		Message m = response.readEntity(Message.class);		
+		System.out.println(m.getMessage());  // hellow world!
+				
+	}
+ }
+ 
+ -----------------------------------------------------------------------
+ 
+ Video 15 : client code explained step by step
+ 
+  //inside main
+  
+  public class RestApiClient{
+	public static void main (String args){
+	
+		Client client = ClientBuilder.newClient();
+		
+		WebTarget target = client.target("http://localhost:8080/messenger/webapi/messages/4");
+		Builder builder = target.request();
+		Response response = builder.get();
+		Message msg = respone.readEntity(Message.class);
+		System.out.println(msg.getMessage());
+	}
+}
+ 
+ 
+ or 
+ 
+ Message response = client
+							.target("http://localhost:8080/messenger/webapi/messages/4") 
+							.request(MediaType.APPLICATION_JSON) 
+							.get(Message.class); 
+ sysout(response.getMessage());
+ -----------------------------------------------------------------------
+
+ Video 16 : Some Best Practices
+ 
+ 1. create only one client per method
+ 2. dont keep full rest url
+		instead of .target("http://localhost:8080/messenger/webapi/messages/4") 
+		use like
+		WebTarget basetarget = client.target("http://localhost:8080/messenger/webapi/"); // upto root path
+		WebTarget messageTarget = basetarget.path("messages");
+		WebTarget singleMessageTarget = messageTarget.path("{messageId}");
+		
+		Message msg = singleMessageTarget
+						.resolveTemplate("messageId","4")
+						.request(MediaType.APPLICATION_JSON)
+						.get(Message.class);
+		Sysout(msg.getMessage());				
+ 
+ ------------------------------------------------------------------
+ 
+ Video 17 : making a post request
+ 
+ public static void main(){
+		Client client = ClientBuilder.newClient();
+		WebTarget basetarget = client.target("http://localhost:8080/messenger/webapi/"); // upto root path
+		WebTarget messageTarget = basetarget.path("messages");
+		WebTarget singleMessageTarget = messageTarget.path("{messageId}");
+		
+		// to get data 
+		Message msg = singleMessageTarget
+						.resolveTemplate("messageId","4")
+						.request(MediaType.APPLICATION_JSON)
+						.get(Message.class);
+		Sysout(msg.getMessage());			
+		
+		//to post or save message obj in map
+		Message newMessage = new Message(4,"my new msg", "author");		
+		Response postresponse = messageTarget
+								.request()
+								.post(Entity.json(newMessage));
+								
+		if(postresponse.getStatus != 201){
+			Sysout("Error!....");   // best practices
+		}						
+		Message createdMessage = postresponse.readEntity(Message.class);	// once you convert postresponse to 
+																			//Message obj we cant check what is the response 
+																			//status code for given request, so before convertion it 
+																			//self u have to keep check conditions for exception handling.					
+		sysout(createdMessage.getMessage());		// my new msg			 	
+ 
+ }
+ 
+ ------------------------------------------------------------------------
+ 
+ Video 18 : creating invocations
+ 
+ // full fledged creation of request obj 
+ 
+ public class InvocationDemo()
+ 
+	public static void main(String args){
+		invocationDemo = new InvocationDemo();
+		Invocation invocation = invocationDemo.prepareRequestForMessagesByYear(2015);
+		Response response = invocation.invoke();
+		sysout(response.getStatus); // prings 200
+	}
+ 
+	public Invocation prepareRequestForMessagesByYear(int year){
+	
+		Client client = ClientBuilder.newClient();
+		return client.target("http://localhost:8080/messenger/webapi/")
+					 .path("messages")
+					 .queryParam("year", year)
+					 .request(MediaType.APPLICATION_JSON)
+					 .buildGet();  // we should not use get() becoz to execute rest call we wll use get() or post not for creating invocation object.
+	}
+ }
+ 
+ ------------------------------------------------------------------
+ 
+ Video 19 : Handling Generic Types
+ 
+ How to get response as list of messages.
+ 
+ Client client = ClientBuilder.newClient();
+ List<Message> messages = client.target("http://localhost:8080/messenger/webapi/")
+				.path("messages")
+				.queryParam("year", 2015)
+				.request(MediaType.APPLICATION_JSON)
+				.get(new GenericType<List<Message>>(){})
+ 
+ sysout(messages); 
+ 
+ --------------------------------------------------------
+ 
+ Video 20 : Unit Introduction
+ 
+ nothing explained, just welcomed as he going to explain authentication in next videos.
+ ------------------------------------------------------------------
+ 
+ Video 21 : Implementing Filters
+ 
+ 
+ In this tutorial, we'll learn about Filters in JAX-RS. We'll implement Request and Response filters and examine how they let us intercept the request-response flow and execute code.
+ 
+ 
+ Explained how filter works with example
+ 
+ ex1 : Container Response Filter
+ 
+ @Provider
+ public class PowerdByResponseFilter implements ContainerResponseFilter{
+	@Override
+	public void filter (ContainerRequestContext requestContext, ContainerResponseContext) throws IOException{
+		responseContext.getHeaders().add("X-Powered-By", "Java Brains");
+	}
+ }
+ 
+ o/p: after access of any resource link : 
+ In response headers we can see the new header which we added in response filter.
+ 
+ sample response:
+ Content-Length -> 9
+ Content-type -> text/plain
+ Date -> wed,29 July
+ Server -> Apache-coyote/1.1
+ X-Powered-By -> java brains  // this is newly added one.
+ 
+ ex 2: add filter logic before req and after response
+ 
+ @Provider
+ public class LoggingFilter implements ContainerRequestFilter, ContainerResponseFilter{
+ 
+	@Override
+	public void filter(ContainerRequestContext requestContext) throws IOException{
+		Sysout ("Request Headers");
+		Syout (requestContext.getHeaders());
+	}
+	
+	@Override
+	public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException{
+		sysout ("Response Headers");
+		sysout ("responseContext.getHeaders());
+	}
+ }
+ 
+ 
+------------------------------------------------------------------
+ 
+  
+Video : 22  REST API Authentication Mechanisms
+
+This lesson aims to explain the different approaches to authentication for a REST API application. It also explains the workings of Basic Auth, the authentication mechanism we'll implement in this course.
+
+Classinc Session-based authentication:
+1. client send the username / pwd to server to authenticate.
+2. server after successful validation creates a seesion at server side and sends the session token to client.
+3. client receives that 'session token' and saved in cookies at 'client side'.
+4. later on each request 'client' will add this session token in headers of req object and send the request to server.
+5. based on session token server will respond back to client.
+
+- Rest Api's are stateless, means it wont maintain any sessions.
+So, in each request we have to add username and pwd in req headers and send to server as req.
+
+Basic auth - client side.
+username:password -----> Base64 encoding ----> after applying base64 it generated encoded string as for example "dXNcmLtp56U753dQ="
+- we have to send this encoded string as header 'Authorization' in request obj.
+it looks like : 
+Authorization: Basic dXNcmLtp56U753dQ= (in Basic -'B' should be caps and space must and should after Basic word)
+
+Basic auth - server side
+read authentication header -> do decode Base64 on encoded string -> it returns username:password
+
+- Use HTTPS protocol in basic authentication, dont use http protocol becoz its not secure.
+Q) why we have to encode even though using the https?
+- Security is not the intent of the encoding step. Rather, the intent of the encoding is to 
+ 'encode non-Http-compatible characters' that may be in the user name or passowrd into those
+ that are http-compatible.
+
+advantages :
+1. simple
+2. stateless server
+3. supported by all browsers
+
+Disadvantages:
+1. requires https
+2. subject to replay attacks
+3. "logout" is tricky (if browser caching happend)
+
+better solutions: 
+1. digest access authentication.
+2. asymmetric cryptography
+3. OAuth
+4. Json web tokens
+
+------------------------------------------------------------------
+ 
+  
+Video 23 : Sending Basic Auth Requests
+
+Let's look at how to send Basic Auth REST API requests using Postman.
+
+Explained how to add username and pwd in under authorization heading in postman thats all.
+
+------------------------------------------------------------------
+ 
+Video : 24 Implementing REST API Authorization
+
+Let's implement Basic Auth by using a Security Request Filter and have clients login using a user ID and password.
+
+@path("secured")
+
+
+
+
+class : SecurityFilter.java
+
+@Provider
+public class SecurityFilter implements ContainerRequestFilter{
+
+	private static final String AUTHORIZATION_HEADER_KEY="Authorization";
+	private static final String AUTHORIZATION_HEADER_PREFiX="Basic "; //sapce requried at lastName
+	private static final String SECURED_URL_PREFIX="secured";
+	
+	@Override
+	public void filter(ContainerRequestContext requestContext) throws IOException{
+		if(requestContext.getUriInfo().getPath().contains(SECURED_URL_PREFIX)){
+			List<String> authHeader = requestContext.getHeaders().get(AUTHORIZATION_HEADER_KEY);
+			if(authHeader != null && authHeader.size()>0){
+				String authToken = authHeader.get(0);
+				authToken = authToken.replaceFirst(AUTHORIZATION_HEADER_PREFiX,"");
+				String deccodedString = Base64.decodeAsString(authToken);
+				StringTokennizer tokenizer = new StringTokennizer(deccodedString,":");
+				String username = tokenizer.nextToken();
+				String password = tokenizer.nextToken();
+				
+				if("user".equals(username) && "password".equals(password)){
+					return;  // it should be only return keyword thats all.
+				}
+			}
+			Response unauthorizedstatus = Response
+												.status(Response.status.UNAUTHORIZED)
+												.entity("User cant access the resource")
+												.build();
+			
+			requestContext.aborthWith(unauthorizedstatus);			
+		}
+	}
+}
+ 
+ 
+class securedresouce.java
+
+@Path("secured")
+public class SecuredResource{
+	@GET
+	@Path("message")
+	@Produces(MediaType.TEXT_PLAINN)
+	public String securedMethod(){
+		return "This API is secured";
+	}
+
+} 
+ 
+Test:
+URL to execute : http://localhost:8080/testapp/webapi/secured/message
+- if url doesnt have secured word it will throw error 
+- if u wont add basic authHeader it throw error msg like unauthrized. 
+- if u execute with worng username and pwd it throw err msg "User cant access the resource".
+ 
+ 
+------------------------------------------------------------------
+
+
+JWT: 
+https://www.youtube.com/watch?v=b_QdSemDKoU
+
+JWT:Json Web Token (by tech cbt)
+https://www.youtube.com/watch?v=oXxbB5kv9OA
+- self-contained : carries all the info necessary within itself as JSON object.
+- Mainly used in web applications
+- can be used in javascript, node.js, java, python,.net, php etc
+- can be used/passed as part of url(query string), form body parameter, cookie or http header(x-access-token)
+- greate for single sing on context (best use case is applications which work on sigle sign on)
+
+- JWT structure : three sections separated with dots.
+	- 1. header 2. payload and 3. signature
+	- all are base64 encoded (not encrypted)
+- header : usually contains 2 parts, in the form of json.
+		typ : should be jwt
+		alg : hashing algorithm (HS256, RS512, ES384 etc).
+		sample json:
+		{
+			"typ" : "jwt",
+			"alg" : "HS256"
+		}
+- payload : the info which we need to transmit.
+- signature : a hash of header and payload using a 'secret'.
+	ie: var s = base64Encode(header)+"."+base64Encode(payload);
+		var signature = hashAlgHs256(s,'secret'); // here secret is pwd.
+		
+- final jwt web tokent:
+			jwt = header + payload + signature
+			ie: var jwt = s + "." + base64Encode(signature);
+			
+steps in JWT : in real world:
+1. client will request for token by providing auth credentials
+2. server validates the credentials and creates the token jwt.
+3. send jwt to client ( or error if not auth)
+4. client will verify the token (its optional - whether the tokent is tamper or not)
+	extract info for app usage (optional)
+	persist token (at client side) - its mandatory step.
+	
+	if client wont persist the token then client needs to send auth credentials to server for further communication.
+5. client has to use the same(persisted) token for subsequent calls to server.
+6. server has to verify token for all subsequent requests coming form client.
+7. server side : if valid token, server will respond with response else return error.
+
+create JWT:
+http://jwtbuilder.jamiekurtz.com/
+http://kjur.github.io/jsjws/tool_jwt.html
+
+verify jwt:
+http://jwt.io/
+
+Base64encode/decode:
+https://www.base64encode.org/
+https://www.base64decode.org/
+
+
+	
+	
+		
+------------------------------------------------------------------
+
+ 
+http://tutorials.jenkov.com/oauth2/index.html
+http://websystique.com/spring-security/secure-spring-rest-api-using-oauth2/
+
+http://www.beingjavaguys.com/2014/10/spring-security-oauth2-integration.html
+https://raymondhlee.wordpress.com/2014/12/21/implementing-oauth2-with-spring-security/
+
+good one:
+http://javabycode.com/spring-framework-tutorial/spring-security/secure-spring-rest-api-using-spring-security-oauth2-example.html
+http://www.hascode.com/2016/03/setting-up-an-oauth2-authorization-server-and-resource-provider-with-spring-boot/
+
+
+ 
+ 
+
+ 

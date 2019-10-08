@@ -1,0 +1,22 @@
+Spring Security - Explanation: Total 10 videos
+------------------------------
+https://www.youtube.com/watch?v=dST7SfPFlf8&list=PLzS3AYzXBoj_OOobvCvUYwENKxFhwTyqH
+
+1.Spring Boot Security basics
+
+To enable security to spring boot project
+- Update pom with security artifact
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-security</artifactId>
+	</dependency>
+
+- in application.properites enter the following properites (for custom credentails)
+	security.user.name=admin
+	security.user.password=admin 
+
+	default username and password is user/16-digit UUID
+-----------------------------------------------------------------------
+
+2. Spring Boot Security In-Memory Authentication Example_PART1
+
