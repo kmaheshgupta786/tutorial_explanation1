@@ -1544,3 +1544,10 @@ curl -X POST "http://ntaapp-dev601.cisco.com:9200/asr_feedback/_delete_by_query?
 			System.out.println("failed size : "+ failedRecords.size());*/
 ============================
 			
+			
+Q) Inverted Index
+	- Inverted Index is backbone of Elasticsearch which make full-text search  fast.  Inverted index consists of a list of all unique words that occurs in  documents and for each word, maintain a list of documents number and positions in which it appears.
+
+Q) Full-Text search
+
+Q) Analyser and tokenizer			

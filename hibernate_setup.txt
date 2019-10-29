@@ -1243,3 +1243,12 @@ public class HibernateUtil
    }
 }    
 
+---------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+Good: 
+https://www.youtube.com/watch?v=fRbtzOFLFME
+* How to create indexes in oracle db? How many types of indexes present? How to choose which index type should be used?
+
+
+

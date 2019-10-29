@@ -154,6 +154,8 @@ Cisco:
 23. why to use constructor overloading
 24. explain <T extends ?>, can T be replaced with Number, String, Integer
 
+9+
+---
 Kongsberg:
 1. Can u define Steriotype in spring. How it works internally.
 2. diff between @Component & @Service
@@ -174,7 +176,9 @@ Morgan stanley:
 	condition: assume 1) file has 1to10 numbers and 2) file has 1 to 100 such that 1-10 + 11-100 then we have to consider these two as two diffent files.
 	we cant rely on the file names.
 3. cyclic barrier and countdown latch
-4. how to remove cyclic dependency. how to solve it.
+4. how to remove cyclic dependency. how to solve it. - using the lazy init on bean.
+	- 4 ways to delete cyclic dependency - https://java2blog.com/circular-dependencies-spring/ -- good
+	in spring - <beans default-lazy-init="true" xmlns="http://www.springframework.org/schema/beans"
 5. corss origin explanation. (not answered properly)
 6. what is the use of default method in java 8 interface.
 7. i have a interface A() - has only method m1();
@@ -188,13 +192,45 @@ Morgan stanley:
 8. jwt token question: assume firstuser authenticated and got token1, and mean time second user authenticated and got the token2.
    if the firstuser will use the second token what will happen.
    
-   
 
-   
+CGI:
+1. How garbage collector find the object is live or not?
+2. Difference between map vs flatmap 
+	- https://javarevisited.blogspot.com/2016/03/difference-between-map-and-flatmap-in-java8.html 
+3. how stream and parallel stream works internallay 
+	- based on number of core processors the original stream divided into sub streams. each stream processed by individual code and aggregate the all results and return the response.
+	- In seq stream order is guaranteed(eg: a,b,c,d,e,f,g,h..) , but in paraller it wont.(eg: a,b,c,g,h,i,d,e,f...)
+	
+4. how to implement your own hashmap
+5. how the bean class life cycle? like create,initialization and destory.
+6. How to make your class to be loaded while booting spring boot?   
+
+
+Volvo:
+1. with minimal configuaration how to change the jar file.
+2. How to achieve the singleton concept in distributed environments.
+3. @valid annotation: https://www.springboottutorial.com/spring-boot-validation-for-rest-services
+
+IBM: only Microservices
+1. In How many ways we can create micro services?
+2. How to manage the Loggig machanism.
+3. How to get the logs of a particular micro service in distributed environemnt.
+4. Spring boot fault tolerance.
+5. spring boot circuit breaker.
+6. how to achieve asynchronus mechanism in microsystem architecture. - through kafka, rabit mq.
+7. Synchronus will be achieved by - using resttemplates in code (communication between microservices)
+8. as a pattern where should "spring transaction" boundaries be set  - across dependent micro services ( need to cofirm one more time)
+	- Two-phase commit (2pc) pattern ( is synchronus )
+	- saga ( Saga pattern is asynchronous and reactive )
+	https://developers.redhat.com/blog/2018/10/01/patterns-for-distributed-transactions-within-a-microservices-architecture/
 	
 	
+   
+	
+-------------------------------------------------------------------------------------------------------------------------
 
-
+Dependency Injection:
+- the process where Spring framework looks for the beans and identifies the dependencies, and creates the instances of beans and autowires them.
 	  
 --------------------------------------------------------------------------------------------------------------------------
 Q) NoClassDefFoundError Vs ClassNotFoundException(Cheked Exception ie: Compile Time)

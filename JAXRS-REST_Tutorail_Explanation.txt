@@ -1012,7 +1012,50 @@ http://javabycode.com/spring-framework-tutorial/spring-security/secure-spring-re
 http://www.hascode.com/2016/03/setting-up-an-oauth2-authorization-server-and-resource-provider-with-spring-boot/
 
 
+---------------------------------------------------------------------------------------------------------------------------
+
+Q) what is mean of content negotiation?
+
+ - The process of selecting the best representation for a given response when there are multiple representations available. 
+ - Implementing Accept header based content negotiation is most used and recommened way.
+
+ In two ways we can implement the content negotiation.
+ 1. Server side: its not recommended, becoz as we are not sure how many clients will consume the api and their response entity types (even in future they can change).
+ 2. Client side: Using the "Accept" header, while sending the requrest from postman to back end we can achieve this.
  
- 
+ To support your rest api response as application-xml we have to add jackson xml dependency in our pom.xml.
+ <dependency>
+  <groupId>com.fasterxml.jackson.dataformat</groupId>
+  <artifactId>jackson-dataformat-xml</artifactId>
+ </dependency>
+
+---------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
  

@@ -25,6 +25,10 @@
 5. Thread dump is list of all the threads active in the JVM, 
    thread dumps are very helpful in analyzing bottlenecks in the application and analyzing deadlock situations.		
    Tools:  Profiler, Kill -3 command, jstack(in built of JDK) tool etc. In Unix Syntax: jstack PID
+   - precautions to avoid dead locks:
+		- consistent ordering of lock acquition helps avoid deadlock.
+		- Using timeouts for lock acquisition can also help. // becoz to timeout option, threads wont wait for ever so we can eliminate the dead lock.
+		https://www.youtube.com/watch?v=B4IVu-2hCos
    
    
 6. java.util.Timer: is a utility class that can be used to schedule a thread to be executed at certain time in future.  
@@ -587,5 +591,51 @@ class TaskRunnable implements runnable{
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+https://www.youtube.com/watch?v=shH38znT_sQ&list=PLhfHPmPYPPRk6yMrcbfafFGSbE2EPK_A6&index=11
 
+Semaphore: Restrict access
+
+public static void main (String args[]) throws InterruptedException{
+
+	Semaphore semaphore = new Semaphore(3); // n is number of permits - it allow max n-number of threads at a time to access the resource.
+	ExecutorService es = Executors.newFixedThreadPool(50);
+	
+	IntStream.of(1000).forEach(i-> es.execute(new Task(semaphore)));
+	
+	es.shutdown();
+	es.awaitTermination(1, TimeUnit.MiNUTES);
+}
+
+class Task implementes Runnable(){
+
+	private Semaphore semaphore;
+	Task(Semaphore semaphore){
+		this.semaphore = semaphore;
+	}
+	
+	public void run(){
+		semaphore.acquireUninterruptibly(); // here only one thread will aquire the permit to access resource.
+		semaphore.acquireUninterruptibly(2); // you are giving permits to two threads to access the resource.
+		semaphore.acquireUninterruptibly(2); // you are giving permits to two threads to access the resource.
+		// resource access logic
+		semaphore.release();
+	}
+}
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Thread Local vs Local variables:
+
+Most common use of thread local is when you have some object that is not thread-safe, but you want to avoid synchronizing access to that object using synchronized keyword/block. Instead, give each thread its own instance of the object to work with.
+A good alternative to synchronization or threadlocal is to make the variable a local variable. Local variables are always thread safe. The only thing which may prevent you to do this is your application design constraints.
+
+**
+In wabapp server, it may be keep a thread pool, so a ThreadLocal var should be removed before response to the client, since current thread may be reused by next request. Also, if you do not clean up when you’re done, any references it holds to classes loaded as part of a deployed webapp will remain in the permanent heap and will never get garbage collected.
+
+Thread local:
+https://www.youtube.com/watch?v=sjMe9aecW_A
+usecase1 : defineing simple dataformat object as thread local variable, becoz sdf object by default not thread safe.
+usecase 2 : in webapplicaton, assume you passed the user objection from controller to service and then to dao.
+			In this case create separate class define thread local variable and in controller set this for thread in the service2 read the obj from thread local using of get().
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

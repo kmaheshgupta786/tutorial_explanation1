@@ -341,6 +341,10 @@ Stream:
 	list.stream().filter(i -> i%2 == 0).toArray(Integer[]::new);
 	list.parallelStream().filter(i -> i%2 == 0).toArray(Integer[]::new);  // parallel stream
 
+*- stream follows sequence data processing.
+*- parallel stream, it wont follows sequence data processing. the original stream divided into multiple streams based on number of processor cores and processed independantly.
+eg: list.stream().map(Integer::valueOf).forEach(System.out::print);  // output: 1,2,3,4,5,6,7,8,9
+    list.parallelStream().map(Integer::valueOf).forEach(System.out::print); //output: 1,4,7,9,3,2,5,8,6 
 
 comparable : comparator:
 
@@ -351,6 +355,7 @@ These collections store elements in sorted order. To determining the sorting, th
 in java 7:
 		Collections.sort(al); //comparable
 		Collections.sort(al, new EmployeeByFirstName()); // comparator
+		*Map cant be sorted directly using Collections.sort(), first we have to convert map to list(entrykeyset) and then apply Collections.sort() method.
 		
 in Java 8: 
 		employees.sort(Comparator.comparing(e -> e.getFirstName())); //comparator
@@ -365,8 +370,26 @@ in Java 8:
 		SortedSet<Employee> set = new TreeSet<Employee>(new FirstNameSorter()); //check howtodoinjava site.
 		
 ------------------------------------------------------------------------------------
+Lambda Expression:
 
+- Lambda Expression can be defined as an Anonymous Function that allows users to pass methods as arguments. 
+- This helps removes a lot of boilerplate code. 
+*- Lambda Functions have no access modifiers(private, public or protected),
+*- no return type declaration and no name.   
    
-   
+--------------------------------------------------------------------------------------------		
 		
+		
+Sort:
+
+List<String> sortedList = al.stream().sorted().collect(Collectors.toList());
+List<String> sortedList = al.stream().sorted(Comparator.reverseOrder());
+List<Student> sortedList = al.stream().sorted(Comparator.comparing(Student::name));
+
+Map<String, String> sortedMap = map.entrySet().stream()
+												.sorted(Map.Entry.comparingByKey)  //Map.Entry.comparingByValue
+												.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (old, new)-> old, LinkedHashMap::new ));
+												
+
+
 		

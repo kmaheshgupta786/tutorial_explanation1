@@ -1,3 +1,39 @@
 web application implementation from scratch:
 https://www.youtube.com/watch?v=0m8oiW-oV2k&list=PLFe6qPta9Rb4KftbopyORQymFR0Ud6E9I
 
+
+Q) Data Bindings?
+Ans:
+	Two Way binding - the combination of Event binding and Property binding features
+	Event binding - the process of updating the values of a variable or attribute from View component layer to Model Component Layer
+	Property binding - the process of updating the of a variable or attribute in Model component and displaying the values in View component.
+
+
+Q) How can we share the data between components in AngularJs?
+
+
+Q) What are Modules in Angular 4?
+Ans:	
+	A Module in Angular is defined as the file where all the Directives, Components, Pipes and Services are grouped and interlinked together to make it a perfect working Angular application. Every Angular app has a root module which will be defined inside app.module.ts which is the Typescript file format. 
+	
+	- To define a module in Angular 4, NgModule can be used.
+
+Q) Directives?
+Ans: 
+	- A directive is used to add behavior to an existing element.
+	- A directive is used to attach different behaviors to an existing DOM element.
+	
+	Is a class. Angular has 3 directives.
+	1. Component directives : These form the main class having details of how the component should be processed, instantiated and used at runtime.
+	2. Structural : *ngIf, *ngFor
+	3. Attribute : deal with changing the look and behavior of the dom element. You can create your own directives as shown below.
+
+	How to create custom directives?
+	ng g directive changeText
+	
+Q) Routing?
+Ans:
+	 The process of applying routes to different components to display the content of the component defined mainly in Single Page Applications.
+	 
+
+

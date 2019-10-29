@@ -1,0 +1,8 @@
+Active MQ & Apache Camel
+
+https://www.tomitribe.com/blog/5-minutes-or-less-activemq-with-jms-queues-and-topics/
+
+
+Apache camel - video tutorial:
+
+https://www.youtube.com/playlist?list=PLK0V_H0fCvPilK2_-WMwahm7HYB0XgJx7
